@@ -1,0 +1,18 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="notification_container">
+    {%if notification%}
+        {% for notif in notification %}
+        <div class="notif">
+            <div class="info">
+                <p> <strong>Reference Number: </strong>{{notif.reference_number}}</p> 
+                <p> <strong>Status: </strong>{{notif.status}}</p> 
+                <p> <strong>Time: </strong>{{notif.order_time}}  </p> 
+                <p> <strong>Date: </strong>{{notif.order_date}}  </p> 
+            </div>
+        </div>             
+        {%endfor%}
+    {%endif%}
+</div>
+{% endblock %}

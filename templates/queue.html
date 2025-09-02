@@ -1,0 +1,28 @@
+{% extends "index.html" %}
+
+{% block content %}
+<meta http-equiv="refresh" content="10"> <!-- Refresh every 10 seconds -->
+
+<div class="container text-center mt-5">
+    <h1 class="display-4 fw-bold text-primary">Now Serving</h1>
+    {% if now_serving %}
+        <div class="display-1 fw-bold text-success">{{ now_serving }}</div>
+    {% else %}
+        <div class="h3 text-muted">No orders in queue</div>
+    {% endif %}
+
+    <hr class="my-4">
+
+    <h3 class="fw-bold">Upcoming</h3>
+    <div class="row justify-content-center">
+        {% for num in upcoming %}
+            <div class="col-2">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body fw-bold fs-4">{{ num }}</div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{%endblock%}

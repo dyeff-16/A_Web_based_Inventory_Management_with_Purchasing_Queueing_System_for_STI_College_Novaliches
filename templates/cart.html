@@ -1,0 +1,63 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="cart_container">
+    <h1>Your Cart</h1>
+    {% if cart_items %}
+    <form method="POST" action="{{ url_for('checkout.check_out') }}">
+        <ul>
+                <!-- Loop through cart items -->
+                {% for item in cart_items %}
+                    <li>
+                        <input type="checkbox" name="selected_items" value="{{ item.itemCode }}" class="select-item" data-price="{{ item.total_amount }}" onchange="updateTotal()">
+                        <img src="data:image/jpeg;base64,{{ item.image }}" width="100">
+                        <p>{{ item.item_name }}</p>
+
+                     
+                            <p>₱ {{ item.item_price }}</p>
+                            {%if item.size%}
+                            <p>Size: {{ item.size }}</p>
+                            {%endif%}
+                            <p>Quantity: </p>
+                            <a href="{{ url_for('cart.update_quantity', item_id=item.item_id, item_code=item.itemCode, item_quantity=item.item_quantity - 1) }}">
+                                <button type="button">-</button>
+                            </a>
+                            <span id="qty-{{ item.itemCode }}">{{ item.item_quantity }}</span>
+                            <a href="{{ url_for('cart.update_quantity', item_id=item.item_id, item_code=item.itemCode, item_quantity=item.item_quantity + 1) }}">
+                                <button type="button">+</button>
+                            </a>
+                
+                        <div class="update_price">
+                            <p>Total: ₱ {{ item.total_amount }}</p>
+                        </div>
+                        <div>
+                            <a href="{{ url_for('cart.remove_from_cart', item_id=item.item_id, item_code=item.itemCode, item_category=item.item_category) }}">
+                                <button type="button">R</button>
+                            </a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+            <p><strong>Total for selected items: ₱<span id="selected-total">0.00</span></strong></p>
+            <button type="submit" class="btn">Check Out</button>
+        </form>
+    {% else %}
+        <p>Your cart is empty.</p>
+    {% endif %}
+</div>
+
+<script>
+    function updateTotal() {
+        let total = 0;
+        // Loop through all checkboxes with the 'select-item' class
+        document.querySelectorAll('.select-item').forEach(function(checkbox) {
+            if (checkbox.checked) {
+                total += parseFloat(checkbox.getAttribute('data-price'));
+            }
+        });
+        // Update the total amount in the UI
+        document.getElementById('selected-total').textContent = total.toFixed(2);
+    }
+</script>
+
+{% endblock %}

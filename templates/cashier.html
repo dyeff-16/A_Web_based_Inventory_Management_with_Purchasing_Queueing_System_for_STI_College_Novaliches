@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="rfnc_num">
+        <form method="POST">
+            <label for="search_query">Search:</label>
+            <input type="text" id="search_query" name="search_query" placeholder="Enter search query">
+            <label for="filter_category">Filter by:</label>
+            <select name="filter_category" id="filter_category">
+                <option value="item_name">Student Name</option>
+                <option value="rfnc_num">Reference Number</option>
+            </select>
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    <div class="order_all">
+        <div class="order">
+            <p><strong>Reference Number:</strong> 123456</p>
+            <p><strong>Name:</strong> John Doe</p>
+            <p><strong>Total Amount:</strong> $59.99</p>
+            <p><strong>Items Ordered:</strong></p>
+            <ul>
+                <li>Item A - 2 pcs</li>
+                <li>Item B - 1 pc</li>
+            </ul>
+            <form method="POST" action="mark_paid.php">
+                <input type="hidden" name="reference_number" value="123456">
+                <button type="submit" name="mark_paid">Mark as Paid</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

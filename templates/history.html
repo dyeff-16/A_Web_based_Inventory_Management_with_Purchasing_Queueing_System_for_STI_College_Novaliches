@@ -1,0 +1,53 @@
+    {% extends "index.html" %}
+    {% block content %}
+    <div class="order_history_container mt-4">
+    <h2>Order History</h2>
+
+    {% if history %}
+        {% for hist in history %}
+        <div class="card shadow-sm border-0 rounded-3 hover-shadow mb-3">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="card-title mb-1 fw-bold">
+                        Reference Number: <span class="fw-normal">{{ hist.reference_number }}</span>
+                    </h5>
+                    <small class="text-muted fst-italic"><b>Date:</b> {{ hist.order_date }}</small><br>
+                    <small class="text-muted fst-italic"><b>Time:</b> {{ hist.order_time }}</small>
+                </div>
+
+                <span class="three-dots" role="button" tabindex="0" 
+                      data-bs-toggle="collapse" data-bs-target="#historyDetails{{ loop.index }}" 
+                      aria-expanded="false" aria-controls="historyDetails{{ loop.index }}" 
+                      title="Show order details" aria-label="Toggle order details">⋯</span>
+            </div>
+
+            <div class="collapse" id="historyDetails{{ loop.index }}">
+                <hr class="my-2">
+                <div class="card-body pt-0 text-secondary">
+                    <p class="mb-1"><strong>Status:</strong> {{ hist.status }}</p>
+                    <p class="mb-1"><strong>Total Amount:</strong> {{ hist.total_amount }}</p>
+
+                    {% if hist.order_items %}
+                        <p class="mb-1"><strong>Items Ordered:</strong></p>
+                        <ul class="mb-2">
+                            {% for item in hist.order_items %}
+                            <li>
+                                {{ item.item_name }}
+                                {% if item.size != 'N/A' %} - {{ item.size }}{% endif %}
+                                - {{ item.quantity }} pcs - Price: {{ item.price }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No items available</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>No order history available.</p>
+    {% endif %}
+</div>
+
+    {% endblock %}

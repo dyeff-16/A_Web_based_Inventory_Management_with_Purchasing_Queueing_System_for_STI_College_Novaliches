@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+<body>
+    <div class="loginpage">
+    <div class="login_container">
+        <!-- Display Flash Messages -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="flash-messages">     
+            <div class="alert">{{ messages }}</div>
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('login.login_') }}" method="POST" id="loginform">
+            <h2>Login</h2>
+            <div class="inputfield">
+                <input type="text" id="email" name="email_" required placeholder=""/>
+                <label for="email">Enter your email</label>
+            </div>
+            <div class="inputfield">
+                <input type="password" id="password" name="password_" required placeholder=""/>
+                <label for="password">Enter your password</label>
+            </div>
+            <button type="submit" id="login-btn">Log In</button>
+        </form>
+    </div>
+</div>
+</body>
+<style>
+    .flash-messages {
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.alert {
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    background-color: #f8d7da;
+    color: #842029;
+    font-weight: bold;
+}
+
+/* Success Message Styling */
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+/* Info Message Styling */
+.alert-info {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+/* Error Message Styling */
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+</style>
+</html>

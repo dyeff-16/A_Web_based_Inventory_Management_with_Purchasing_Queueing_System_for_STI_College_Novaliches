@@ -1,0 +1,87 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class='item-detail'>  
+  <img src="data:image/jpeg;base64,{{ item.image }}">
+      <div class="details-right">
+          <h2>{{ item.item_name }}</h2>
+          <p class="item_description">Description: {{ item.item_description }}</p>
+
+      {% if item.item_category in ['Uniform', 'Proware'] and item.sizes %}
+        <form class="item_dets" method="POST" action="{{ url_for('item_details.add_to_cart') }}">
+          <input type="hidden" name="item_id" value="{{ item._id }}">
+          <input type="hidden" name="item_name" value="{{ item.item_name }}">
+          <input type="hidden" name="item_category" value="{{ item.item_category }}">
+          
+          
+          <p id="selectedPrice" class="price">Price: </p>
+          <label for="size_selection" class="form-label">Choose Size</label>
+          <select class="form-select" name="size_selection" id="size_selection" required>
+              {% for size in item.sizes %}
+                {% if size.itemCode %}
+                <option value="{{ size.itemCode }}|{{ size.size }}|{{ size.price }}" {% if size.quantity == 0 %}disabled{% endif %}>
+                    {{ size.size }} - ({{ size.quantity }} in stock)
+                  </option>
+                {% endif %}
+              {% endfor %}
+          </select>
+            <div class="quantity_addcart">
+              <label id="label_qty" for="quantity">Quantity</label>
+              <input type="number" name="quantity" min="1" value="1">    
+            </div>
+            <div class="button-row">
+              <button type="submit" class="btn-primary">Add to Cart</button>
+            </div>
+        </form>
+</div>
+
+      {% else %}
+        <form class="item_dets" method="POST" action="{{ url_for('item_details.add_to_cart') }}">
+
+          <input type="hidden" name="item_id" value="{{ item._id }}">
+          <input type="hidden" name="item_code" value="{{ item.itemCode }}">
+          <input type="hidden" name="item_name" value="{{ item.item_name }}">
+          <input type="hidden" name="item_category" value="{{ item.item_category }}">
+          <input type="hidden" name="item_price" value="{{ item.item_price }}">
+          <p class="price"><strong>Price: ₱</strong>{{ item.item_price }}</p>
+
+          <div class="button-row">
+              <label id="label_qty" for="quantity">Quantity</label>
+              <input type="number" name="quantity" min="1"  value="1">
+          </div> 
+         
+          {% if item.item_quantity == 0 %}
+          <div class="out-of-stock">
+            <p class="out-of-stock-message">Sorry, this item is out of stock!</p>
+            <button type="submit" class="btn-primary" disabled>Add to Cart</button>
+          </div>
+        {% else %}
+          <div class="button-row">
+            <button type="submit" class="btn-primary">Add to Cart</button>
+          </div>
+        {% endif %}
+        </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <script>
+    const select = document.getElementById("size_selection");
+    const priceDisplay = document.getElementById("selectedPrice");
+  
+    select.addEventListener("change", function() {
+      const selectedValue = this.value;
+      const parts = selectedValue.split("|");
+      const price = parts[2];
+      priceDisplay.textContent = `Price: ₱${price}`;
+    });
+  
+    // Optional: Show price of the first item on load
+    window.addEventListener("load", () => {
+      if (select.value) {
+        const parts = select.value.split("|");
+        priceDisplay.textContent = `Price: ₱${parts[2]}`;
+      }
+    });
+  </script>
+{% endblock %}

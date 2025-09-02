@@ -1,0 +1,35 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="otp-container">
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-messages">
+                <div class="alert">{{ messages }}</div>
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <form id="otp-form" method="POST" action="{{url_for('login.otp_verification')}}">
+        <h3>OTP Verification</h3>
+        <label for="otp_verification">Enter OTP:</label>
+        <input type="text" id="otp_verification" name="otp_verification" placeholder="OTP" required>
+        <button type="submit">Verify OTP</button>
+    </form>
+</div>
+
+<!-- Optional basic CSS to style flash messages -->
+<style>
+.flash-messages {
+    margin-bottom: 15px;
+}
+.alert {
+    background-color: #f8d7da;
+    color: #842029;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STI ProWare Sign Up</title>
+  <link rel="icon" type="png" href="Logo2.png">
+  <link rel="stylesheet" href="design.css">
+</head>
+<body>
+<div class="signup">
+  <div class="signup-container">
+    <h2>STI ProWare Sign Up</h2>
+       <br>
+    <form action="#">
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" placeholder="Last Name, First Name, Middle Name" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="Enter your student email" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="StudentID">Student ID</label>
+        <input type="text" id="StudentID" placeholder="02000******" name="student_id" pattern="[0-9]{11}" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter your password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Confirm Password</label>
+        <input type="password" id="Confirmpassword" placeholder="Enter your password again..." pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" required>
+      </div>
+
+      <div class="form-group-terms">
+        <label for="terms">
+          <input type="checkbox" id="terms" name="terms" required>
+        <a href="#" onclick="openModal()"> Terms and Conditions</a>
+        </label>
+      </div>
+      
+      <div id="termsModal" class="modal">
+        <div class="modal-content">
+          <span class="close" onclick="closeModal()">&times;</span>
+          <h2>Terms and Conditions</h2>
+          <p>
+            Welcome to ProWare! It is an online platform for ordering merchandise for schools. By using this platform, you agree to the following terms and conditions. Please read them carefully prior to placing any order.<br>
+           <br>
+            For user legibility:<br>
+            <br>
+            •	ProWare is only made available to students or staff members currently enrolled at STI College Novaliches.<br>
+            •	Alumni have the privilege of browsing the goods but cannot place any order directly. They may ask for help from the currently enrolled students.<br>
+            •	Unauthorized access to the system is strictly prohibited and will be appropriately penalized.<br>
+            <br>
+            Ordering Process:<br>
+            <br>
+            •	Orders need to be placed on the official ProWare platform.<br>
+            •	The users shall be responsible to ensure that each order is complete with details including the quantity and the product chosen before submission.<br>
+            •	Once an order is submitted, it cannot be modified or canceled unless approved by the system administrator.<br>
+            <br>
+            Payment:<br>
+            <br>
+            •	Orders will only be processed once payment is received and confirmed.<br>
+            <br>
+            PickUp and Order Tracking:<br>
+            <br>
+            •	Users will be notified of their order status via the ProWare tracking system.<br>
+            •	Pickup location and times will be provided upon order confirmation.<br>
+            •	Users must ensure to pick up their orders within the specified pickup period. <br>
+            Otherwise, it will be rescheduled for another pick up date.<br>
+            <br>
+             Security and Account Access:<br>
+             <br>
+            •	MFA is used by ProWare to protect users' accounts. <br>
+            •	Users must keep any access credentials private and must not share account details with anyone. <br>
+            •	Unusual activity should be reported to the system administrator without delay.<br>
+            •	ProWare is not liable for any losses caused by the user’s failure to maintain account security.<br>    
+          </p>
+        </div>
+        </div>
+
+        <a href="index.html"><button type="submit" class="submit-btn">Sign Up</button></a>
+    </form>
+   
+    <div class="login-link">
+      Already have an account? <a href="#">Login here</a>
+    </div>
+    </div>
+</div> 
+
+  <script>
+    function openModal() {
+      document.getElementById("termsModal").style.display = "block";
+    }
+    
+    function closeModal() {
+      document.getElementById("termsModal").style.display = "none";
+    }
+    </script>
+</body>
+</html>
