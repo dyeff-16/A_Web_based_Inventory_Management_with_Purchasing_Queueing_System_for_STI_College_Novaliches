@@ -11,7 +11,7 @@ def notification():
   
   user = session['user']['email']
   print(user)
-  notif = list(db_notification.find({'user_email': user}).sort([("order_date", -1), ("order_time", -1)])) 
+  notif = list(db_notification.find({'email': user}).sort([("order_date", -1), ("order_time", -1)])) 
   return render_template('notification.html', notification=notif)
 
 @notifbp.route('/history')

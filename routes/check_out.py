@@ -1,6 +1,8 @@
+from email.message import EmailMessage
 import random
+import smtplib
 import string
-from flask import Flask, url_for, redirect, render_template, session, flash, request, Blueprint
+from flask import Flask, current_app, url_for, redirect, render_template, session, flash, request, Blueprint
 from db_proware import *
 
 check_outbp = Blueprint('checkout', __name__, url_prefix='/check_out')
@@ -103,12 +105,63 @@ def place_order():
         'order_time': time_str,
         'status': 'to pay'
     }
+    
+
 
     db_orders.insert_one(order_doc)
     db_notification.insert_one(order_notif)
-
+    send_order_confirmation(
+    to_email=user_email['email'],
+    fullname=user_email['fullname'],
+    student_id=user_email['student_id'],
+    ref_number=ref_number,
+    date_str=date_str,
+    time_str=time_str,
+    total_amount=total_amount,
+    ordered_items=ordered_items
+    )
     # Remove items from the cart
     for item in selected_ids:
         db_cart.delete_one({'email': get_email(), 'itemCode': item})
 
     return redirect(url_for('home'))
+
+
+def send_order_confirmation(to_email, fullname, student_id, ref_number, date_str, time_str, total_amount, ordered_items):
+
+
+    # Format items as a readable list
+    items_list = "\n".join(
+        [f"- {item['item_name']} (x{item['quantity']}) - {item['subtotal']}" for item in ordered_items]
+    )
+
+    msg = EmailMessage()
+    msg['Subject'] = 'STI ProWare – Order Confirmation'
+    msg['From'] = current_app.config['EMAIL_USER']
+    msg['To'] = to_email
+    msg.set_content(f"""Good day {fullname},
+
+Thank you for placing your order with STI ProWare!
+
+Your order has been successfully placed and is now being processed. Below are your order details:
+
+Reference Number: {ref_number}
+Student ID: {student_id}
+Order Date: {date_str}
+Order Time: {time_str}
+Total Amount: {total_amount}
+Order Status: To Pay
+
+Items Ordered:
+{items_list}
+
+Please keep this reference number for future inquiries regarding your order.
+
+Warm regards,
+ProWare Team
+""")
+    
+    with smtplib.SMTP('smtp.gmail.com', 587) as server:
+        server.starttls()
+        server.login(current_app.config['EMAIL_USER'], current_app.config['EMAIL_PASSWORD'])
+        server.send_message(msg)

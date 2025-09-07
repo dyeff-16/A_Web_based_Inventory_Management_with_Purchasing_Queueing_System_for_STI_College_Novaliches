@@ -79,6 +79,7 @@ def account():
     return render_template('profile.html', orders=user_orders, std_id=std_id, name=name, email=email)
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5002, debug=True)
+    app.run(host='0.0.0.0',port="5001",debug=True)
+
 
 

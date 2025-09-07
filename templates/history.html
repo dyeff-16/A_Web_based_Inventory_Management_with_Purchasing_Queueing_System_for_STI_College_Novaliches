@@ -1,24 +1,43 @@
-    {% extends "index.html" %}
+{% extends "index.html" %}
     {% block content %}
-    <div class="order_history_container mt-4">
-    <h2>Order History</h2>
+    <div class="container my-4">
+    <h2 class="fw-bold text-primary mb-4">Purchased</h2>
+
+<nav class="navbar navbar-expand-lg bg-dark pt-5 pb-5">
+  <div class="container-fluid">
+    <div class="navbar" id="navbarNavAltMarkup">
+      <div class="navbar-nav">
+        <a style="text-decoration: none;" class="m-5 h2 text-light" href="#">Placed Order</a>
+        <a style="text-decoration: none;" class="m-5 h2 text-light" href="#">Paid Order</a>
+        <a style="text-decoration: none;" class="m-5 h2 text-light" href="#">Completed Order</a>
+        <a style="text-decoration: none;" class="m-5 h2 text-light" href="">Order History</a>
+      </div>
+    </div>
+  </div>
+</nav>
 
     {% if history %}
         {% for hist in history %}
-        <div class="card shadow-sm border-0 rounded-3 hover-shadow mb-3">
+        <div class="card shadow-sm border-primary border-opacity-25 mt-3 rounded-3 mb-3">
             <div class="card-body d-flex justify-content-between align-items-center">
                 <div>
-                    <h5 class="card-title mb-1 fw-bold">
-                        Reference Number: <span class="fw-normal">{{ hist.reference_number }}</span>
+                    <h5 class="card-title fw-semibold text-dark">
+                        Reference Number: <span class="fw-normal text-muted">{{ hist.reference_number }}</span>
                     </h5>
-                    <small class="text-muted fst-italic"><b>Date:</b> {{ hist.order_date }}</small><br>
-                    <small class="text-muted fst-italic"><b>Time:</b> {{ hist.order_time }}</small>
+                    <small class="text-muted"><b>Date:</b> {{ hist.order_date }}</small>
+                    <br>
+                    <small class="text-muted"><b>Time:</b> {{ hist.order_time }}</small>
                 </div>
 
-                <span class="three-dots" role="button" tabindex="0" 
-                      data-bs-toggle="collapse" data-bs-target="#historyDetails{{ loop.index }}" 
-                      aria-expanded="false" aria-controls="historyDetails{{ loop.index }}" 
-                      title="Show order details" aria-label="Toggle order details">⋯</span>
+                <button class="btn btn-link text-primary p-0 border-0 d-flex align-items-center"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#historyDetails{{ loop.index }}"
+                        aria-expanded="false"
+                        aria-controls="historyDetails{{ loop.index }}">
+                <span class="me-1">⋯</span>
+                <i class="bi bi-chevron-down"></i>
+                </button>
             </div>
 
             <div class="collapse" id="historyDetails{{ loop.index }}">
@@ -27,10 +46,10 @@
                     <p class="mb-1"><strong>Status:</strong> {{ hist.status }}</p>
                     <p class="mb-1"><strong>Total Amount:</strong> {{ hist.total_amount }}</p>
 
-                    {% if hist.order_items %}
+                    {% if hist['items'] %}
                         <p class="mb-1"><strong>Items Ordered:</strong></p>
-                        <ul class="mb-2">
-                            {% for item in hist.order_items %}
+                        <ul class="mb-2 ps-2">
+                            {% for item in hist['items'] %}
                             <li>
                                 {{ item.item_name }}
                                 {% if item.size != 'N/A' %} - {{ item.size }}{% endif %}
@@ -39,15 +58,14 @@
                             {% endfor %}
                         </ul>
                     {% else %}
-                        <p>No items available</p>
+                        <p class="text-muted fst-italic">No items available</p>
                     {% endif %}
                 </div>
             </div>
         </div>
         {% endfor %}
     {% else %}
-        <p>No order history available.</p>
+        <p class="alert alert-info">No order history available.</p>
     {% endif %}
 </div>
-
     {% endblock %}
