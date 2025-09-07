@@ -23,6 +23,7 @@ def login_():
     if 'user' in session:
         return redirect(url_for('home'))
 
+    termsadcondition = db_info.find_one({"info": "terms and condition"})
     ip = request.remote_addr
     now = datetime.utcnow()
 
@@ -69,7 +70,7 @@ def login_():
             print('Account not found')
             flash('Incorrect email or password')
 
-    return render_template('login.html')
+    return render_template('login.html', tc=termsadcondition)
 
 @loginbp.route('/otp_login', methods=['GET', 'POST'])
 def otp_verification_login():
