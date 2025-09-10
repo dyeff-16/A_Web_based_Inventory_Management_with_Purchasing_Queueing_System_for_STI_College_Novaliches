@@ -1,9 +1,9 @@
 {% extends "index.html" %}
 
 {% block content %}
-<div class='item-detail'>  
-  <img src="data:image/jpeg;base64,{{ item.image }}">
-      <div class="details-right">
+<div class="container my-4 mt-5 bg-light p-4 rounded shadow-sm">  
+  <div class="row g-4 align-items-start">
+    <div class="col-md-5 text-center">  
           <h2>{{ item.item_name }}</h2>
           <p class="item_description">Description: {{ item.item_description }}</p>
 

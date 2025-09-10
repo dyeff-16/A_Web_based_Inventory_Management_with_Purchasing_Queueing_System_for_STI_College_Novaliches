@@ -1,28 +1,56 @@
 {% extends "index.html" %}
 
 {% block content %}
-<meta http-equiv="refresh" content="10"> <!-- Refresh every 10 seconds -->
+<meta http-equiv="refresh" content="10"> 
 
-<div class="container text-center mt-5">
-    <h1 class="display-4 fw-bold text-primary">Now Serving</h1>
+<div class="container mt-4">
+    <h1 class="display-4 fw-bold text-primary text-center">Now Serving</h1>
     {% if now_serving %}
-        <div class="display-1 fw-bold text-success">{{ now_serving }}</div>
+        <div class="display-1 fw-bold text-success text-center">{{ now_serving }}</div>
     {% else %}
-        <div class="h3 text-muted">No orders in queue</div>
+        <div class="h3 text-muted text-center">No orders in queue</div>
     {% endif %}
 
     <hr class="my-4">
 
-    <h3 class="fw-bold">Upcoming</h3>
-    <div class="row justify-content-center">
-        {% for num in upcoming %}
-            <div class="col-2">
-                <div class="card shadow-sm mb-3">
-                    <div class="card-body fw-bold fs-4">{{ num }}</div>
+    <div class="row">
+        <!-- Queue Line -->
+        <div class="col-md-6">
+            <div class="border rounded p-3 h-100">
+                <h5 class="fw-bold text-center">Queue Line</h5>
+                <div class="d-flex flex-column gap-3 mt-3">
+                    {% if queue_orders %}
+                        {% for order in queue_orders %}
+                            <div class="border rounded p-4 text-center 
+                                {% if order.reference_number == user_ref_num %} bg-primary text-white {% else %} bg-light {% endif %}">
+                                <span class="fw-bold">{{ order.reference_number }}</span>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No orders in queue.</p>
+                    {% endif %}
                 </div>
             </div>
-        {% endfor %}
+        </div>
+
+        <!-- Skipped Queue -->
+        <div class="col-md-6">
+            <div class="border rounded p-3 h-100">
+                <h5 class="fw-bold text-center">Skipped Queue</h5>
+                <div class="d-flex flex-column gap-3 mt-3">
+                    {% if skip_orders %}
+                        {% for order in skip_orders %}
+                            <div class="border rounded p-4 text-center 
+                                {% if order.reference_number == user_ref_num %} bg-primary text-white {% else %} bg-warning {% endif %}">
+                                <span class="fw-bold">{{ order.reference_number }}</span>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No skipped orders.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-
-{%endblock%}
+{% endblock %}

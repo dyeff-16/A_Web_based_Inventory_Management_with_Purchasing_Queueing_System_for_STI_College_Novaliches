@@ -1,19 +1,27 @@
-from flask import Blueprint, Flask, url_for, redirect, render_template, session, flash, request
-from db_proware import *
+from flask import Blueprint, render_template, session
+from db_proware import db_orders
 
+queuebp = Blueprint('queue', __name__, url_prefix='/queue')
 
-queuebp= Blueprint('queue', __name__, url_prefix='/queue')
+@queuebp.route("/", methods=["GET"])
+def queue_view():
+    # Find the first order in the queue (now serving)
+    now_serving_order = db_orders.find_one({"queue_status": "queue"}, sort=[("_id", 1)])
+    now_serving = now_serving_order["reference_number"] if now_serving_order else None
 
-@queuebp.route("/queue")
-def queue():
-    # Get orders that are Waiting or Ready, sorted by pickup_number
-    orders = list(db_orders.find(
-        {"pickup_status": {"$in": ["Waiting", "Ready"]}}
-    ).sort("pickup_number", 1))
+    # All queue orders sorted by oldest first
+    queue_orders = list(db_orders.find({"queue_status": "queue"}).sort("_id", 1))
 
-    now_serving = orders[0]["pickup_number"] if orders else None
-    upcoming = [o["pickup_number"] for o in orders[1:5]]  # next 4 numbers
+    # All skipped orders sorted by oldest first
+    skip_orders = list(db_orders.find({"queue_status": "skipped"}).sort("_id", 1))
 
-    return render_template("queue.html",
-                           now_serving=now_serving,
-                           upcoming=upcoming)
+    # Current user’s reference number (if logged in or tracked in session)
+    user_ref_num = session.get("ref_num")
+
+    return render_template(
+        "queue.html",
+        now_serving=now_serving,
+        queue_orders=queue_orders,
+        skip_orders=skip_orders,
+        user_ref_num=user_ref_num
+    )
