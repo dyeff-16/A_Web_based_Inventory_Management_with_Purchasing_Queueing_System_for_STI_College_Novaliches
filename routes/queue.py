@@ -3,8 +3,8 @@ from db_proware import db_orders
 
 queuebp = Blueprint('queue', __name__, url_prefix='/queue')
 
-@queuebp.route("/queue_view", methods=["GET"])
-def queue_view():
+@queuebp.route("/queue_user", methods=["GET"])
+def queue_user():
     # Find the first order in the queue (now serving)
     now_serving_order = db_orders.find_one({"queue_status": "queue"}, sort=[("_id", 1)])
     now_serving = now_serving_order["reference_number"] if now_serving_order else None
