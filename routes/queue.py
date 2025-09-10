@@ -3,7 +3,7 @@ from db_proware import db_orders
 
 queuebp = Blueprint('queue', __name__, url_prefix='/queue')
 
-@queuebp.route("/", methods=["GET"])
+@queuebp.route("/queue_view", methods=["GET"])
 def queue_view():
     # Find the first order in the queue (now serving)
     now_serving_order = db_orders.find_one({"queue_status": "queue"}, sort=[("_id", 1)])
