@@ -22,7 +22,7 @@
                     {% if queue_orders %}
                         {% for order in queue_orders %}
                             <div class="border rounded p-4 text-center 
-                                {% if order.reference_number == user_ref_num %} bg-primary text-white {% else %} bg-light {% endif %}">
+                                {% if order.email == email %} bg-primary text-white {% else %} bg-light {% endif %}">
                                 <span class="fw-bold">{{ order.reference_number }}</span>
                             </div>
                         {% endfor %}

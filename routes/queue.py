@@ -5,6 +5,8 @@ queuebp = Blueprint('queue', __name__, url_prefix='/queue')
 
 @queuebp.route("/queue_user", methods=["GET"])
 def queue_user():
+    user_session = session['user']
+    email_session = user_session['email']
     # Find the first order in the queue (now serving)
     now_serving_order = db_orders.find_one({"queue_status": "queue"}, sort=[("_id", 1)])
     now_serving = now_serving_order["reference_number"] if now_serving_order else None
@@ -23,5 +25,6 @@ def queue_user():
         now_serving=now_serving,
         queue_orders=queue_orders,
         skip_orders=skip_orders,
-        user_ref_num=user_ref_num
+        user_ref_num=user_ref_num,
+        email=email_session
     )
