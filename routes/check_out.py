@@ -93,7 +93,7 @@ def place_order():
         'total_amount': total_amount,
         'order_date': date_str,
         'order_time': time_str,
-        'status': 'to pay'
+        'status': 'placed_order'
     }
     order_notif = {
         'reference_number': ref_number,
@@ -103,7 +103,7 @@ def place_order():
         'total_amount': total_amount,
         'order_date': date_str,
         'order_time': time_str,
-        'status': 'Placed Order'
+        'status': 'placed Order'
     }
     
 
@@ -150,7 +150,7 @@ Student ID: {student_id}
 Order Date: {date_str}
 Order Time: {time_str}
 Total Amount: {total_amount}
-Order Status: To Pay
+Order Status: Placed Order
 
 Items Ordered:
 {items_list}

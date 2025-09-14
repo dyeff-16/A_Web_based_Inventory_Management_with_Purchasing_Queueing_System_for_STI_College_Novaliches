@@ -7,18 +7,19 @@
   <div class="container-fluid d-flex justify-content-center">
     <div class="navbar" id="navbarNavAltMarkup">
       <div class="navbar-nav">
-        <a class="m-5 h4 text-light {% if selected_status == 'placed order' %}fw-bold text-warning{% endif %}"
-           href="{{ url_for('notif.history', status='placed order') }}">Placed Order</a>
+        <a class="m-5 h4 text-light {% if selected_status == 'placed_order' %}fw-bold text-warning{% endif %}"
+           href="{{ url_for('notif.history', status='placed_order') }}">Placed Order</a>
         <a class="m-5 h4 text-light {% if selected_status == 'paid' %}fw-bold text-warning{% endif %}"
            href="{{ url_for('notif.history', status='paid') }}">Paid Order</a>
-        <a class="m-5 h4 text-light {% if selected_status == 'completed' %}fw-bold text-warning{% endif %}"
-           href="{{ url_for('notif.history', status='completed') }}">Completed Order</a>
+        <a class="m-5 h4 text-light {% if selected_status == 'claim' %}fw-bold text-warning{% endif %}"
+           href="{{ url_for('notif.history', status='claim') }}">Claimed Order</a>
         <a class="m-5 h4 text-light {% if selected_status == 'history' %}fw-bold text-warning{% endif %}"
-           href="{{ url_for('notif.history', status='history') }}">Order History</a>
+           href="{{ url_for('notif.history', status='history') }}">All History</a>
       </div>
     </div>
   </div>
 </nav>
+
 
 
   {% if history %}

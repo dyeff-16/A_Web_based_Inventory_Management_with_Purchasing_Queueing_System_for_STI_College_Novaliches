@@ -18,6 +18,14 @@ failed_signup_attempts = {}  # { 'IP': { 'count': int, 'last_attempt': datetime 
 BLOCK_TIME = timedelta(minutes=10)
 MAX_ATTEMPTS = 5
 
+
+def check_role(required_role):
+    if 'user' not in session:
+        return redirect(url_for('login.login_'))
+    if session['user']['roles'] == required_role:
+        return True 
+    return False
+
 @loginbp.route("/login", methods=['POST', 'GET'])
 def login_():   
     if 'user' in session:
@@ -53,8 +61,8 @@ def login_():
                 session['login_pending'] = {
                         'fullname': user['fullname'],
                         'email': user['email'],
-                        'student_id': user['std_id'],
-                        'role': user['role'],
+                        'student_id': user['student_id'],
+                        'roles': user['roles'],
                         'otp': otp,
                         'otp_created_at': datetime.utcnow().isoformat(),
                         'otp_attempts': 0
@@ -115,14 +123,23 @@ def otp_verification_login():
                 'fullname': login_pending['fullname'],
                 'email': login_pending['email'],
                 'student_id': login_pending['student_id'],
-                'role': login_pending['role'],
+                'roles': login_pending['roles'],
             }
             session.pop('login_pending')
 
             # Reset IP failure count on success
             failed_otp_attempts.pop(ip, None)
+            check_roles_user = check_role("Student")
+            check_roles_admin = check_role("admin")
+            check_roles_system_admin = check_role("system_admin")
+            
+            if check_roles_user:
+                return redirect(url_for('home'))
+            elif check_roles_admin:
+                return redirect(url_for('admin'))
+            elif check_roles_system_admin:
+                return redirect(url_for('system_admin'))
 
-            return redirect(url_for('home'))
         else:
             login_pending['otp_attempts'] += 1
             session['login_pending'] = login_pending
@@ -291,7 +308,6 @@ If you did not request this code, please disregard this message.
 Warm regards,
 ProWare
 """)
-
 
     with smtplib.SMTP('smtp.gmail.com', 587) as server:
         server.starttls()

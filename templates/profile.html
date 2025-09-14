@@ -1,166 +1,49 @@
 {% extends "index.html" %}
 {% block content %}
+<div class="container mt-5" style="max-width: 600px;">
+  <div class="card shadow-lg border-0 rounded-4 p-4">
+    <div class="text-center mb-4">
+      <h3 class="fw-bold ">My Profile</h3>
+    </div>
 
-<div class="container mt-5">
-    <!-- Profile Card -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-dark text-white">
-            <h4 class="mb-0">My Profile</h4>
-        </div>
-        <div class="card-body">
-            <table class="table table-borderless mb-0">
-                <tr>
-                    <th>Name:</th>
-                    <td>{{ name }}</td>
-                </tr>
-                <tr>
-                    <th>Email:</th>
-                    <td>{{ email }}</td>
-                </tr>
-                <tr>
-                    <th>Student ID:</th>
-                    <td>{{ std_id }}</td>
-                </tr>
-            </table>
-            <form action="/auth/logout" method="POST" class="mt-3">
-                <button type="submit" class="btn btn-danger">Logout</button>
+    <div class="text-center mb-4">
+      <div class="position-relative d-inline-block">
+        <img src="COMSCI_COE_IT_Female_Blouse.png" 
+             alt="Profile Photo" 
+             class="border border-3 shadow-sm" 
+             style="width: 180px; height: 180px; object-fit: cover;">
+
+        <form action="/upload_photo" method="POST" enctype="multipart/form-data" class="mt-3">
+          <div class="input-group">
+            <input type="file" class="form-control" name="photo" accept="image/*" required>
+            <button class="btn btn-primary" type="submit">Upload</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="px-3">
+      <table class="table table-borderless mb-0">
+        <tr>
+          <th scope="row" class="text-muted">Name:</th>
+          <td>{{ name }}</td>
+        </tr>
+        <tr>
+          <th scope="row" class="text-muted">Email:</th>
+          <td>{{ email }}</td>
+        </tr>
+        <tr>
+          <th scope="row" class="text-muted">Student ID:</th>
+          <td>{{ std_id }}</td>
+        </tr>
+      </table>
+
+        <div class="d-flex justify-content-end mt-4">
+            <form action="/auth/logout" method="POST">
+            <button type="submit" class="btn btn-danger px-4">Logout</button>
             </form>
         </div>
     </div>
-
-    <div class="order_status_container mt-4">
-        <h2>Current Order</h2>
-
-        <div class="container" style="padding-top: 1rem; padding-bottom: 0.25rem;">
-            {% if orders %}
-                {% for order in orders %}
-                <div class="card shadow-sm border-0 rounded-3 hover-shadow mb-3">
-                    <div class="card-body d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5 class="card-title mb-1 fw-bold">
-                                Reference Number: <span class="fw-normal">{{ order.reference_number }}</span>
-                            </h5>
-                            <small class="text-muted fst-italic"><b>Date:</b> {{ order.order_date }}</small><br>
-                            <small class="text-muted fst-italic"><b>Time:</b> {{ order.order_time }}</small>
-                             {% if not order.receipt %}
-
-                                <form id="uploadForm{{ loop.index }}" action="/account" method="post" enctype="multipart/form-data" onsubmit="return confirmUpload(event, '{{ loop.index }}')">
-                                    <input type="hidden" name="ref_number" value="{{ order.reference_number }}">
-                                    <input type="file" name="img_reciept" class="form-control mb-2 mt-3" required onchange="previewReceipt(this, '{{ loop.index }}')">
-                                    <input type="submit" value="Upload Receipt" class="btn btn-sm btn-dark">
-                                </form>
-
-                                <div class="modal fade" id="confirmUploadModal{{ loop.index }}" tabindex="-1" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">Confirm Upload</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                            </div>
-                                            <div class="modal-body text-center">
-                                                <p>Are you sure you want to upload this receipt?</p>
-                                                <img id="previewImage{{ loop.index }}" src="" style="max-width: 100%; display:none;" class="mb-2 rounded">
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                                                <button type="button" class="btn btn-primary" onclick="confirmYes('{{ loop.index }}')">Yes</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% else %}
-                                <p>
-                                    <a href="#" data-bs-toggle="modal" data-bs-target="#receiptModal{{ loop.index }}">View Receipt</a>
-                                </p>
-                                <div class="modal fade" id="receiptModal{{ loop.index }}" tabindex="-1" 
-                                    aria-labelledby="receiptModalLabel{{ loop.index }}" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="receiptModalLabel{{ loop.index }}">Receipt</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body text-center">
-                                                <img src="data:image/png;base64,{{ order.receipt }}" 
-                                                     alt="receipt" style="max-width: 100%;">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endif %}
-                            {% if order.status == "Paid" %}
-                                <form action="{{ url_for('account') }}" method="POST">
-                                    <input type="hidden" name="rfr_num" value="{{ order.reference_number }}">
-                                    <input type="hidden" name="user_email" value="{{ order.email }}">
-                                    <input type="hidden" name="student_id" value="{{ order.student_id }}">
-                                    
-                                    <button type="submit" name="status" value="Claim" class="btn btn-sm btn-success">Claim</button>
-                                </form>
-                            {% endif %}
-                        </div>
-                        <span class="three-dots" role="button" tabindex="0" 
-                              data-bs-toggle="collapse" data-bs-target="#orderDetails{{ loop.index }}" 
-                              aria-expanded="false" aria-controls="orderDetails{{ loop.index }}" 
-                              title="Show order details" aria-label="Toggle order details">⋯</span>
-                    </div>
-
-                    <div class="collapse" id="orderDetails{{ loop.index }}">
-                        <hr class="my-2">
-                        <div class="card-body pt-0 text-secondary">
-                            <p class="mb-1"><strong>Status:</strong> {{ order.status }}</p>
-                            <p class="mb-1"><strong>Total Amount:</strong> {{ order.total_amount }}</p>
-                            <p class="mb-1"><strong>Items Ordered:</strong></p>
-                            <ul class="mb-2">
-                                {% if order['items'] %}
-                                    {% for item in order['items'] %}
-                                    <li>
-                                        {{ item.item_name }}
-                                        {% if item.size != 'N/A' %} - {{ item.size }}{% endif %}
-                                        - {{ item.quantity }} pcs - Price: {{ item.price }}
-                                    </li>
-                                    {% endfor %}
-                                {% else %}
-                                    <li>No items available</li>
-                                {% endif %}
-                            </ul>
-
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            {% else %}
-                <p>No orders available.</p>
-            {% endif %}
-        </div>
-    </div>
+  </div>
 </div>
-
-<script>
-function previewReceipt(input, index) {
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            document.getElementById('previewImage' + index).src = e.target.result;
-            document.getElementById('previewImage' + index).style.display = 'block';
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-
-let formToSubmit = {};
-
-function confirmUpload(event, index) {
-    event.preventDefault(); // Stop form submission
-    formToSubmit[index] = event.target; // Store the form
-    const modal = new bootstrap.Modal(document.getElementById('confirmUploadModal' + index));
-    modal.show();
-    return false;
-}
-
-function confirmYes(index) {
-    if (formToSubmit[index]) {
-        formToSubmit[index].submit(); // Submit the correct form
-    }
-}
-</script>
 {% endblock %}

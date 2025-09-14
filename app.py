@@ -27,16 +27,57 @@ app.register_blueprint(check_outbp)
 app.register_blueprint(notifbp)
 app.register_blueprint(queuebp)
 
-@app.route("/", methods=['GET','POST'])
+
+def check_role(required_role):
+    if 'user' not in session:
+        return redirect(url_for('login.login_'))
+    if session['user']['roles'] == required_role:
+        return True 
+    return False
+
+@app.route('/', methods=['GET','POST'])
+def dashboard():
+
+    return render_template('dashboard.html')
+
+@app.route("/home", methods=['GET','POST'])
 def home():
+    if 'user' not in session:
+        return redirect(url_for('login.login_'))
     search_query = request.form.get('search_item', '').strip()
-    
+        
     if search_query:
-        items = db_items.find({'item_name': {'$regex': search_query, '$options': 'i'}})
+            items = db_items.find({'item_name': {'$regex': search_query, '$options': 'i'}})
     else:
-        items = db_items.find()
-   
+            items = db_items.find()
+
+    check_roles = check_role("Student")
+    if not check_roles:
+        return redirect(url_for('dashboard'))
+    
     return render_template('index.html', items=items)
+
+@app.route("/admin", methods=["POST","GET"])
+def admin():
+    if 'user' not in session:
+        return redirect(url_for('login.login_'))
+    
+    check_roles = check_role("admin")
+    if not check_roles:
+        return redirect(url_for('dashboard'))
+    
+    return render_template('admin.html')
+    
+@app.route("/system_admin", methods=["POST","GET"])
+def system_admin():
+    if 'user' not in session:
+        return redirect(url_for('login.login_'))
+    
+    check_roles = check_role("system_admin")
+    if not check_roles:
+        return redirect(url_for('dashboard'))
+    
+    return render_template('system_admin.html')
 
 @app.route("/account", methods=['POST', 'GET'])
 def account():
