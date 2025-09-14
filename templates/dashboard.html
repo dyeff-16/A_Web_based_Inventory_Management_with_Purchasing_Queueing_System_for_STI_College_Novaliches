@@ -35,7 +35,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
   <div class="container">
     <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
-      <img src="Logo.png" height="30" class="me-2">Novaliches Proware
+      <img src="sti.png" height="30" class="me-2">Novaliches Proware
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
@@ -45,7 +45,7 @@
         <li class="nav-item">
           <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#FAQModal">FAQ</a>
         </li>
-        <li class="nav-item"><a class="nav-link" href="#">Login</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{url_for('login.login_')}}">Login</a></li>
       </ul>
     </div>
   </div>
@@ -124,7 +124,7 @@
   <div class="container">
     <h1>Welcome to STI Novaliches Proware</h1>
     <p class="lead mt-3">Fast and easy uniform and proware shopping for STI students.</p>
-    <a href="#" class="btn btn-warning btn-lg mt-3">Shop Now</a>
+    <a href="{{url_for('home')}}" class="btn btn-warning btn-lg mt-3">Shop Now</a>
   </div>
 </section>
 

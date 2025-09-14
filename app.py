@@ -37,13 +37,13 @@ def check_role(required_role):
 
 @app.route('/', methods=['GET','POST'])
 def dashboard():
-
+    if 'user' in session:
+        return redirect(url_for('home'))
     return render_template('dashboard.html')
 
 @app.route("/home", methods=['GET','POST'])
 def home():
-    if 'user' not in session:
-        return redirect(url_for('login.login_'))
+
     search_query = request.form.get('search_item', '').strip()
         
     if search_query:
