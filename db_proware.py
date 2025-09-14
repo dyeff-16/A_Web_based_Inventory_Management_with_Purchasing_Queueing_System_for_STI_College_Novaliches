@@ -4,7 +4,7 @@ dbClient = MongoClient("mongodb+srv://stinovalichesproware:!Stinovalichesproware
 
 db_admin = dbClient.Proware
 db_items = db_admin.items  # Collection for items/products
-db_account = db_admin.account  # Collection for user accounts
+db_account = db_admin.accounts  # Collection for user accounts
 db_cart = db_admin.cart  # Collection for user carts
 db_orders = db_admin.orders  # Collection for user orders
 db_notification = db_admin.notification
