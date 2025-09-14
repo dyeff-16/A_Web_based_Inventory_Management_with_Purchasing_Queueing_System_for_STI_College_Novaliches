@@ -53,7 +53,6 @@ def login_():
         email = request.form['email']
         password = request.form['password']        
         user = db_account.find_one({ "email" : email})
-
         if user:
             # if bcrypt.check_password_hash(user['password'], password):
             if password == user['password']:
