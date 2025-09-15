@@ -15,50 +15,89 @@ def notification():
   notif = list(db_notification.find({'email': user}).sort([("order_date", -1), ("order_time", -1)])) 
   return render_template('notification.html', notification=notif)
 
-@notifbp.route('/history')
-def history():
+@notifbp.route('/purchase')
+def purchase():
     if 'user' not in session:
-        return redirect(url_for('login.login_'))
+        return redirect(url_for('home'))
+    
+    #i2 ay upload sa resibo
+    if request.method == "POST":
+        # Handle receipt upload only if file is provided
+        if 'img_reciept' in request.files and request.files['img_reciept'].filename != '':
+            image_reciept = request.files['img_reciept']
+            ref_num = request.form.get('ref_number')
 
-    user_email = session['user']['email']
-    selected_status = request.args.get('status', 'placed_order')  # default = show all
+            image_data = image_reciept.read()
+            image_base64 = base64.b64encode(image_data).decode('utf-8')
 
-    # Build query
-    query = {"email": user_email}
-    if selected_status == 'placed_order': 
-        query["status"] = "placed_order"
-        history_data = list(db_orders.find(query).sort([("order_date", -1), ("order_time", -1)]))
-    elif selected_status == 'paid':
-        query["status"] = "paid"
-        history_data = list(db_orders.find(query).sort([("order_date", -1), ("order_time", -1)]))
-    elif selected_status == 'claim':
-        query["status"] = "claim"
-        history_data = list(db_orders.find(query).sort([("order_date", -1), ("order_time", -1)]))
-    elif selected_status == "history":
-        history_data = list(db_history.find(query).sort([("order_date", -1), ("order_time", -1)]))
+            db_orders.update_one(
+                {"reference_number": ref_num},
+                {"$set": {'receipt': image_base64}}
+            )
 
+        # Handle status update
+        rfr_num = request.form.get('rfr_num')
+        new_status = request.form.get('status')
+        if rfr_num and new_status:
+            db_orders.update_one(
+                {"reference_number": rfr_num},
+                {"$set": {"status": new_status}}
+            )
 
-    return render_template(
-        "history.html",
-        history=history_data,
-        selected_status=selected_status
-    )
+    user_data = session.get('user')
+    if user_data:
+        name = user_data.get('fullname')
+        email = user_data.get('email')
+        std_id = user_data.get('student_id')
+
+    user_orders = db_orders.find({"email": email})
+    
+
+    return render_template('purchase.html', orders=user_orders, std_id=std_id, name=name, email=email)
+ 
 @notifbp.route('/upload_receipt', methods=['POST'])
 def upload_receipt():
-    if 'user' not in session:
-        return redirect(url_for('login.login_'))
+    
+    if request.method == "POST":
+        # Handle receipt upload only if file is provided
+        if 'img_reciept' in request.files and request.files['img_reciept'].filename != '':
+            image_reciept = request.files['img_reciept']
+            ref_num = request.form.get('ref_number')
 
-    ref_number = request.form.get('ref_number')
-    file = request.files.get('img_receipt')
+            image_data = image_reciept.read()
+            image_base64 = base64.b64encode(image_data).decode('utf-8')
 
-    if file and ref_number:
-        # Convert file to base64
-        receipt_b64 = base64.b64encode(file.read()).decode('utf-8')
+            db_orders.update_one(
+                {"reference_number": ref_num},
+                {"$set": {'receipt': image_base64}}
+            )
 
-        db_orders.update_one(
-            {"reference_number": ref_number, "email": session['user']['email']},
-            {"$set": {"receipt": receipt_b64}}
-        )
-        flash("Receipt uploaded successfully!", "success")
+        # Handle status update
+        rfr_num = request.form.get('rfr_num')
+        new_status = request.form.get('status')
+        if rfr_num and new_status:
+            db_orders.update_one(
+                {"reference_number": rfr_num},
+                {"$set": {"status": new_status}}
+            )
 
-    return redirect(url_for('notif.history', status='placed_order'))
+    user_data = session.get('user')
+    if user_data:
+        name = user_data.get('fullname')
+        email = user_data.get('email')
+        std_id = user_data.get('student_id')
+
+    user_orders = db_orders.find({"email": email})
+    return redirect(url_for('notif.purchase', orders=user_orders, std_id=std_id, name=name, email=email, status='placed_order'))
+
+@notifbp.route('/Paid', methods=['GET','POST'])
+def paid():
+    return render_template('paid.html')
+
+@notifbp.route('/Claim',methods=['GET','POST'])
+def claim():
+    return render_template('claim.html')
+
+@notifbp.route('/Order_History', methods=['GET','POST'])
+def order_history():
+    return render_template('order_history.html')

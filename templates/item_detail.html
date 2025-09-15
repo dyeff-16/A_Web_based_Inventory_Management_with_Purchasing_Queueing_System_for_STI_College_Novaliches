@@ -4,87 +4,102 @@
 <div class="container my-4 mt-5 bg-light p-4 rounded shadow-sm">  
   <div class="row g-4 align-items-start">
     <div class="col-md-5 text-center">  
-          <img src="data:image/jpeg;base64,{{ item.image }}" class="img-fluid rounded shadow-sm" alt="{{ item.item_name }}">
+      <img src="data:image/jpeg;base64,{{ item.image }}" class="img-fluid rounded shadow-sm" alt="{{ item.item_name }}">
     </div>
 
     <div class="col-md-7">
       <h2 class="mb-3 text-primary fw-bold">{{ item.item_name }}</h2>
       <p class="text-muted">Description: {{ item.item_description }}</p>
-   
 
       {% if item.item_category in ['Uniform', 'Proware'] and item.sizes %}
-        <form class="mb-4" method="POST" action="{{ url_for('item_details.add_to_cart') }}">
+      <!-- ✅ Single Form -->
+      <form id="itemForm" class="mb-4" method="POST" action="{{ url_for('item_details.add_to_cart') }}">
         <input type="hidden" name="item_id" value="{{ item._id }}">
         <input type="hidden" name="item_name" value="{{ item.item_name }}">
         <input type="hidden" name="item_category" value="{{ item.item_category }}">
-          
-          
-          <div class="mb-3 w-50">
+
+        <div class="mb-3 w-50">
           <label for="size_selection" class="form-label">Choose Size</label> 
-            <select class="form-select" name="size_selection" id="size_selection" required>
-              {% for size in item.sizes %}
-                {% if size.itemCode %}  
-                <option value="{{ size.itemCode }}|{{ size.size }}|{{ size.price }}" {% if size.quantity == 0 %}disabled{% endif %}>
-                  {{ size.size }} - ({{ size.quantity }} in stock - P{{size.price}} )
-                </option>
-                {% endif %}
-              {% endfor %}
-           </select>
+          <select class="form-select" name="size_selection" id="size_selection" required>
+            {% for size in item.sizes %}
+              {% if size.itemCode %}
+              <option 
+                value="{{ size.itemCode }}|{{ size.size }}|{{ size.price }}|{{ size.quantity }}"
+                {% if size.quantity == 0 %}data-outofstock="true"{% endif %}>
+                {{ size.size }} - ({{ size.quantity }} in stock - P{{ size.price }})
+              </option>
+              {% endif %}
+            {% endfor %}
+          </select>
         </div>
-        
-             <div class="mb-3 d-flex align-items-center">
+
+        <div class="mb-3 d-flex align-items-center">
           <label id="label_qty" for="quantity" class="me-2">Quantity</label>
           <input type="number" name="quantity" min="1" value="1" class="form-control w-auto">    
         </div>
-        <button type="submit" class="btn btn-primary">Add to Cart</button>        
+
+        <!-- Dynamic Button -->
+        <button id="actionBtn" type="submit" class="btn btn-primary">Add to Cart</button>
       </form>
 
       {% else %}
-        <form class="mb-4" method="POST" action="{{ url_for('item_details.add_to_cart') }}">
+      <!-- ✅ No Sizes (same as your code, with preorder option if out of stock) -->
+      <form id="simpleForm" class="mb-4" method="POST" 
+        action="{% if item.item_quantity == 0 %}{{ url_for('item_details.preorder') }}{% else %}{{ url_for('item_details.add_to_cart') }}{% endif %}">
+        
+        <input type="hidden" name="item_id" value="{{ item._id }}">
+        <input type="hidden" name="item_code" value="{{ item.itemCode }}">
+        <input type="hidden" name="item_name" value="{{ item.item_name }}">
+        <input type="hidden" name="item_category" value="{{ item.item_category }}">
+        <input type="hidden" name="item_price" value="{{ item.item_price }}">
 
-          <input type="hidden" name="item_id" value="{{ item._id }}">
-          <input type="hidden" name="item_code" value="{{ item.itemCode }}">
-          <input type="hidden" name="item_name" value="{{ item.item_name }}">
-          <input type="hidden" name="item_category" value="{{ item.item_category }}">
-          <input type="hidden" name="item_price" value="{{ item.item_price }}">
-          <p class="h5 fw-bold text-primary"><strong>Price: ₱</strong>{{ item.item_price }}</p>
-          <p>{{item.item_quantity}}</p>
+        <p class="h5 fw-bold text-primary"><strong>Price: ₱</strong>{{ item.item_price }}</p>
+        <p>{{ item.item_quantity }}</p>
 
-          <div class="mb-3 d-flex align-items-center">
-              <label class="me-2" id="label_qty" for="quantity">Quantity</label>
-              <input class="form-control w-auto" type="number" name="quantity" min="1"  value="1">
-          </div> 
-         
-          {% if item.item_quantity == 0 %}
-           <div class="alert alert-warning">Sorry, this item is out of stock!</div>
-            <button type="submit" class="btn btn-dark">Pre-Order</button>
+        <div class="mb-3 d-flex align-items-center">
+          <label class="me-2" id="label_qty" for="quantity">Quantity</label>
+          <input class="form-control w-auto" type="number" name="quantity" min="1" value="1">
+        </div> 
 
+        {% if item.item_quantity == 0 %}
+          <div class="alert alert-warning">Sorry, this item is out of stock!</div>
+          <button type="submit" class="btn btn-dark">Pre-Order</button>
         {% else %} 
-            <button type="submit" class="btn btn-primary">Add to Cart</button>
+          <button type="submit" class="btn btn-primary">Add to Cart</button>
         {% endif %}
-        </form>
+      </form>
       {% endif %}
     </div>
   </div>
 </div>
 
-  <script>
-    const select = document.getElementById("size_selection");
-    const priceDisplay = document.getElementById("selectedPrice");
-  
-    select.addEventListener("change", function() {
-      const selectedValue = this.value;
-      const parts = selectedValue.split("|");
-      const price = parts[2];
-      priceDisplay.textContent = `Price: ₱${price}`;
-    });
-  
-    // Optional: Show price of the first item on load
-    window.addEventListener("load", () => {
-      if (select.value) {
-        const parts = select.value.split("|");
-        priceDisplay.textContent = `Price: ₱${parts[2]}`;
-      }
-    });
-  </script>
+<script>
+  const select = document.getElementById("size_selection");
+  const actionBtn = document.getElementById("actionBtn");
+  const form = document.getElementById("itemForm");
+
+  function updateButton() {
+    if (!select) return;
+    const selected = select.options[select.selectedIndex];
+    const parts = selected.value.split("|");
+    const qty = parseInt(parts[3]);
+
+    if (qty === 0) {
+      actionBtn.textContent = "Pre-Order";
+      actionBtn.classList.remove("btn-primary");
+      actionBtn.classList.add("btn-dark");
+      form.action = "{{ url_for('item_details.preorder') }}";  // 🔄 switch to preorder
+    } else {
+      actionBtn.textContent = "Add to Cart";
+      actionBtn.classList.remove("btn-dark");
+      actionBtn.classList.add("btn-primary");
+      form.action = "{{ url_for('item_details.add_to_cart') }}"; // 🔄 switch to add-to-cart
+    }
+  }
+
+  if (select) {
+    select.addEventListener("change", updateButton);
+    window.addEventListener("load", updateButton);
+  }
+</script>
 {% endblock %}

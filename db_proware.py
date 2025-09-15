@@ -11,3 +11,4 @@ db_notification = db_admin.notification
 db_orders_history = db_admin.order_history
 db_history = db_admin.user_history
 db_info =db_admin.info
+db_preorder = db_admin.pre_order

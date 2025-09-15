@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import Flask, url_for, redirect, render_template, session, flash, request, Blueprint
 from db_proware import *
 from flask_wtf.csrf import CSRFProtect
@@ -19,33 +20,28 @@ def item_detail(item_id):
 
 @itemdt_bp.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
-    # Check if the user is logged in
     if 'user' not in session:
         return redirect(url_for('login.login_'))
 
-    # Get data from the form
     item_id = request.form.get('item_id')
     item_quantity = int(request.form.get("quantity", 1))
     item_category = request.form['item_category']
     
-    # Find the item in the database
     item = db_items.find_one({"_id": item_id})
     if not item:
         return "Item not found", 404
 
-    if item.get('sizes'):  # For items with sizes like 'Uniform' or 'Proware'
+    if item.get('sizes'): 
         size_selection = request.form.get('size_selection')
-        print(f"Size selection value: {size_selection}")  # Debugging print statement
+        print(f"Size selection value: {size_selection}")  
         
-        # Split and check if there are exactly 2 parts
         split_values = size_selection.split('|')
-        if len(split_values) != 3:
+        if len(split_values) != 4:
             return "Error: Invalid format for size selection", 400
 
-        item_code, item_size, item_price = split_values
+        item_code, item_size, item_price, item_quantities = split_values
         item_price = float(item_price)
 
-        # Prepare the cart entry for this item
         cart_entry = {
             "image": item['image'],
             "email": session["user"]['email'],
@@ -59,12 +55,10 @@ def add_to_cart():
             "total_amount": round(item_price * item_quantity, 2)
         }
 
-        # Check if this item already exists in the cart
         query = {'email': session["user"], 'itemCode': item_code}
         existing_entry = db_cart.find_one(query)
 
         if existing_entry:
-            # Update quantity and total amount if the item already exists
             updated_quantity = existing_entry.get("item_quantity", 0) + item_quantity
             updated_total_amount = updated_quantity * item_price
             db_cart.update_one(
@@ -72,13 +66,12 @@ def add_to_cart():
                 {'$set': {"item_quantity": updated_quantity, "total_amount": round(updated_total_amount, 2)}}
             )
         else:
-            # Insert a new cart entry if it doesn't exist
             db_cart.insert_one(cart_entry)
 
         return redirect(url_for('cart.cart'))
 
-    else:  # For items without sizes (non-Uniform, non-Proware)
-        item_price = float(item["item_price"])  # For items that don't have 'sizes'
+    else:  
+        item_price = float(item["item_price"]) 
         total_amount = item_price * item_quantity
 
         cart_entry = {
@@ -93,12 +86,11 @@ def add_to_cart():
             "total_amount": round(total_amount, 2)
         }
 
-        # Check if this item already exists in the cart
         query = {'email': session["user"], 'itemCode': item["itemCode"]}
         existing_entry = db_cart.find_one(query)
 
         if existing_entry:
-            # Update quantity and total amount if the item already exists
+           
             updated_quantity = existing_entry.get("item_quantity", 0) + item_quantity
             updated_total_amount = updated_quantity * item_price
             db_cart.update_one(
@@ -110,3 +102,40 @@ def add_to_cart():
             db_cart.insert_one(cart_entry)
 
         return redirect(url_for('cart.cart'))
+
+@itemdt_bp.route("/preorder", methods=["POST"])
+def preorder():
+    if 'user' not in session:
+        flash("Please log in to place a pre-order", "warning")
+        return redirect(url_for('login.login_'))
+
+    user_email = session['user']['email']
+    item_id = request.form.get("item_id")
+    size_selection = request.form.get("size_selection")  # only exists for size-based items
+
+    # default values
+    item_code = None
+    size = None
+    price = None
+
+    if size_selection:  
+        # size format: itemCode|size|price|quantity
+        parts = size_selection.split("|")
+        item_code, size, price, qty = parts[0], parts[1], parts[2], parts[3]
+    else:
+        # non-size item (from hidden input)
+        item_code = request.form.get("item_code")
+
+    preorder_doc = {
+        "email": user_email,
+        "itemCode": item_code,
+        "size": size if size_selection else None,
+        "status": "pending",   # pending until restock
+        "created_at": datetime.utcnow()
+    }
+
+    # insert into preorders collection
+    db_preorder.insert_one(preorder_doc)
+
+    flash("Your pre-order has been placed. We'll notify you when it's back in stock.", "success")
+    return redirect(url_for("home"))

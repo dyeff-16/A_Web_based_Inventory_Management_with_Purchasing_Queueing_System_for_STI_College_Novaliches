@@ -1,0 +1,89 @@
+{% extends "index.html" %}
+{% block content %}
+<div class="container my-4">
+  <h2 class="fw-bold text-primary mb-4">Placed Orders</h2>
+
+  <!-- ✅ Navigation bar -->
+  <nav class="navbar navbar-expand-lg bg-dark pt-5 pb-5" style="height: 75px;">
+    <div class="container-fluid d-flex justify-content-center">
+      <div class="navbar" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <span class="m-5 h4 text-light fw-bold text-warning"><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.purchase')}}">Paid Order</a></span>
+          <span class="m-5 h4 text-light" ><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.paid')}}">Paid Order</a></span>
+          <span class="m-5 h4 text-light" ><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.claim')}}">Claimed Order</a></span>
+          <span class="m-5 h4 text-light"><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.order_history')}}">All History</a></span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+{% if orders %}
+    {% for order in orders %}
+        {% if order.status not in ["Paid", "Claim", "Completed"] %}
+        <div class="card shadow-sm border-0 rounded-3 hover-shadow mb-3">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="card-title mb-1 fw-bold">
+                        Reference Number: <span class="fw-normal">{{ order.reference_number }}</span>
+                    </h5>
+                    <small class="text-muted fst-italic"><b>Date:</b> {{ order.order_date }}</small><br>
+                    <small class="text-muted fst-italic"><b>Time:</b> {{ order.order_time }}</small>
+
+                    {% if not order.receipt %}
+                        <!-- Upload Receipt Form -->
+                        <form id="uploadForm{{ loop.index }}" action="{{url_for('notif.upload_receipt')}}" method="post" enctype="multipart/form-data" onsubmit="return confirmUpload(event, '{{ loop.index }}')">
+                            <input type="hidden" name="ref_number" value="{{ order.reference_number }}">
+                            <input type="file" name="img_reciept" class="form-control mb-2 mt-3" required onchange="previewReceipt(this, '{{ loop.index }}')">
+                            <input type="submit" value="Upload Receipt" class="btn btn-sm btn-dark">
+                        </form>
+
+                        <!-- Confirm Upload Modal -->
+                        <div class="modal fade" id="confirmUploadModal{{ loop.index }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Confirm Upload</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body text-center">
+                                        <p>Are you sure you want to upload this receipt?</p>
+                                        <img id="previewImage{{ loop.index }}" src="" style="max-width: 100%; display:none;" class="mb-2 rounded">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                                        <button type="button" class="btn btn-primary" onclick="confirmYes('{{ loop.index }}')">Yes</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#receiptModal{{ loop.index }}">View Receipt</a>
+                        </p>
+                        <div class="modal fade" id="receiptModal{{ loop.index }}" tabindex="-1" 
+                             aria-labelledby="receiptModalLabel{{ loop.index }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="receiptModalLabel{{ loop.index }}">Receipt</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body text-center">
+                                        <img src="data:image/png;base64,{{ order.receipt }}" 
+                                             alt="receipt" style="max-width: 100%;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    {% endfor %}
+{% else %}
+    <p>No orders available.</p>
+{% endif %}
+
+</div>
+{% endblock %}
