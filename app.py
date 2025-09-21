@@ -1,4 +1,5 @@
 import base64
+from inspect import ismethod
 from flask import Blueprint, Flask, url_for, redirect, render_template, session, flash, request
 from db_proware import *
 from routes.cart import cartbp
@@ -43,14 +44,20 @@ def dashboard():
 
 @app.route("/home", methods=['GET','POST'])
 def home():
-
+    #get ung data from form html
+    category = request.args.get('category', '').strip()
     search_query = request.form.get('search_item', '').strip()
-        
+
+    #query para sa items    
     if search_query:
             items = db_items.find({'item_name': {'$regex': search_query, '$options': 'i'}})
     else:
             items = db_items.find()
+    #query para sa category
+    if category:
+        items = db_items.find({'item_category': {'$regex': category, '$options': 'i'}})
 
+    #check roles dito   
     check_roles = check_role("Student")
     if not check_roles:
         return redirect(url_for('dashboard'))
@@ -84,40 +91,19 @@ def account():
     if 'user' not in session:
         return redirect(url_for('home'))
     
-    #i2 ay upload sa resibo
-    if request.method == "POST":
-        # Handle receipt upload only if file is provided
-        if 'img_reciept' in request.files and request.files['img_reciept'].filename != '':
-            image_reciept = request.files['img_reciept']
-            ref_num = request.form.get('ref_number')
-
-            image_data = image_reciept.read()
-            image_base64 = base64.b64encode(image_data).decode('utf-8')
-
-            db_orders.update_one(
-                {"reference_number": ref_num},
-                {"$set": {'receipt': image_base64}}
-            )
-
-        # Handle status update
-        rfr_num = request.form.get('rfr_num')
-        new_status = request.form.get('status')
-        if rfr_num and new_status:
-            db_orders.update_one(
-                {"reference_number": rfr_num},
-                {"$set": {"status": new_status}}
-            )
-
     user_data = session.get('user')
-    if user_data:
-        name = user_data.get('fullname')
-        email = user_data.get('email')
-        std_id = user_data.get('student_id')
-
-    user_orders = db_orders.find({"email": email})
+    email = user_data.get('email')
+     
     
+    if request.method == 'POST':
+      profile = request.files.get("profile")
+      print('succes profile')
+      image_data = profile.read()
+      image_base64 = base64.b64encode(image_data).decode('utf-8')
+      db_account.update_one({'email': email}, {'$set': {'profile': image_base64}})        
 
-    return render_template('profile.html', orders=user_orders, std_id=std_id, name=name, email=email)
+    acc = db_account.find_one({"email": email})   
+    return render_template('profile.html', account=acc)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0',port="5001",debug=True)

@@ -45,13 +45,10 @@ def update_quantity():
     cart_item = db_cart.find_one({"item_id": item_id, "email": get_email(), "itemCode": item_code})
 
     if cart_item:
-        # Ensure quantity doesn't go below 1
-        new_quantity = max(item_quantity, 1)
         
-        # Recalculate the total amount (price * quantity)
+        new_quantity = max(item_quantity, 1)
         total_amount = int(cart_item["item_price"] * new_quantity)
 
-        # Update the cart with the new quantity and total_amount
         db_cart.update_one(
             {'_id': cart_item['_id']},
             {'$set': {"item_quantity": new_quantity, "total_amount": total_amount}}

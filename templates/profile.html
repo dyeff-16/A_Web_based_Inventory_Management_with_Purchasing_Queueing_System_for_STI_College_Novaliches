@@ -8,14 +8,20 @@
 
     <div class="text-center mb-4">
       <div class="position-relative d-inline-block">
-        <img src="COMSCI_COE_IT_Female_Blouse.png" 
+        {%if account.profile%}
+        <img src="data:image/jpeg;base64,{{ account.profile }}" 
              alt="Profile Photo" 
              class="border border-3 shadow-sm" 
              style="width: 180px; height: 180px; object-fit: cover;">
-
-        <form action="/upload_photo" method="POST" enctype="multipart/form-data" class="mt-3">
+        {%else%}
+              <img src="" 
+             alt="Profile Photo" 
+             class="border border-3 shadow-sm" 
+             style="width: 180px; height: 180px; object-fit: cover;">
+        {%endif%}
+        <form action="{{url_for('account')}}" method="POST" enctype="multipart/form-data" class="mt-3">
           <div class="input-group">
-            <input type="file" class="form-control" name="photo" accept="image/*" required>
+            <input type="file" class="form-control" name="profile" accept="image/*" required>
             <button class="btn btn-primary" type="submit">Upload</button>
           </div>
         </form>
@@ -26,15 +32,15 @@
       <table class="table table-borderless mb-0">
         <tr>
           <th scope="row" class="text-muted">Name:</th>
-          <td>{{ name }}</td>
+          <td>{{ account.fullname }}</td>
         </tr>
         <tr>
           <th scope="row" class="text-muted">Email:</th>
-          <td>{{ email }}</td>
+          <td>{{ account.email }}</td>
         </tr>
         <tr>
           <th scope="row" class="text-muted">Student ID:</th>
-          <td>{{ std_id }}</td>
+          <td>{{ account.student_id }}</td>
         </tr>
       </table>
 

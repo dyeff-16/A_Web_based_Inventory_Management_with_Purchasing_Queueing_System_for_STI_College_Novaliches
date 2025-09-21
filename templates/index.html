@@ -73,19 +73,19 @@
 {%block content%}
 <main class="container my-4">
   <div class="d-flex justtify-content-end">
-    <form class="d-flex ms-auto my-2 my-lg-0" method="POST" action="/">
+    <form class="d-flex ms-auto my-2 my-lg-0" name="search_item" method="POST" action="{{url_for('home')}}">
     <input class="form-control me-2" type="search" name="search_item" placeholder="Search" aria-label="Search">
     <button class="btn btn-dark" type="submit">Search</button>
     </form>
   </div>
 
-    <div class="dropdown mb-4 mt-4 text-start">
+  <div class="dropdown mb-4 mt-4 text-start">
     <button class="btn btn-outline-primary dropdown-toggle" type="button" id="categoryDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-      Select Category
+      {{ category if category else 'Select Category' }}
     </button>
     <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
-      <li><a class="dropdown-item" href="#">Uniform</a></li>
-      <li><a class="dropdown-item" href="#">Proware</a></li>
+      <li><a class="dropdown-item" href="{{ url_for('home', category='Uniform') }}">Uniform</a></li>
+      <li><a class="dropdown-item" href="{{ url_for('home', category='Proware') }}">Proware</a></li>
     </ul>
   </div>
 

@@ -74,7 +74,7 @@ def add_to_cart():
         item_price = float(item["item_price"]) 
         total_amount = item_price * item_quantity
 
-        cart_entry = {
+        cart_entry = { 
             "image": item['image'],
             "email": session["user"]['email'],
             "item_id": item["_id"],

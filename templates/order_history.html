@@ -3,12 +3,11 @@
 <div class="container my-4">
   <h2 class="fw-bold text-primary mb-4">Placed Orders</h2>
 
-  <!-- ✅ Navigation bar -->
   <nav class="navbar navbar-expand-lg bg-dark pt-5 pb-5" style="height: 75px;">
     <div class="container-fluid d-flex justify-content-center">
       <div class="navbar" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-          <span class="m-5 h4 text-light fw-bold text-warning"><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.purchase')}}">Paid Order</a></span>
+          <span class="m-5 h4 text-light fw-bold text-warning"><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.purchase')}}">Placed Order</a></span>
           <span class="m-5 h4 text-light" ><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.paid')}}">Paid Order</a></span>
           <span class="m-5 h4 text-light" ><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.claim')}}">Claimed Order</a></span>
           <span class="m-5 h4 text-light"><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.order_history')}}">All History</a></span>
@@ -17,5 +16,49 @@
     </div>
   </nav>
 
-  </div>
+{% if history %}
+  {% for histo in history %}
+    <div class="container" style="padding-top: 1rem; padding-bottom: 0.25rem;">
+      <div class="card shadow-sm border-0 rounded-3 hover-shadow mb-0">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <h5 class="card-title mb-1 fw-bold">
+              Reference Number: <span class="fw-normal">{{ histo.reference_number }}</span>
+            </h5>
+            <small class="text-muted fst-italic">{{ histo.order_date }}</small>
+          </div>
+          <span class="three-dots" role="button" tabindex="0" 
+                data-bs-toggle="collapse" data-bs-target="#orderDetails{{ loop.index }}"
+                aria-expanded="false" aria-controls="orderDetails{{ loop.index }}"
+                title="Show order details" aria-label="Toggle order details">⋯</span>
+        </div>
+        <div class="collapse" id="orderDetails{{ loop.index }}">
+          <hr class="my-2">
+          <div class="card-body pt-0 text-secondary">
+            <p class="mb-1"><strong>Email:</strong> {{ histo.email }}</p>
+            <p class="mb-1"><strong>Name:</strong> {{ histo.name }}</p>
+            <p class="mb-1"><strong>Student ID:</strong> {{ histo.student_id }}</p>
+            <p class="mb-1"><strong>Total Amount:</strong> {{ histo.total_amount }}</p>
+            <p class="mb-1"><strong>Status:</strong> {{ histo.status }}</p>
+            <p class="mb-1"><strong>Date:</strong> {{ histo.order_date }}</p>
+            <p class="mb-1"><strong>Time:</strong> {{ histo.order_time }}</p>
+            <p class="mb-1"><strong>Items Ordered:</strong></p>
+            <ul class="mb-2">
+              {%if histo['items']%}
+              {% for item in histo['items']%}
+                <li>
+                  {{ item.item_name }}
+                  {% if item.size != 'N/A' %} - {{ item.size }}{% endif %}
+                  - {{ item.quantity }} pcs - Price: {{ item.price }}
+                </li>
+              {% endfor %}
+              {%endif%}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+{% endif %}
+
 {% endblock %}

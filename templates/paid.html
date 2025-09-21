@@ -8,7 +8,7 @@
     <div class="container-fluid d-flex justify-content-center">
       <div class="navbar" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-          <span class="m-5 h4 text-light fw-bold text-warning"><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.purchase')}}">Paid Order</a></span>
+          <span class="m-5 h4 text-light fw-bold text-warning"><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.purchase')}}">Placed Order</a></span>
           <span class="m-5 h4 text-light" ><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.paid')}}">Paid Order</a></span>
           <span class="m-5 h4 text-light" ><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.claim')}}">Claimed Order</a></span>
           <span class="m-5 h4 text-light"><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.order_history')}}">All History</a></span>
@@ -17,5 +17,23 @@
     </div>
   </nav>
 
-  </div>
+{% if orders %}
+    {% for order in orders %}
+        {% if order.status not in ["Place_Order", "Claim", "Completed"] %}
+        <div class="card shadow-sm border-0 rounded-3 hover-shadow mb-3">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="card-title mb-1 fw-bold">
+                        Reference Number: <span class="fw-normal">{{ order.reference_number }}</span>
+                    </h5>
+                    <small class="text-muted fst-italic"><b>Date:</b> {{ order.order_date }}</small><br>
+                    <small class="text-muted fst-italic"><b>Time:</b> {{ order.order_time }}</small>
+             
+        {% endif %}
+    {% endfor %}
+{% else %}
+    <p>No orders available.</p>
+{% endif %}
+
+</div>
 {% endblock %}

@@ -87,17 +87,45 @@ def upload_receipt():
         email = user_data.get('email')
         std_id = user_data.get('student_id')
 
-    user_orders = db_orders.find({"email": email})
-    return redirect(url_for('notif.purchase', orders=user_orders, std_id=std_id, name=name, email=email, status='placed_order'))
+    user_orders = list(db_orders.find({"email": email})) 
+    return redirect(url_for('notif.purchase', orders=user_orders, std_id=std_id, name=name, email=email))
 
 @notifbp.route('/Paid', methods=['GET','POST'])
 def paid():
-    return render_template('paid.html')
+    if 'user' not in session:
+        return redirect(url_for('home'))
+    
+    user_data = session.get('user')
+    if user_data:
+        name = user_data.get('fullname')
+        email = user_data.get('email')
+        std_id = user_data.get('student_id')
+    user_orders = list(db_orders.find({"email": email})) 
+    return render_template('paid.html', orders=user_orders, std_id=std_id, name=name, email=email)
 
 @notifbp.route('/Claim',methods=['GET','POST'])
 def claim():
-    return render_template('claim.html')
+    if 'user' not in session:
+        return redirect(url_for('home'))
+    
+    user_data = session.get('user')
+    if user_data:
+        name = user_data.get('fullname')
+        email = user_data.get('email')
+        std_id = user_data.get('student_id')
+    user_orders = list(db_orders.find({"email": email})) 
+    return render_template('claim.html', orders=user_orders, std_id=std_id, name=name, email=email)
 
 @notifbp.route('/Order_History', methods=['GET','POST'])
 def order_history():
-    return render_template('order_history.html')
+    if 'user' not in session:
+        return redirect(url_for('home'))
+    
+    user_data = session.get('user')
+    
+    if user_data:
+        email = user_data.get('email')
+ 
+    history = db_orders_history.find({'email': email}).sort([("order_date", -1), ("order_time", -1)])
+    return render_template('order_history.html', history=list(history))
+  

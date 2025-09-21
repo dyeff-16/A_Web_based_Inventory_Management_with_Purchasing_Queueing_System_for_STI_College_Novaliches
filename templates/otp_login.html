@@ -1,7 +1,7 @@
 {% extends "index.html" %}
 {% block content %}
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 70vh;">
-  <div class="card shadow-sm border-light p-4" style="max-width: 400px; width: 100%;">
+<div class="container" style="min-height: 70vh; display: flex; justify-content: center; align-items: center;">
+  <div class="card shadow-sm border-light p-4 w-100" style="max-width: 400px;">
 
     <!-- Flash message block updated to show only the latest message -->
     {% with messages = get_flashed_messages() %}
@@ -17,13 +17,15 @@
 
         <div class="mb-3">
           <label for="otp_verification" class="form-label fw-semibold">Enter One-Time Password:</label>
-          <input type="text" id="otp_verification" name="otp_verification" class="form-control text-center fw-bold" placeholder="••••••" required>
+          <input type="text" id="otp_verification" name="otp_verification"
+                 class="form-control text-center fw-bold" style="width: 350px;"
+                 placeholder="••••••" required>
         </div>
 
         <div class="d-grid">
           <button class="btn btn-primary fw-bold" id="btnverify" name="verify" type="submit">Verify OTP</button>
         </div>
     </form>
-</div>
+  </div>
 </div>
 {% endblock %}

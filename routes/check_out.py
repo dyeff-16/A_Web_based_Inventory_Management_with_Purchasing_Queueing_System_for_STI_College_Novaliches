@@ -93,7 +93,7 @@ def place_order():
         'total_amount': total_amount,
         'order_date': date_str,
         'order_time': time_str,
-        'status': 'placed_order'
+        'status': 'Placed_Order'
     }
     order_notif = {
         'reference_number': ref_number,
