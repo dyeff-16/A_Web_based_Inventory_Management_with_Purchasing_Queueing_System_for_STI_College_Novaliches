@@ -56,7 +56,6 @@ def add_to_cart():
         }
 
         query = {'email': user_email, 'itemCode': item_code}
-        print(query)
         existing_entry = db_cart.find_one(query)
 
         if existing_entry:
@@ -87,8 +86,7 @@ def add_to_cart():
             "total_amount": round(total_amount, 2)
         }
 
-        query = {'email': user_email, 'itemCode': item_code}
-        print(query)
+        query = {'email': user_email, 'itemCode': item["itemCode"]}
         existing_entry = db_cart.find_one(query)
 
         if existing_entry:
