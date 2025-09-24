@@ -32,8 +32,7 @@ def add_uniform():
         item_name = request.form['item_name']
         item_selection = request.form.get('item_selection')
         item_program = request.form.get('program_selection')
-        item_description = request.form['description']
-        
+        item_description = request.form.get("description", "").strip()        
 
         image_data = item_img.read()
         image_base64 = base64.b64encode(image_data).decode('utf-8')
@@ -105,7 +104,7 @@ def add_proware():
         item_img = request.files['item_img']
         item_name = request.form['item_name']
         item_selection = request.form.get('item_selection')
-        item_description = request.form['description']
+        item_description = request.form.get("description", "").strip()
 
         image_data = item_img.read()
         image_base64 = base64.b64encode(image_data).decode('utf-8')

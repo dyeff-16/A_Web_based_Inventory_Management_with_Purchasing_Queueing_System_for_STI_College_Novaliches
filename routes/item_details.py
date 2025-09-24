@@ -26,7 +26,7 @@ def add_to_cart():
     item_id = request.form.get('item_id')
     item_quantity = int(request.form.get("quantity", 1))
     item_category = request.form['item_category']
-    
+    user_email = session["user"]['email']
     item = db_items.find_one({"_id": item_id})
     if not item:
         return "Item not found", 404
@@ -55,7 +55,8 @@ def add_to_cart():
             "total_amount": round(item_price * item_quantity, 2)
         }
 
-        query = {'email': session["user"], 'itemCode': item_code}
+        query = {'email': user_email, 'itemCode': item_code}
+        print(query)
         existing_entry = db_cart.find_one(query)
 
         if existing_entry:
@@ -86,7 +87,8 @@ def add_to_cart():
             "total_amount": round(total_amount, 2)
         }
 
-        query = {'email': session["user"], 'itemCode': item["itemCode"]}
+        query = {'email': user_email, 'itemCode': item_code}
+        print(query)
         existing_entry = db_cart.find_one(query)
 
         if existing_entry:
