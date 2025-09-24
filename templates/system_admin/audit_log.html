@@ -1,0 +1,57 @@
+{% extends 'system_admin.html' %}
+{% block content %}
+<style>
+    .audit-container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+    .filter-form input,
+    .filter-form select {
+        max-width: 200px;
+    }
+</style>
+
+<div class="audit-container">
+    <h1 class="mb-5 text-center">Audit Logs</h1>
+
+    <!-- 🔍 Filter Form -->
+    <form method="GET" class="d-flex justify-content-start align-items-center mb-4 gap-2 filter-form">
+        <input type="text" name="query" value="{{ query }}" placeholder="Search..." class="form-control form-control-sm">
+        <select name="filter" class="form-select form-select-sm">
+            <option value="all" {% if filter_type == 'all' %}selected{% endif %}>All</option>
+            <option value="date" {% if filter_type == 'date' %}selected{% endif %}>Date</option>
+            <option value="email" {% if filter_type == 'email' %}selected{% endif %}>Email</option>
+            <option value="action" {% if filter_type == 'action' %}selected{% endif %}>Action</option>
+        </select>
+        <button type="submit" class="btn btn-sm btn-primary">Search</button>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log.timestamp.strftime('%Y-%m-%d') }}</td>   
+                    <td>{{ log.timestamp.strftime('%H:%M') }}</td> 
+                    <td>{{ log.fullname }}</td>
+                    <td>{{ log.action }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" class="text-muted text-center">No logs available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

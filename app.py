@@ -1,6 +1,5 @@
 import base64
-from inspect import ismethod
-from flask import Blueprint, Flask, url_for, redirect, render_template, session, flash, request
+from flask import Flask, url_for, redirect, render_template, session, flash, request
 from db_proware import *
 from routes.cart import cartbp
 from routes.queue import queuebp
@@ -8,6 +7,8 @@ from routes.login import loginbp
 from routes.item_details import itemdt_bp
 from routes.check_out import check_outbp
 from routes.notif import notifbp
+from routes.system_admin import system_adminbp
+from routes.admin.id_generate import *
 from flask_bcrypt import Bcrypt
 from flask_wtf.csrf import CSRFProtect
 from flask_wtf import FlaskForm
@@ -19,8 +20,9 @@ app.config['EMAIL_USER'] = 'stinovalichesproware@gmail.com'
 app.config['EMAIL_PASSWORD'] = 'iocv jahk rprh hijv'
 bcrypt = Bcrypt(app) 
 #csrf = CSRFProtect(app)
+#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
 
-
+app.register_blueprint(system_adminbp)
 app.register_blueprint(cartbp)
 app.register_blueprint(loginbp)
 app.register_blueprint(itemdt_bp)
@@ -89,7 +91,7 @@ def system_admin():
 @app.route("/account", methods=['POST', 'GET'])
 def account():
     if 'user' not in session:
-        return redirect(url_for('home'))
+        return redirect(url_for('login.login_'))
     
     user_data = session.get('user')
     email = user_data.get('email')
@@ -106,7 +108,7 @@ def account():
     return render_template('profile.html', account=acc)
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0',port="5001",debug=True)
+    app.run(host='0.0.0.0',port="5000",debug=True)
 
 
 

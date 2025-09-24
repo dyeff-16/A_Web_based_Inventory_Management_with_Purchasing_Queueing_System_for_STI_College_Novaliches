@@ -18,25 +18,25 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-           <a class="navbar-brand d-flex align-items-center" href="{{url_for('index')}}" style="text-decoration: none;">
+           <a class="navbar-brand d-flex align-items-center" href="{{url_for('system_admin')}}" style="text-decoration: none;">
           <img class="navbar-brand d-none d-lg-block" style="width: 50px;" src="/static/img/Logosti.png">
           </a>
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
-                <a class="nav-link pe-4nav-link fw-semibold text-light" href="{{url_for('accounts')}}">Accounts</a>
+                <a class="nav-link pe-4nav-link fw-semibold text-light" href="{{url_for('system_admin.accounts')}}">Accounts</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link pe-4 nav-link fw-semibold text-light" href="{{url_for('audit_log_access')}}">Audit Log</a>
+                <a class="nav-link pe-4 nav-link fw-semibold text-light" href="{{url_for('system_admin.audit_log_access')}}">Audit Log</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link pe-4  nav-link fw-semibold text-light" href="{{url_for('data_mgrt')}}">Batch Upload</a>
+                <a class="nav-link pe-4  nav-link fw-semibold text-light" href="{{url_for('system_admin.data_mgrt')}}">Batch Upload</a>
               </li>
             </ul>
-          <form class="d-flex" role="search">
+          <!-- <form class="d-flex" role="search">
             <input class="form-control me-3" style="width: 300px;" type="search" placeholder="Search" aria-label="Search"/>
             <button class="btn btn-outline-light me-3" type="submit">Search</button>
-          </form>
-          <form method="POST" action="{{ url_for('logout') }}">
+          </form> -->
+          <form method="POST" action="{{ url_for('login.logout') }}">
               <button type="submit" class="btn btn-sm btn-danger">Logout</button>
           </form>
         </div>

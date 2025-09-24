@@ -1,0 +1,12 @@
+{% extends 'system_admin.html' %}
+{% block content %}
+<div class="d-flex justify-content-center align-items-start" style="margin-top: 200px;">
+<form method="POST" enctype="multipart/form-data" action="{{url_for('system_admin.upload')}}" class="p-4 border rounded shadow bg-white">
+    <div class="mb-3">
+      <label for="file" class="form-label">Upload CSV File</label>
+      <input type="file" class="form-control" name="file" id="file" accept=".csv" required>
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Upload & Migrate</button>
+  </form>
+</div>
+{% endblock %}

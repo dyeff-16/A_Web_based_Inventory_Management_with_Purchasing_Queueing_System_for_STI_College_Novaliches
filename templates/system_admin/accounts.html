@@ -1,0 +1,48 @@
+{%extends 'system_admin.html'%}
+{%block content%}
+<div class="container-fluid mt-4">
+    <h2 class="pb-3 text-center">Accounts</h2>
+    <div class="row justify-content-center">
+      <div class="col-8">
+        <form method="POST" action="{{url_for('system_admin.accounts')}}" class="d-flex align-items-center gap-2 mb-4 flex-wrap">
+          <input type="text" name="search" placeholder="Search here" class="form-control" style="max-width: 300px;">
+          <select name="filter_by" class="form-select" style="max-width: 200px;">
+            <option value="role">Role</option>
+            <option value="email">Email</option>
+          </select>
+          <button type="submit" class="btn btn-outline-dark">Search</button>
+        </form>
+      </div>
+    </div>
+{% if accounts %}
+      <div class="row justify-content-center">
+      <div class="col-8">
+        <table class="table table-bordered table-striped">
+          <thead class="table-light text-center">
+            <tr>
+              <th style="max-width: 600px;">Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Edit</th>
+            </tr>
+          </thead>
+          <tbody>
+                    {% for acc in accounts %}
+                    <tr>
+                        <td>{{ acc.email }}</td>
+                        <td>{{ acc.role }}</td>
+                        <td>{{ acc.status }}</td>
+                        <td><a href="{{url_for('system_admin.edit_account', account_id=acc._id)}}"><button type="submit" class="btn btn-outline-dark btn-sm align-items-center">Edit</button></a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% else %}
+    <p class="text-center mt-4">No accounts found.</p>
+      </div>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+{% endif %}
+
+{%endblock%}

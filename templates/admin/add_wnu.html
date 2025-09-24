@@ -1,0 +1,174 @@
+{%extends 'index.html'%}
+{% block content %}
+<div class="container bg-body-tertiary p-4 my-4 rounded shadow-sm">
+    <h2 class="fw-bold mb-4">Add WNU</h2>
+    <form action="/item/add_wnu" method="POST" enctype="multipart/form-data" id="item_form">
+        <div class="mb-4 row align-items-center" style="max-width: 450px;">
+            <label for="reference_number" class="col-auto fw-bold mb-0 me-3">Reference Number:</label>
+                <div class="col">
+                    <input id="refnum" class="form-control" type="text" name="refnum" placeholder="Reference Number"/>
+                </div>
+        </div>
+        <div class="mb-4 row align-items-center" style="max-width: 600px;">
+        <label for="item_name" class="col-auto fw-bold mb-0 me-3">Name:</label>
+        <div class="col">
+            <input id="item_name" class="form-control" type="text" name="item_name" placeholder="Item Name"/>
+        </div>
+        </div>
+
+        <div class="mb-4 row align-items-center" style="max-width: 600px;">
+        <label for="item_img" class="col-auto fw-bold mb-0 me-3">Image:</label>
+        <div class="col">
+            <input id="item_img" class="form-control" type="file" name="item_img"/>
+        </div>
+        </div>
+
+        <div id="size_section">
+        <div class="mb-3 row align-items-center" style="max-width: 800px;">
+            <label for="ItemCode_XS" class="col-auto fw-semibold">Item Code (XS):</label>
+            <div class="col">
+                <input type="text" class="form-control" id="ItemCode_XS" name="ItemCode_XS" placeholder="Item Code">
+            </div>
+            
+            <label for="quantity_xs" class="col-auto fw-semibold">Size:</label>
+            <div class="col">
+                <input type="text" class="form-control" id="quantity_xs" name="quantity_xs" placeholder="Extra Small">
+            </div>
+            
+            <label for="price_xs" class="col-auto fw-semibold">Price:</label>
+            <div class="col">
+                <input type="text" class="form-control" id="price_xs" name="price_xs" placeholder="Price">
+            </div>
+        </div>
+
+        <div class="row align-items-center mb-3">
+            <label for="ItemCode_S" class="col-auto fw-semibold">Item Code (S):</label>
+            <div class="col">
+                <input type="text" class="form-control" id="ItemCode_S" name="ItemCode_S" placeholder="Item Code">
+            </div>
+            
+            <label for="quantity_small" class="col-auto fw-semibold">Size:</label>
+            <div class="col">
+                <input type="text" class="form-control" id="quantity_small" name="quantity_small" placeholder="Small">
+            </div>
+            
+            <label for="price_small" class="col-auto fw-semibold">Price:</label>
+            <div class="col">
+                <input type="text" class="form-control" id="price_small" name="price_small" placeholder="Price">
+            </div>
+        </div>
+
+        <div class="row align-items-center mb-3">
+            <label for="ItemCode_M" class="col-auto fw-semibold">Item Code (M):</label>
+            <div class="col">
+                <input type="text" class="form-control" id="ItemCode_M" name="ItemCode_M" placeholder="Item Code">
+            </div>
+            
+            <label for="quantity_medium" class="col-auto fw-semibold">Size:</label>
+            <div class="col">
+                <input type="text" class="form-control" id="quantity_medium" name="quantity_medium" placeholder="Medium">
+            </div>
+            
+            <label for="price_medium" class="col-auto fw-semibold">Price:</label>
+            <div class="col">
+                <input type="text" class="form-control" id="price_medium" name="price_medium" placeholder="Price">
+            </div>
+        </div>
+
+        <div class="row align-items-center mb-3">
+            <label for="ItemCode_L" class="col-auto fw-semibold">Item Code (L):</label>
+            <div class="col">
+                <input type="text" class="form-control" id="ItemCode_L" name="ItemCode_L" placeholder="Item Code">
+            </div>
+            
+            <label for="quantity_large" class="col-auto fw-semibold">Size:</label>
+            <div class="col">
+                <input type="text" class="form-control" id="quantity_large" name="quantity_large" placeholder="Large">
+            </div>
+            
+            <label for="price_large" class="col-auto fw-semibold">Price:</label>
+            <div class="col">
+                <input type="text" class="form-control" id="price_large" name="price_large" placeholder="Price">
+            </div>
+        </div>
+
+        <div class="row align-items-center mb-3">
+            <label for="ItemCode_XL" class="col-auto fw-semibold">Item Code (XL):</label>
+            <div class="col">
+                <input type="text" class="form-control" id="ItemCode_XL" name="ItemCode_XL" placeholder="Item Code">
+            </div>
+            
+            <label for="quantity_XL" class="col-auto fw-semibold">Size:</label>
+            <div class="col">
+                <input type="text" class="form-control" id="quantity_XL" name="quantity_XL" placeholder="Extra Large">
+            </div>
+            
+            <label for="price_XL" class="col-auto fw-semibold">Price:</label>
+            <div class="col">
+                <input type="text" class="form-control" id="price_XL" name="price_XL" placeholder="Price">
+            </div>
+        </div>
+
+        <div class="row align-items-center mb-3">
+            <label for="ItemCode_2XL" class="col-auto fw-semibold">Item Code (2XL):</label>
+            <div class="col">
+            <input type="text" class="form-control" id="ItemCode_2XL" name="ItemCode_2XL" placeholder="Item Code">
+            </div>
+            
+            <label for="quantity_2XL" class="col-auto fw-semibold">Size:</label>
+            <div class="col">
+                <input type="text" class="form-control" id="quantity_2XL" name="quantity_2XL" placeholder="2XL">
+            </div>
+            
+            <label for="price_2XL" class="col-auto fw-semibold">Price:</label>
+            <div class="col">
+                <input type="text" class="form-control" id="price_2XL" name="price_2XL" placeholder="Price">
+            </div>
+        </div>
+
+        <div class="row align-items-center mb-3">
+            <label for="ItemCode_3XL" class="col-auto fw-semibold">Item Code (3XL):</label>
+            <div class="col">
+                <input type="text" class="form-control" id="ItemCode_3XL" name="ItemCode_3XL" placeholder="Item Code">
+            </div>
+            
+            <label for="quantity_3XL" class="col-auto fw-semibold">Size:</label>
+            <div class="col">
+                <input type="text" class="form-control" id="quantity_3XL" name="quantity_3XL" placeholder="3XL">
+            </div>
+            
+            <label for="price_3XL" class="col-auto fw-semibold">Price:</label>
+            <div class="col">
+                <input type="text" class="form-control" id="price_3XL" name="price_3XL" placeholder="Price">
+            </div>
+        </div>
+
+        <div class="row align-items-center mb-3">
+            <label for="ItemCode_4XL" class="col-auto fw-semibold">Item Code (4XL):</label>
+            <div class="col">
+                <input type="text" class="form-control" id="ItemCode_4XL" name="ItemCode_4XL" placeholder="Item Code">
+            </div>
+            
+            <label for="quantity_4XL" class="col-auto fw-semibold">Size:</label>
+            <div class="col">
+                <input type="text" class="form-control" id="quantity_4XL" name="quantity_4XL" placeholder="4XL">
+            </div>
+            
+            <label for="price_4XL" class="col-auto fw-semibold">Price:</label>
+            <div class="col">
+                <input type="text" class="form-control" id="price_4XL" name="price_4XL" placeholder="Price">
+            </div>
+        </div>
+        
+        <div class="mb-4 d-flex align-items-start gap-3">
+            <label for="description" class="form-label fw-bold pt-2">Description:</label>
+            <textarea class="form-control mx-auto" id="description" style="max-width: 600px; height: 200px" name="description" placeholder="Description"></textarea>
+        </div>
+    </div>
+
+        <div class="text-center">
+        <button class="btn btn-primary px-5" type="submit">Upload</button>
+      </div>
+    </form>
+  </div>
+{% endblock %}

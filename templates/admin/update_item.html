@@ -1,0 +1,127 @@
+{%extends 'index.html'%}
+{% block content %}
+    <div class="container-fluid p-5">
+         <div class="mb-4">
+        <h2 class="fw-bold">Update Item Stock</h2>
+    </div>
+  
+    <form method="POST" action="/item/update_items" class="row gy-2 align-items-center mb-4">
+        <div class="col-auto">   
+                <label for="search_query" class="fw-bold">Search:</label>
+                <input type="text" id="search_query" name="search_query" class="form-control" placeholder="Enter search query">
+        </div>   
+        <div class="col-auto">
+            <label for="filter_category" class="fw-bold">Filter by:</label>
+            <select class="form-select" id="filter_category" name="filter_category">
+                <option value="item_name">Name</option>
+                <option value="itemCode">Item Code</option>
+                <option value="item_category">Item Type</option>
+            </select>
+        </div>  
+        <div class="col-auto">
+            <button type="submit" class="btn btn-outline-dark mt-4">Search</button>  
+        </div>
+    </form>
+    
+     
+   <div class="table-responsive">
+        {% if items %}
+            <h3 class="mb-3">Search Results:</h3>
+                <table class="table table-striped table-hover text-center align-middle">
+                 <thead class="table-light">
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Category</th>
+                        <th>Size</th>
+                        <th>Item Code</th>
+                        <th>Current Stock</th>
+                        <th>Action Type</th>
+                        <th>Date Modified</th>
+                        <th>Time Modified</th>
+                        <th>Edit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                        {% if item.get('sizes') %}
+                            {% for size in item['sizes'] %}
+                                <tr>
+                                    <td>{{ item['item_name'] }}</td>
+                                    <td>{{ item['item_category'] }}</td>
+                                    <td>{{ size['size'] }}</td>
+                                    <td>{{ size['itemCode'] }}</td>
+                                    <td>{{ size['quantity'] }}</td>
+                                    <td>
+                                        {% if size.action == 'deduct' %}
+                                        <a href="javascript:void(0);" onclick="openDeductDialog('{{ size.itemCode }}', '{{ size.reason}}')" style="text-decoration: none; color: red;">deduct</a>
+                                        {% else %}
+                                            {{ size['action'] or "None" }}
+                                        {% endif %}
+                                    </td>                                                                                      
+                                    <td>{{ size['date_modified'] or "N/A" }}</td>
+                                    <td>{{size['time_modified'] or 'N/A'}}</td>
+                                    <td>
+                                        <form method="GET" action="/item/edit/{{ size['itemCode'] }}">
+                                            <button class="btn btn-outline-success btn-sm" type="submit">Edit</button>
+                                        </form>
+                                    </td>                            
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td>{{ item['item_name'] }}</td>
+                                <td>{{ item['item_category'] }}</td>
+                                <td>No size available</td>
+                                <td>{{ item['itemCode'] }}</td>
+                                <td>{{ item['item_quantity'] }}</td>
+                                <td>
+                                    {% if item.action == 'deduct' %}
+                                    <a href="javascript:void(0);" onclick="openDeductDialog('{{ item.itemCode }}', '{{ item.reason}}')" style="text-decoration: none; color: red;">deduct</a>
+                                    {% else %}
+                                        {{ item['action'] or "None" }}
+                                    {% endif %}
+                                </td>  
+                                <td>{{ item['date_modified'] or "N/A" }}</td>
+                                <td>{{ item['time_modified'] or "N/A" }}</td>
+                                <td>
+                                    <form method="GET" action="/item/edit/{{ item.itemCode }}">
+                                        <button class="btn btn-outline-success btn-sm" type="submit">Edit</button>
+                                    </form>                            
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}        
+        {% endif %}
+    </div>
+</div>
+
+
+<!-- <div id="deductModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+    background: rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index: 1000;">
+    <div style="background:white; padding:20px; border-radius:5px; width:300px; position:relative;">
+        <h3>Reason for Deduction</h3>
+        <div id="modalReason" style="border: 1px solid #ccc; padding: 10px; height: 100px; overflow-y: auto;">
+            
+        </div><br><br>
+        <button type="button" onclick="closeDeductDialog()">Close</button>
+    </div>
+</div> -->
+
+<script>
+    function openDeductDialog(itemCode, reason) {
+        // Set the reason into the modal
+        document.getElementById('modalReason').innerText = reason;
+        // Show the modal
+        document.getElementById('deductModal').style.display = 'flex';
+    }
+
+    function closeDeductDialog() {
+        // Hide the modal
+        document.getElementById('deductModal').style.display = 'none';
+    }
+</script>
+
+{% endblock %}

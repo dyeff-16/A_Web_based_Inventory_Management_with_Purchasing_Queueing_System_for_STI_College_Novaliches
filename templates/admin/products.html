@@ -1,0 +1,112 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+<div class="container-fluid mt-5 px-4">
+    <div class="d-flex justify-content-start mb-4">
+        <label for="category" class="form-label fw-bold me-2 mb-0 align-self-center">Select Category:</label>
+        <select name="Category" id="item_category" class="form-select form-select-sm w-auto" onchange="toggleFields()">
+            <option value="">Select Category</option>
+            <option value="Uniform">Uniform</option>
+            <option value="Proware">Proware</option>
+            <option value="Textbook">Textbook</option>
+            <option value="RTW">RTW</option>
+            <option value="SMS">SMS</option>
+            <option value="WNU">WNU</option>
+            <option value="MKT">MKT</option>
+            <option value="ERM">ERM</option>
+        </select>
+    </div>
+    <input type="hidden" name="item_category" id="selected_category">
+</div>
+
+{% macro render_table(table_id, items, add_url) %}
+<div id="{{ table_id }}" class="container px-4 mb-5" style="display: none; max-width: 100%; width: 90%;">
+    <div class="d-flex justify-content-start mb-3 gap-2">
+        <a href="{{ url_for(add_url) }}">
+            <button class="btn btn-primary">Add Product</button>
+        </a>
+        <a href="{{ url_for('item.update_items') }}">
+            <button class="btn btn-primary">Update Product</button>
+        </a>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle shadow-sm border rounded">
+            <thead class="table-light">
+                <tr>
+                    <th>Item Code</th>
+                    <th>Item Name</th>
+                    <th>Price</th>
+                    <th>Category</th>
+                    <th>Sizes</th>
+                    <th>Stock</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                    {% if not item.sizes %}
+                        <tr>
+                            <td>{{ item.itemCode }}</td>
+                            <td>{{ item.item_name }}</td>
+                            <td>{{ item.item_price }}</td>
+                            <td>{{ item.item_category }}</td>
+                            <td>n/a</td>
+                            <td>{{ item.item_quantity }}</td>
+                        </tr>
+                    {% else %}
+                        {% for size in item.sizes %}
+                            <tr>
+                                <td>{{ size.itemCode }}</td>
+                                <td>{{ item.item_name }}</td>
+                                <td>{{ size.price if size.price else item.item_price }}</td>
+                                <td>{{ item.item_category }}</td>
+                                <td>{{ size.size }}</td>
+                                <td>{{ size.quantity }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endmacro %}
+
+
+{{ render_table('uniform_table', uniforms, 'item.add_uniform') }}
+{{ render_table('proware_table', prowares, 'item.add_proware') }}
+{{ render_table('textbook_table', textbooks, 'item.add_textbook') }}
+{{ render_table('rtw_table', rtws, 'item.add_rtw') }}
+{{ render_table('sms_table', smss, 'item.add_sms') }}
+{{ render_table('wnu_table', wnus, 'item.add_wnu') }}
+{{ render_table('mkt_table', mkts, 'item.add_mkt') }}
+{{ render_table('erm_table', erms, 'item.add_erm') }}
+
+
+<script>
+function toggleFields() {
+    var category = document.getElementById("item_category").value;
+
+    var tables = {
+        "Uniform": "uniform_table",
+        "Proware": "proware_table",
+        "Textbook": "textbook_table",
+        "RTW": "rtw_table",
+        "SMS": "sms_table",
+        "WNU": "wnu_table",
+        "MKT": "mkt_table",
+        "ERM": "erm_table"
+    };
+
+    Object.values(tables).forEach(id => {
+        document.getElementById(id).style.display = "none";
+    });
+
+    if (tables[category]) {
+        document.getElementById(tables[category]).style.display = "block";
+    }
+
+    document.getElementById("selected_category").value = category;
+}
+</script>
+{% endblock %}

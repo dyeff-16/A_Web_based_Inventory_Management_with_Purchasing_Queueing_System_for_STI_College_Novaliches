@@ -1,0 +1,29 @@
+{% extends 'system_admin.html' %}
+{% block content %}
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .access-box {
+            max-width: 350px;
+            padding: 30px;
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            background-color: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+
+    <div class="d-flex justify-content-center align-items-center access-wrapper" style="margin-top: 200px;">
+        <div class="access-box text-center">
+            <h5 class="mb-4">Enter Admin Password</h5>
+            {% if error %}
+            <div class="alert alert-danger py-1">{{ error }}</div>
+            {% endif %}
+            <form method="POST">
+                <input type="password" name="password" class="form-control form-control-sm mb-3 text-center" placeholder="••••••••" required>
+                <button class="btn btn-primary btn-sm w-100" type="submit">Unlock</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
