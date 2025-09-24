@@ -17,7 +17,7 @@ def products():
     item_textbook = db_items.find({"item_category" : "Textbook"})
 
     if 'user' in session:
-        return render_template('products.html',
+        return render_template('admin/products.html',
             uniforms=item_uniform,
             prowares=item_proware,
             textbooks=item_textbook)
@@ -94,7 +94,7 @@ def add_uniform():
 
     # Handle GET request inside the function
     if 'user' in session:
-        return render_template('add_uniform.html')
+        return render_template('admin/add_uniform.html')
     else:
         return redirect(url_for('login.login_'))
 
@@ -158,7 +158,7 @@ def add_proware():
 
     # Handle GET request
     if 'user' in session:
-        return render_template('add_proware.html')
+        return render_template('admin/add_proware.html')
     else:
         return redirect(url_for('login.login_'))
 
@@ -188,29 +188,29 @@ def add_textbook():
 
     # Handle GET request inside the function
     if 'user' in session:
-        return render_template('add_textbook.html')
+        return render_template('admin/add_textbook.html')
     else:
         return redirect(url_for('login.login_'))
 
 @itembp.route('/add_erm', methods=['POST', 'GET'])
 def add_erm():
-    return render_template('add_erm.html')
+    return render_template('admin/add_erm.html')
 
 @itembp.route('/add_mkt', methods=['POST', 'GET'])
 def add_mkt():
-    return render_template('add_mkt.html')
+    return render_template('admin/add_mkt.html')
 
 @itembp.route('/add_rtw', methods=['POST', 'GET'])
 def add_rtw():
-    return render_template('add_rtw.html')
+    return render_template('admin/add_rtw.html')
 
 @itembp.route('/add_sms', methods=['POST', 'GET'])
 def add_sms():
-    return render_template('add_sms.html')
+    return render_template('admin/add_sms.html')
 
 @itembp.route('/add_wnu', methods=['POST', 'GET'])
 def add_wnu():
-    return render_template('add_wnu.html')
+    return render_template('admin/add_wnu.html')
 
 @itembp.route('/update_items', methods=['GET', 'POST'])
 def update_items():
@@ -232,9 +232,9 @@ def update_items():
         
         # Search for items that match the query
         items = db_items.find(query)
-        return render_template('update_item.html', items=items)
+        return render_template('admin/update_item.html', items=items)
     
-    return render_template('update_item.html', items=None)
+    return render_template('admin/update_item.html', items=None)
 
 @itembp.route('/edit/<item_code>', methods=['GET', 'POST'])
 def edit_item(item_code):
@@ -242,7 +242,7 @@ def edit_item(item_code):
     item = db_items.find_one({"itemCode": item_code})
     if item:
         print('Found top-level item')
-        return render_template('edit_item.html', item=item, item_code=item_code, size_data=None)
+        return render_template('admin/edit_item.html', item=item, item_code=item_code, size_data=None)
 
     # Not found top-level, try finding it inside sizes.itemCode
     item_size = db_items.find_one({"sizes.itemCode": item_code})
@@ -252,7 +252,7 @@ def edit_item(item_code):
         # Grab the specific size object
         matched_size = next((s for s in item_size.get('sizes', []) if s.get('itemCode') == item_code), None)
         if matched_size:
-            return render_template('edit_item.html', item=item_size, item_code=item_code, size_data=matched_size)
+            return render_template('admin/edit_item.html', item=item_size, item_code=item_code, size_data=matched_size)
 
     # Still not found
     return "Item not found", 404

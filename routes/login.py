@@ -156,7 +156,7 @@ def logout():
     if 'user' in session:
         print("logout user")
         session.pop('user')
-    return redirect(url_for('home'))
+    return redirect(url_for('dashboard'))
 
 
 def send_otp_email(to_email, otp):

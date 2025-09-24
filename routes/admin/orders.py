@@ -28,7 +28,7 @@ def order_history():
             history = db_orders_history.find().sort([("order_date", -1), ("order_time", -1)])
     else:   
         history = db_orders_history.find().sort([("order_date", -1), ("order_time", -1)])
-    return render_template('order_history.html', history=list(history))
+    return render_template('admin/order_history.html', history=list(history))
 
 @orderbp.route('/orders', methods=['POST', 'GET'])
 def orders_list():
@@ -51,7 +51,7 @@ def orders_list():
     else:   
         orders = db_orders.find().sort([("order_date", -1), ("order_time", -1)])
 
-    return render_template('orders.html', orders=list(orders))
+    return render_template('admin/orders.html', orders=list(orders))
     
 @orderbp.route('/update_order_status', methods=['POST'])
 def update_order_status():
@@ -144,7 +144,7 @@ def update_order_status():
 
 @orderbp.route('/pre-order', methods=['POST','GET'])
 def pre_order():
-    return render_template('pre_order.html')
+    return render_template('admin/pre_order.html')
 
 def send_order_paid_notification(to_email, fullname, student_id, ref_number, date_str, time_str, total_amount):
     msg = EmailMessage()

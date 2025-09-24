@@ -7,7 +7,14 @@ from routes.login import loginbp
 from routes.item_details import itemdt_bp
 from routes.check_out import check_outbp
 from routes.notif import notifbp
+
+from routes.admin.items import itembp
+from routes.admin.orders import orderbp
+from routes.admin.report import reportbp
+from routes.admin.queue import queueadminbp
+
 from routes.system_admin import system_adminbp
+
 from routes.admin.id_generate import *
 from flask_bcrypt import Bcrypt
 from flask_wtf.csrf import CSRFProtect
@@ -22,7 +29,16 @@ bcrypt = Bcrypt(app)
 #csrf = CSRFProtect(app)
 #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
 
+#admin blueprint
+app.register_blueprint(itembp)
+app.register_blueprint(orderbp)
+app.register_blueprint(reportbp)
+app.register_blueprint(queueadminbp)
+
+#system_admin blueprint
 app.register_blueprint(system_adminbp)
+
+#user blueprint
 app.register_blueprint(cartbp)
 app.register_blueprint(loginbp)
 app.register_blueprint(itemdt_bp)

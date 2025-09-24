@@ -1,4 +1,4 @@
-{% extends 'index.html' %}
+{% extends 'admin.html' %}
 {% block content %}
 <div class="container mt-4">
   {% if not queue_started %}
@@ -20,11 +20,11 @@
               <!-- Active order (first in line) -->
               <div class="border rounded p-4 text-center bg-light">
                 <span class="fw-bold">{{ queue_orders[0].reference_number }}</span>
-                <form method="POST" action="{{ url_for('queue.queue_done') }}">
+                <form method="POST" action="{{ url_for('queue_admin.queue_done') }}">
                   <input type="hidden" name="ref_num" value="{{ queue_orders[0].reference_number }}">
                   <button type="submit" class="btn btn-success btn-sm mt-2">Done</button>
                 </form>
-                <form method="POST" action="{{ url_for('queue.queue_skip') }}">
+                <form method="POST" action="{{ url_for('queue_admin.queue_skip') }}">
                   <input type="hidden" name="ref_num" value="{{ queue_orders[0].reference_number }}">
                   <button type="submit" class="btn btn-primary btn-sm mt-1">Skip</button>
                 </form>
@@ -52,7 +52,7 @@
               {% for order in skip_orders %}
                 <div class="border rounded p-4 text-center">
                   <span class="fw-bold">{{ order.reference_number }}</span>
-                  <form method="POST" action="{{ url_for('queue.queue_done') }}">
+                  <form method="POST" action="{{ url_for('queue_admin.queue_done') }}">
                     <input type="hidden" name="ref_num" value="{{ order.reference_number }}">
                     <button type="submit" class="btn btn-success btn-sm mt-2">Done</button>
                   </form>

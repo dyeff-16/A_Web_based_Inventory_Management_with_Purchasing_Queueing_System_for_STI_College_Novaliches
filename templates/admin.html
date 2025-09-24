@@ -10,7 +10,7 @@
 <body class="bg-light">
 <nav class="navbar nav-underline navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
-    <a class="navbar-brand d-flex align-items-center" href="{{url_for('home')}}">
+    <a class="navbar-brand d-flex align-items-center" href="{{url_for('admin')}}">
       <img src="/static/img/Logosti.png" alt="Logo" style="width: 50px;" class="me-2 d-none d-lg-block">
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
@@ -32,17 +32,17 @@
           <a class="nav-link fw-semibold text-light" href="{{url_for('orders.order_history')}}">History</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link fw-semibold text-light" href="{{url_for('queue.queue_view')}}">Queue</a>
+          <a class="nav-link fw-semibold text-light" href="{{url_for('queue_admin.queue_view')}}">Queue</a>
         </li>
          <li class="nav-item">
           <a class="nav-link fw-semibold text-light" href="{{url_for('login.logout')}}" >Logout</a>
         </li>
       </ul>
 
-      <form class="d-flex" role="search">
+      <!-- <form class="d-flex" role="search">
         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
         <button class="btn btn-outline-light" type="submit">Search</button>
-      </form>
+      </form> -->
     </div>
   </div>
 </nav>

@@ -89,9 +89,9 @@ def generate_report():
                     name = item['item_name']
                     qty = item['quantity']
                     items[name] = items.get(name, 0) + qty
-            return render_template('reports.html', items=items, report_type='sales', message="Item Sales Report (All-Time)")
+            return render_template('admin/reports.html', items=items, report_type='sales', message="Item Sales Report (All-Time)")
 
         else:
-            return render_template('reports.html', message="Select a report type")
+            return render_template('admin/reports.html', message="Select a report type")
 
-    return render_template('reports.html', report_type=report_type, orders=result, total_income=total_income, message=message)
+    return render_template('admin/reports.html', report_type=report_type, orders=result, total_income=total_income, message=message)
