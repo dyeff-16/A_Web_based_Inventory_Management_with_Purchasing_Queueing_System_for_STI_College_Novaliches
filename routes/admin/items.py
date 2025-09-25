@@ -54,7 +54,10 @@ def add_uniform():
             "2XL": ("ItemCode_2XL", "quantity_2XL", "price_2XL"),
             "3XL": ("ItemCode_3XL", "quantity_3XL", "price_3XL"),
             "4XL": ("ItemCode_4XL", "quantity_4XL", "price_4XL"),
-            "5XL": ("ItemCode_5XL", "quantity_5XL", "price_5XL")
+            "5XL": ("ItemCode_5XL", "quantity_5XL", "price_5XL"),
+            "6XL": ("ItemCode_6XL", "quantity_6XL", "price_6XL"),
+            "7XL": ("ItemCode_7XL", "quantity_7XL", "price_7XL"),
+
         }
 
         def safe_int(value):
@@ -126,6 +129,7 @@ def add_proware():
             "2XL": ("ItemCode_2XL", "quantity_2XL", "price_2XL"),
             "3XL": ("ItemCode_3XL", "quantity_3XL", "price_3XL"),
             "4XL": ("ItemCode_4XL", "quantity_4XL", "price_4XL"),
+            "5XL": ("ItemCode_5XL", "quantity_5XL", "price_5XL")
         }
 
         for size_label, (code_field, qty_field, price_field) in size_map.items():
