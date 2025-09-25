@@ -117,7 +117,6 @@ def add_to_cart():
     if not item:
         return "Item not found", 404
 
-    # ============== If item has sizes =================
     if item.get('sizes'):
         size_selection = request.form.get('size_selection')
         split_values = size_selection.split('|')
@@ -171,7 +170,6 @@ def add_to_cart():
 
         return redirect(url_for('cart.cart'))
 
-    # ============== If item has NO sizes =================
     else:
         item_price = float(item["item_price"])
         item_stock = int(item.get("item_quantity", 99999))  # fallback if stock not set
