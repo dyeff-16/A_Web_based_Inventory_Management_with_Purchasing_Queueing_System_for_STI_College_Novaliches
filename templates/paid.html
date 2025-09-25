@@ -1,7 +1,7 @@
 {% extends "index.html" %}
 {% block content %}
 <div class="container my-4">
-  <h2 class="fw-bold text-primary mb-4">Placed Orders</h2>
+  <h2 class="fw-bold text-primary mb-4">Paid Orders</h2>
 
   <!-- ✅ Navigation bar -->
   <nav class="navbar navbar-expand-lg bg-dark pt-5 pb-5" style="height: 75px;">
@@ -28,6 +28,15 @@
                     </h5>
                     <small class="text-muted fst-italic"><b>Date:</b> {{ order.order_date }}</small><br>
                     <small class="text-muted fst-italic"><b>Time:</b> {{ order.order_time }}</small>
+                    {%if order['items']%}
+                        {% for item in order['items']%}
+                        <li>
+                            {{ item.item_name }}
+                            {% if item.size != 'N/A' %} - {{ item.size }}{% endif %}
+                            - {{ item.quantity }} pcs - Price: {{ item.price }}
+                        </li>
+                        {% endfor %}
+                    {%endif%}
              
         {% endif %}
     {% endfor %}
