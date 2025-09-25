@@ -2,6 +2,22 @@
 
 {% block content %}
 <div class="container my-4 mt-5 bg-light p-4 rounded shadow-sm">  
+
+<!-- 🔔 Flash Messages Section -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="mb-3">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ 'warning' if category == 'warning' else 'info' }} alert-dismissible fade show auto-dismiss" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+
   <div class="row g-4 align-items-start">
     <div class="col-md-5 text-center">  
       <img src="data:image/jpeg;base64,{{ item.image }}" class="img-fluid rounded shadow-sm" alt="{{ item.item_name }}">
@@ -43,7 +59,7 @@
       </form>
 
       {% else %}
-      <!-- ✅ No Sizes (same as your code, with preorder option if out of stock) -->
+      <!-- No Sizes (same as your code, with preorder option if out of stock) -->
       <form id="simpleForm" class="mb-4" method="POST" action="{% if item.item_quantity == 0 %}{{ url_for('item_details.preorder') }}{% else %}{{ url_for('item_details.add_to_cart') }}{% endif %}">
         
         <input type="hidden" name="item_id" value="{{ item._id }}">
@@ -73,6 +89,15 @@
 </div>
 
 <script>
+
+  // ⏳ Auto-hide after 10 seconds
+  setTimeout(() => {
+    document.querySelectorAll('.auto-dismiss').forEach(alert => {
+      let bsAlert = new bootstrap.Alert(alert);
+      bsAlert.close(); // uses Bootstrap's fade-out effect
+    });
+  }, 10000);
+
   const select = document.getElementById("size_selection");
   const actionBtn = document.getElementById("actionBtn");
   const form = document.getElementById("itemForm");

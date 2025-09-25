@@ -44,9 +44,10 @@ def update_quantity():
 
     cart_item = db_cart.find_one({"item_id": item_id, "email": get_email(), "itemCode": item_code})
 
+
     if cart_item:
         
-        new_quantity = max(item_quantity, 1)
+        new_quantity = min(max(item_quantity, 1), 10)
         total_amount = int(cart_item["item_price"] * new_quantity)
 
         db_cart.update_one(
