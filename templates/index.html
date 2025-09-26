@@ -99,9 +99,9 @@
           <div class="card-body text-center">
             <h5 class="card-title">{{ item.item_name }}</h5>
             {%if item.sizes%}
-            <p class="text-dark">₱{{ item.sizes[0].price }}</p>
+            <p class="text-dark"><small>₱{{ item.sizes[0].price }}.00</small></p>
             {%else%}
-            <p class="text-muted"><small>₱{{ item.item_price }}</small></p>
+            <p class="text-dark"><small>₱{{ item.item_price }}.00</small></p>
             {%endif%}
           </div>
         </div>

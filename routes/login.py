@@ -56,6 +56,18 @@ def login_():
         if user:
             # if bcrypt.check_password_hash(user['password'], password):
             if password == user['password']:
+                if user.get('force_change_password', False):
+                    otp = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+
+                    session['pending_change_password'] = {
+                        'email': email,   
+                        'otp': otp,
+                        'otp_created_at': datetime.utcnow().isoformat(),
+                        'otp_attempts': 0
+                    }
+                    send_otp_email(user['email'], otp)
+                    return redirect(url_for('login.otp_force_change_password'))
+                
                 otp = ''.join([str(random.randint(0, 9)) for _ in range(6)])
                 session['login_pending'] = {
                         'fullname': user['fullname'],
@@ -158,7 +170,6 @@ def logout():
         session.pop('user')
     return redirect(url_for('dashboard'))
 
-
 def send_otp_email(to_email, otp):
     msg = EmailMessage()
     msg['Subject'] = 'Proware OTP verification'
@@ -185,7 +196,6 @@ ProWare
         server.login(current_app.config['EMAIL_USER'], current_app.config['EMAIL_PASSWORD'])
         server.send_message(msg)
 
-
 @loginbp.route("/enter_info", methods=['GET', 'POST'])
 def info():
     if request.method == 'POST':
@@ -202,7 +212,6 @@ def info():
             return render_template("info.html")
 
     return render_template("info.html")
-
 
 @loginbp.route('/otp_verify_password', methods=['GET', 'POST'])
 def otp_VerifyPassword():
@@ -243,7 +252,6 @@ def otp_VerifyPassword():
 
     return render_template("otp_ResetPassword.html")
 
-
 @loginbp.route("/reset_password", methods=['GET', 'POST'])
 def reset_password():
     if 'usr_resetpassword' not in session:
@@ -266,3 +274,83 @@ def reset_password():
         return redirect(url_for('login.login_'))
 
     return render_template("reset_password.html")
+
+@loginbp.route('/otp_force_change_password', methods=['POST','GET'])
+def otp_force_change_password():
+    if 'pending_change_password' not in session:
+        flash("Session expired. Please start again.")
+        return redirect(url_for('login.info'))
+    
+    ip = request.remote_addr
+    now = datetime.utcnow()
+
+    if ip in failed_otp_attempts:
+        attempt_info = failed_otp_attempts[ip]
+        if attempt_info['count'] >= MAX_ATTEMPTS:
+            if now - attempt_info['last_attempt'] < BLOCK_TIME:
+                block_time_left = BLOCK_TIME - (now - attempt_info['last_attempt'])
+                block_minutes = block_time_left.seconds // 60
+                block_seconds = block_time_left.seconds % 60
+                flash(f'Too many failed attempts. Your IP is blocked for {block_minutes} minutes and {block_seconds} seconds. Please try again later.')
+                return render_template("otp_f_change_pass.html")
+            else:
+                failed_otp_attempts.pop(ip)
+
+    if request.method == 'POST':
+        user_otp = request.form.get('otp_verification')
+        otp_data = session['pending_change_password']
+
+        if user_otp == otp_data['otp']:
+            session['pending_change_password'] = {'email': otp_data['email']}
+            failed_otp_attempts.pop(ip, None)  
+            flash("OTP verified successfully. Please reset your password.")
+            return redirect(url_for('login.force_change_password'))
+        else:
+            flash("Invalid OTP. Please try again.")
+            failed_otp_attempts.setdefault(ip, {'count': 0, 'last_attempt': now})
+            failed_otp_attempts[ip]['count'] += 1
+            failed_otp_attempts[ip]['last_attempt'] = now
+    return render_template("otp_f_change_pass.html")
+
+@loginbp.route("/force_change_password", methods=["GET", "POST"])
+def force_change_password():
+    # Make sure user is in pending_change_password session
+    if "pending_change_password" not in session:
+        flash("Session expired. Please login again.")
+        return redirect(url_for("login.login_"))
+
+    user_data = session["pending_change_password"]
+    email = user_data["email"]
+
+    if request.method == "POST":
+        new_password = request.form.get("password")
+        confirm_password = request.form.get("confirm_password")
+
+        if not new_password or not confirm_password:
+            flash("Please fill in all fields.")
+            return render_template("change_password.html")
+
+        if new_password != confirm_password:
+            flash("Passwords do not match.")
+            return render_template("change_password.html")
+
+        # ✅ Update password in MongoDB
+        db_account.update_one(
+            {"email": email},
+            {
+                "$set": {
+                    "password": new_password,   # you can hash it with bcrypt or werkzeug if needed
+                    "force_change_password": False,
+                    "updated_at": datetime.utcnow()
+                }
+            }
+        )
+
+        # Clear session
+        session.pop("pending_change_password", None)
+
+        flash("Password updated successfully. Please login again.")
+        return redirect(url_for("login.login_"))
+
+    return render_template("change_password.html")
+

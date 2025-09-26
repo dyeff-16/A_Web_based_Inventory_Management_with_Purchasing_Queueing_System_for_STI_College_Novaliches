@@ -39,7 +39,7 @@
                     {% for item in items %}
                         <input type="hidden" name="selected_items" value="{{ item.itemCode }}">
                     {% endfor %}
-                    <button type="button" class="btn btn-primary mt-3 px-4" data-bs-toggle="modal" data-bs-toggle="modal" data-bs-target="#confirmationModal">Confirm Order</button>
+                   
                 </form>
 
             <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
@@ -58,7 +58,7 @@
                 </div>
                 </div>
             </div>
-            </div>                 
+            </div>                
                 {% else %}
                     <p>No items selected for checkout.</p>
                 {% endif %}

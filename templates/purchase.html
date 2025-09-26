@@ -28,6 +28,7 @@
                     </h5>
                     <small class="text-muted fst-italic"><b>Date:</b> {{ order.order_date }}</small><br>
                     <small class="text-muted fst-italic"><b>Time:</b> {{ order.order_time }}</small>
+                    <div class="m-3">
                     {%if order['items']%}
                         {% for item in order['items']%}
                         <li>
@@ -37,6 +38,7 @@
                         </li>
                         {% endfor %}
                     {%endif%}
+                    </div>
                     {% if not order.receipt %}
                         <!-- Upload Receipt Form -->
                         <form id="uploadForm{{ loop.index }}" action="{{url_for('notif.upload_receipt')}}" method="post" enctype="multipart/form-data" onsubmit="return confirmUpload(event, '{{ loop.index }}')">
