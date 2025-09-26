@@ -10,13 +10,14 @@ from flask import session, redirect, url_for
 def queue_view():
     if request.method == 'POST':
         if 'start' in request.form:
-            session['queue_started'] = True
+            db_orders.update_one({}, {"$set": {"queue_started": True}}, upsert=True)
             db_orders.update_many({}, {'$set': {'queue_status': "queue"}})
         elif 'stop' in request.form:
-            session.pop('queue_started', None)
+            db_orders.update_one({}, {"$set": {"queue_started": False}}, upsert=True)
         return redirect(url_for('queue_admin.queue_view'))
 
-    queue_started = session.get('queue_started', False)
+    status_doc = db_orders.find_one() or {"queue_started": False}
+    queue_started = status_doc.get("queue_started", False)
 
     queue_orders = []
     skip_orders = []
