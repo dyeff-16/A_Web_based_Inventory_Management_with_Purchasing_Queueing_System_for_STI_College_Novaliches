@@ -4,8 +4,15 @@
     <h1 class="mb-4 text-primary fw-bold">Notifications</h1>
 
     {% if notification %}
-        {% for notif in notification %}
-        {% set latest = notif.thread[-1] %} {# get the last (latest) entry in the thread #}
+       {% for notif in notification %}
+        {% if notif.thread is defined and notif.thread %}
+            {% set latest = notif.thread[-1] %}
+        {% else %}
+            {% set latest = {'status': notif.status if notif.status is defined else 'No Status',
+                            'order_date': notif.order_date if notif.order_date is defined else '',
+                            'order_time': notif.order_time if notif.order_time is defined else '',
+                            'timestamp': ''} %}
+        {% endif %}
 
         <div class="col-12 m-2">
             <div class="card shadow-sm border-0">
