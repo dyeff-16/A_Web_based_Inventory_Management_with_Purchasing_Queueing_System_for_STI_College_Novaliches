@@ -8,7 +8,7 @@ def queue_user():
     if 'user' not in session:
         return redirect(url_for('login.login_'))
     
-    if 'queue' in session:
+    if 'queue_started' in session:
         user_session = session['user']
         email_session = user_session['email']
         # Find the first order in the queue (now serving)
