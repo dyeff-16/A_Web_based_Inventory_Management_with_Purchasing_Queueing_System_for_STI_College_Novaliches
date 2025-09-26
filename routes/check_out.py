@@ -101,9 +101,12 @@ def place_order():
         'name': user_email['fullname'],
         'items': ordered_items,
         'total_amount': total_amount,
-        'order_date': date_str,
-        'order_time': time_str,
-        'status': 'Placed Order'
+        'thread':[
+            {"status": "Placed Order",
+             'order_date': date_str,
+             'order_time': time_str,
+             "timestamp": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        }]
     }
     
 

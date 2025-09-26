@@ -54,41 +54,31 @@ def purchase():
     
 
     return render_template('purchase.html', orders=user_orders, std_id=std_id, name=name, email=email)
- 
+
 @notifbp.route('/upload_receipt', methods=['POST'])
 def upload_receipt():
-    
-    if request.method == "POST":
-        # Handle receipt upload only if file is provided
-        if 'img_reciept' in request.files and request.files['img_reciept'].filename != '':
-            image_reciept = request.files['img_reciept']
-            ref_num = request.form.get('ref_number')
+    if 'img_reciept' in request.files and request.files['img_reciept'].filename != '':
+        image_reciept = request.files['img_reciept']
+        ref_num = request.form.get('ref_number')
 
-            image_data = image_reciept.read()
-            image_base64 = base64.b64encode(image_data).decode('utf-8')
+        image_data = image_reciept.read()
+        image_base64 = base64.b64encode(image_data).decode('utf-8')
 
-            db_orders.update_one(
-                {"reference_number": ref_num},
-                {"$set": {'receipt': image_base64}}
-            )
+        db_orders.update_one(
+            {"reference_number": ref_num},
+            {"$set": {'receipt': image_base64}}
+        )
 
-        # Handle status update
-        rfr_num = request.form.get('rfr_num')
-        new_status = request.form.get('status')
-        if rfr_num and new_status:
-            db_orders.update_one(
-                {"reference_number": rfr_num},
-                {"$set": {"status": new_status}}
-            )
+    # Handle status update
+    rfr_num = request.form.get('rfr_num')
+    new_status = request.form.get('status')
+    if rfr_num and new_status:
+        db_orders.update_one(
+            {"reference_number": rfr_num},
+            {"$set": {"status": new_status}}
+        )
 
-    user_data = session.get('user')
-    if user_data:
-        name = user_data.get('fullname')
-        email = user_data.get('email')
-        std_id = user_data.get('student_id')
-
-    user_orders = list(db_orders.find({"email": email})) 
-    return redirect(url_for('notif.purchase', orders=user_orders, std_id=std_id, name=name, email=email))
+    return redirect(url_for('notif.purchase'))
 
 @notifbp.route('/Paid', methods=['GET','POST'])
 def paid():

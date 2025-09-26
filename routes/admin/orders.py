@@ -92,15 +92,22 @@ def update_order_status():
                         {"itemCode": item_code},
                         {"$inc": {"item_quantity": -quantity}}
                     )
-        db_notification.insert_one({
-            "reference_number": rfr_num,
-            "email": order['email'],
-            "name": order['name'],
-            "status": "Paid",
-            "message": f"Your order {rfr_num} has been marked as Paid.",
-            "date": date_str,
-            "time": time_str
-        })
+
+        db_notification.update_one(
+                {"reference_number": rfr_num, "email": order['email']},
+                {
+                    "$push": {
+                        "thread": {
+                            "status": "Paid",
+                            "order_date": date_str,
+                            "order_time": time_str,
+                            "timestamp": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+                        }
+                    }
+                },
+                upsert=True
+            )
+
 
         send_order_paid_notification(
             to_email=order['email'],
