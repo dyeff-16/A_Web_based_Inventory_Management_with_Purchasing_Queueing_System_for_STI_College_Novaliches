@@ -1,12 +1,11 @@
 {% extends "index.html" %}
-
 {% block content %}
 <div class="container my-5">
     <h1 class="mb-4 text-primary fw-bold">Your Cart</h1>
-    
-    {% if cart_items %}
-    <form method="POST" action="{{ url_for('checkout.check_out') }}">
-        <div class="row g-4">
+
+{% if cart_items %}
+<form method="POST" action="{{ url_for('checkout.check_out') }}">
+    <div class="row g-4">
         <!-- Loop through cart items -->
         {% for item in cart_items %}
         <div class="col-12">
@@ -16,16 +15,14 @@
                     <div class="form-check me-3">
                         <input type="checkbox" name="selected_items" value="{{ item.itemCode }}" class="form-check-input select-item" data-price="{{ item.total_amount }}" onchange="updateTotal()">
                     </div>
-
                     <img src="data:image/jpeg;base64,{{ item.image }}" class="img-thumbnail me-3" alt="{{ item.item_name }}" style="width: 100px; height: 100px; object-fit: cover;">
-                    
                     <div class="flex-grow-1">
                         <h5 class="card-title mb-1">{{ item.item_name }}</h5>
                         <p class="mb-1 text-primary fw-bold">₱ {{ item.item_price }}</p>
 
-                        {%if item.size%}
+                        {% if item.size %}
                         <p class="mb-1"><strong>Size: {{ item.size }}</strong></p>
-                        {%endif%}
+                        {% endif %}
 
                         <div class="d-flex align-items-center mb-2">
                             <label class="me-2">Quantity:</label>
@@ -33,28 +30,35 @@
                             <span id="qty-{{ item.itemCode }}" class="fw-semibold">{{ item.item_quantity }}</span>
                             <a href="{{ url_for('cart.update_quantity', item_id=item.item_id, item_code=item.itemCode, item_quantity=item.item_quantity + 1) }}" class="btn btn-sm btn-outline-primary ms-2">+</a>
                         </div>
-                            <p class="mb-0"><strong>Total:</strong> ₱ {{ item.total_amount }}</p>
+                        <p class="mb-0"><strong>Total:</strong> ₱ {{ item.total_amount }}</p>
                     </div>
 
                     <div class="ms-auto">
                         <a href="{{ url_for('cart.remove_from_cart', item_id=item.item_id, item_code=item.itemCode, item_category=item.item_category) }}" class="btn btn-sm btn-danger">Remove</a>
                     </div>  
                 </div>
-            
             </div>
         </div>
         {% endfor %}
-         <div class="mt-4 p-3 border">
-                <h4 class="fw-bold>Total Amount: ₱{{ total_amount }}">
-                <span class="text-dark">Total: ₱<span id="selected-total">0.00</span></span>
-                </h4>
-                <button type="submit" class="btn btn-primary mt-4 px-4">Check Out</button>
+    </div>
+
+    <div class="container-fluid bg-white border-top shadow fixed-bottom">
+        <div class="row justify-content-end p-3">
+            <div class="col-12 col-md-4 text-end">
+                <h5 class="fw-bold mb-2">
+                    Total: ₱<span id="selected-total">0.00</span>
+                </h5>
+                <button type="submit" class="btn btn-primary w-md-auto px-4">
+                    Check Out
+                </button>
+            </div>
         </div>
-     </div>
-    </form>
-    {% else %}
-      <div class="alert alert-info mt-4">Your cart is empty.</div>
-    {% endif %}
+    </div>
+</form>
+{% else %}
+  <div class="alert alert-info mt-4">Your cart is empty.</div>
+{% endif %}
+
 </div>
 
 <script>

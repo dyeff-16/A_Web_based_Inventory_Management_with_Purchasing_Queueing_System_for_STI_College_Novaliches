@@ -26,8 +26,13 @@
                 {% endfor %}
                 </div>
 
-                <div class="mt-3 p-3 border-light rounded border shadow-sm">
-                    <h2 class="fw-bold">Total Amount: ₱ {{ total }}</h2>
+                <div class="container-fluid bg-white border-top shadow fixed-bottom py-3">
+                <div class="row justify-content-end p-3">
+                    <div class="col-12 col-md-4 text-end">
+                    <h5 class="fw-bold mb-2">Total: ₱ {{ total }}</h5>
+                    <button type="button" class="btn btn-primary w-md-auto px-4" data-bs-toggle="modal" data-bs-target="#confirmationModal">Confirm Order</button>
+                    </div>
+                </div>
                 </div>
 
                 <form id="checkoutForm" action="{{ url_for('checkout.place_order') }}" method="POST">

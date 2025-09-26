@@ -41,18 +41,51 @@ def update_quantity():
     item_id = request.args.get('item_id')
     item_code = request.args.get('item_code')
     item_quantity = int(request.args.get('item_quantity'))
-
+   
     cart_item = db_cart.find_one({"item_id": item_id, "email": get_email(), "itemCode": item_code})
+    stock_item = db_items.find_one({"_id": item_id})
 
+    if cart_item and stock_item and stock_item.get("sizes"):
+        available_stock = 0
+        for s in stock_item["sizes"]:
+            if s.get("itemCode", "").strip() == item_code.strip():
+                available_stock = int(s.get("quantity", 0))
+                break
 
-    if cart_item:
+        new_quantity = max(1, min(item_quantity, available_stock))
+        if new_quantity > 10:
+            new_quantity = 10
+
+        total_amount = int(cart_item["item_price"] * new_quantity)
+
+        result = db_cart.update_one(
+            {"item_id": cart_item["item_id"], "email": get_email(), "itemCode": item_code},
+            {"$set": {"item_quantity": new_quantity, "total_amount": total_amount}}
+        )
+
+        # print("cart quantity:", cart_item["item_quantity"])
+        # print("new quantity:", new_quantity)
+        # print("total amount:", total_amount)
+        # print(result.raw_result)
+        # print("sizes updated")
+        return redirect(url_for('cart.cart'))
+    
+    if cart_item and stock_item:
         
-        new_quantity = min(max(item_quantity, 1), 10)
+        available_stock = int(stock_item.get("item_quantity", 0))
+        new_quantity = max(1, min(item_quantity, available_stock))
+
+        if new_quantity > 10:
+            new_quantity = 10
+        
         total_amount = int(cart_item["item_price"] * new_quantity)
 
         db_cart.update_one(
-            {'_id': cart_item['_id']},
-            {'$set': {"item_quantity": new_quantity, "total_amount": total_amount}}
+            {"item_id": cart_item["item_id"]},
+            {"$set": {"item_quantity": new_quantity, "total_amount": total_amount}}
         )
-
-    return redirect(url_for('cart.cart'))
+        print('walang sizes')
+        return redirect(url_for('cart.cart'))
+    else:  
+        print("⚠️ Item not found in stock or cart")
+        return redirect(url_for('cart.cart'))
