@@ -1,0 +1,73 @@
+
+{% extends "index.html" %}
+{% block content %}<button class="btn btn-dark m-4" data-bs-toggle="modal" data-bs-target="#salesModal">Issuance Slip</button>
+<div class="modal fade" id="salesModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header d-block text-center">
+        <h5 class="modal-title w-100 mb-0">STI NOVALICHES</h5>
+        <small class="text-muted">SALES ISSUANCE SLIP</small>
+        <button type="button" class="btn-close position-absolute end-0 top-0 m-3" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="row mb-2">
+          <div class="col-md-6">
+            <p><strong>Student Name:</strong> Jeraine Rae Gabuat</p>
+          </div>
+          <div class="col-md-6">
+            <p><strong>Student Number:</strong> 2000295882</p>
+          </div>
+          <div class="col-md-6">
+            <p><strong>Date:</strong> Sept 3, 2025</p>
+          </div>
+          <div class="col-md-6">
+            <p><strong>Issuance Slip No.:</strong> IS-00123</p>
+          </div>
+          <div class="col-md-6">
+            <p><strong>Invoice No.:</strong> INV-45678</p>
+          </div>
+        </div>
+
+        <table class="table table-bordered table-sm">
+          <thead>
+            <tr>
+              <th>Item Description</th>
+              <th>Item Type</th>
+              <th>Quantity</th>
+              <th>SRP</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>PE Uniform</td>
+              <td>Clothing</td>
+              <td>1</td>
+              <td>₱500</td>
+              <td>₱500</td>
+            </tr>
+            <tr>
+              <td>School ID</td>
+              <td>Accessory</td>
+              <td>1</td>
+              <td>₱150</td>
+              <td>₱150</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4" class="text-end"><strong>Total</strong></td>
+              <td><strong>₱650</strong></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -39,6 +39,79 @@
                         {% endfor %}
                     {%endif%}
                     </div>
+                                    <!-- ✅ Issuance Slip Button -->
+                <button class="btn btn-success btn-sm mt-3 mb-2 " data-bs-toggle="modal" data-bs-target="#salesModal{{ loop.index }}">
+                    Issuance Slip
+                </button>
+
+                <!-- ✅ Issuance Slip Modal -->
+                <div class="modal fade" id="salesModal{{ loop.index }}" tabindex="-1">
+                  <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+
+                      <div class="modal-header d-block text-center">
+                        <h5 class="modal-title w-100 mb-0">STI NOVALICHES</h5>
+                        <small class="text-muted">SALES ISSUANCE SLIP</small>
+                        <button type="button" class="btn-close position-absolute end-0 top-0 m-3" data-bs-dismiss="modal"></button>
+                      </div>
+
+                      <div class="modal-body">
+                        <div class="row mb-2">
+                          <div class="col-md-6">
+                            <p><strong>Student Name:</strong> {{ order.name }}</p>
+                          </div>
+                          <div class="col-md-6">
+                            <p><strong>Student Number:</strong> {{ order.student_id if order.student_id else "N/A" }}</p>
+                          </div>
+                          <div class="col-md-6">
+                            <p><strong>Date:</strong> {{ order.order_date }}</p>
+                          </div>
+                          <div class="col-md-6">
+                            <p><strong>Issuance Slip No.:</strong> IS-{{ loop.index|string }}</p>
+                          </div>
+                          <div class="col-md-6">
+                            <p><strong>Invoice No.:</strong> INV-{{ order.reference_number }}</p>
+                          </div>
+                        </div>
+
+                        <!-- Items Table -->
+                        <table class="table table-bordered table-sm">
+                          <thead>
+                            <tr>
+                              <th>Item Description</th>
+                              <th>Size</th>
+                              <th>Quantity</th>
+                              <th>SRP</th>
+                              <th>Amount</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for item in order['items'] %}
+                            <tr>
+                              <td>{{ item.item_name }}</td>
+                              <td>{{ item.size if item.size != 'N/A' else 'n/a' }}</td>
+                              <td>{{ item.quantity }}</td>
+                              <td>₱{{ item.price }}</td>
+                              <td>₱{{ item.quantity * item.price }}</td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                          <tfoot>
+                            <tr>
+                              <td colspan="4" class="text-end"><strong>Total</strong></td>
+                              <td><strong>₱{{ order.total_amount }}</strong></td>
+                            </tr>
+                          </tfoot>
+                        </table>
+                      </div>
+
+                      <div class="modal-footer">
+                        <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- End Issuance Slip Modal -->    
                     {% if not order.receipt %}
                         <!-- Upload Receipt Form -->
                         <form id="uploadForm{{ loop.index }}" action="{{url_for('notif.upload_receipt')}}" method="post" enctype="multipart/form-data" onsubmit="return confirmUpload(event, '{{ loop.index }}')">
@@ -68,7 +141,7 @@
                         </div>
                     {% else %}
                         <p>
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#receiptModal{{ loop.index }}">View Receipt</a>
+                            <a href="#" style="text-decoration: none; color: rgb(76, 169, 219);" data-bs-toggle="modal" data-bs-target="#receiptModal{{ loop.index }}">View Receipt</a>
                         </p>
                         <div class="modal fade" id="receiptModal{{ loop.index }}" tabindex="-1" 
                              aria-labelledby="receiptModalLabel{{ loop.index }}" aria-hidden="true">

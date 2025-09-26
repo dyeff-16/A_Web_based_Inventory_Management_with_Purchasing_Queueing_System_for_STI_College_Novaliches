@@ -5,6 +5,7 @@ import string
 from flask import Flask, current_app, url_for, redirect, render_template, session, flash, request, Blueprint
 from db_proware import *
 
+
 check_outbp = Blueprint('checkout', __name__, url_prefix='/check_out')
 
 def get_email():
@@ -127,7 +128,7 @@ def place_order():
     for item in selected_ids:
         db_cart.delete_one({'email': get_email(), 'itemCode': item})
 
-    return redirect(url_for('home'))
+    return redirect(url_for('notif.purchase'))
 
 
 def send_order_confirmation(to_email, fullname, student_id, ref_number, date_str, time_str, total_amount, ordered_items):
