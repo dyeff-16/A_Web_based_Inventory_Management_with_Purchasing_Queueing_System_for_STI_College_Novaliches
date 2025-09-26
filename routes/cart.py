@@ -66,7 +66,7 @@ def update_quantity():
         # print("cart quantity:", cart_item["item_quantity"])
         # print("new quantity:", new_quantity)
         # print("total amount:", total_amount)
-        # print(result.raw_result)
+        # print(result.raw_result)s
         # print("sizes updated")
         return redirect(url_for('cart.cart'))
     

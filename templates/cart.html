@@ -6,7 +6,7 @@
 {% if cart_items %}
 <form method="POST" action="{{ url_for('checkout.check_out') }}">
     <div class="row g-4">
-        <!-- Loop through cart items -->
+        <!-- Loop through cart itemss -->
         {% for item in cart_items %}
         <div class="col-12">
             <div class="card shadow-sm border-primary">
