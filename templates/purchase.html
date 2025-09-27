@@ -112,33 +112,34 @@
                   </div>
                 </div>
                 <!-- End Issuance Slip Modal -->    
-                    {% if not order.receipt %}
-                        <!-- Upload Receipt Form -->
-                        <form id="uploadForm{{ loop.index }}" action="{{url_for('notif.upload_receipt')}}" method="post" enctype="multipart/form-data" onsubmit="return confirmUpload(event, '{{ loop.index }}')">
-                            <input type="hidden" name="ref_number" value="{{ order.reference_number }}">
-                            <input type="file" name="img_reciept" class="form-control mb-2 mt-3" required onchange="previewReceipt(this, '{{ loop.index }}')">
-                            <input type="submit" value="Upload Receipt" class="btn btn-sm btn-dark">
-                        </form>
+                                {% if not order.receipt %}
+            <!-- Upload Receipt Form -->
+            <form id="uploadForm{{ loop.index }}" action="{{ url_for('notif.upload_receipt') }}" method="post" enctype="multipart/form-data">
+              <input type="hidden" name="ref_number" value="{{ order.reference_number }}">
+              <input type="file" name="img_reciept" class="form-control mb-2 mt-3" required id="fileInput{{ loop.index }}">
+              <button type="button" class="btn btn-sm btn-dark" onclick="showUploadModal('{{ loop.index }}')">Upload Receipt</button>
+            </form>
 
-                        <!-- Confirm Upload Modal -->
-                        <div class="modal fade" id="confirmUploadModal{{ loop.index }}" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Confirm Upload</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body text-center">
-                                        <p>Are you sure you want to upload this receipt?</p>
-                                        <img id="previewImage{{ loop.index }}" src="" style="max-width: 100%; display:none;" class="mb-2 rounded">
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                                        <button type="button" class="btn btn-primary" onclick="confirmYes('{{ loop.index }}')">Yes</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            <!-- Confirm Upload Modal -->
+            <div class="modal fade" id="confirmUploadModal{{ loop.index }}" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Confirm Upload</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body text-center">
+                    <p>Are you sure you want to upload this receipt?</p>
+                    <img id="previewImage{{ loop.index }}" src="" style="max-width: 100%; display:none;" class="mb-2 rounded">
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-primary" onclick="confirmYes('{{ loop.index }}')">Yes</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+         
                     {% else %}
                         <p>
                             <a href="#" style="text-decoration: none; color: rgb(76, 169, 219);" data-bs-toggle="modal" data-bs-target="#receiptModal{{ loop.index }}">View Receipt</a>
@@ -168,5 +169,38 @@
     <p>No orders available.</p>
 {% endif %}
 
-</div>
+</div><script>
+function showUploadModal(index) {
+  const fileInput = document.getElementById('fileInput' + index);
+  const file = fileInput.files[0];
+  const preview = document.getElementById('previewImage' + index);
+
+  if (!file) {
+    alert('Please select a file first.');
+    return;
+  }
+
+  // Show preview
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    preview.src = e.target.result;
+    preview.style.display = 'block';
+  }
+  reader.readAsDataURL(file);
+
+  // Show confirmation modal
+  const modal = new bootstrap.Modal(document.getElementById('confirmUploadModal' + index));
+  modal.show();
+}
+
+function confirmYes(index) {
+  const form = document.getElementById('uploadForm' + index);
+  form.submit();
+
+  // Hide modal
+  const modalEl = document.getElementById('confirmUploadModal' + index);
+  const modal = bootstrap.Modal.getInstance(modalEl);
+  if (modal) modal.hide();
+}
+</script>
 {% endblock %}

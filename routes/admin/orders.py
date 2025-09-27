@@ -61,13 +61,28 @@ def update_order_status():
      
     rfr_num = request.form.get('rfr_num')
     new_status = request.form.get('status')
+    ref_receipt = request.form.get('ref_receipt')
+    decline = request.form.get('decline')
     
+    if decline:
+        db_orders.update_one(
+            {"reference_number": rfr_num},
+            {"$unset": {"receipt": ""}}
+        )
+        print(decline)
+    if rfr_num and new_status and ref_receipt:
+        db_orders.update_one(
+            {"reference_number": rfr_num},
+            {"$set": {"status": new_status, "ref_receipt": ref_receipt}}
+        )
+        print(new_status)
+
     if rfr_num and new_status:
         db_orders.update_one(
             {"reference_number": rfr_num},
             {"$set": {"status": new_status}}
         )
-
+        print(new_status)
     ph_time = datetime.now(pytz.timezone('Asia/Manila'))
     date_str = ph_time.strftime('%Y-%m-%d')
     time_str = ph_time.strftime('%H:%M:%S')  # military time
@@ -128,15 +143,20 @@ def update_order_status():
         #delete ung order kase tapos na hehehe
         db_orders.delete_one({'_id': order['_id']})
 
-        db_notification.insert_one({
-            "reference_number": rfr_num,
-            "email": order['email'],
-            "name": order['name'],
-            "status": "Claimed",
-            "message": f"Your order {rfr_num} has been successfully claimed.",
-            "date": date_str,
-            "time": time_str
-        })
+        db_notification.update_one(
+                {"reference_number": rfr_num, "email": order['email']},
+                {
+                    "$push": {
+                        "thread": {
+                            "status": "Claimed",
+                            "order_date": date_str,
+                            "order_time": time_str,
+                            "timestamp": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+                        }
+                    }
+                },
+                upsert=True
+            )
 
         send_order_claimed_notification(
             to_email=order['email'],

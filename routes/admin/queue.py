@@ -39,7 +39,7 @@ def queue_done():
     if ref_num:
         db_orders.update_one(
             {"reference_number": ref_num},
-            {"$set": {"queue_status": "done"}}
+            {"$set": {"queue_status": "done", 'status': 'Claimed'}}
         )
     return redirect(url_for('queue_admin.queue_view'))
 

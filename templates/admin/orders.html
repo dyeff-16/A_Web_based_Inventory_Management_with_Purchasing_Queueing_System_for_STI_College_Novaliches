@@ -66,8 +66,9 @@
                     {% if order.receipt and order.status not in ['Paid', 'Claim', 'Claimed'] %}
                  
                     <label for="ref_input_{{ loop.index }}" class="form-label mt-2">Enter Reference Number:</label>
-                    <input type="text" name="" id="ref_input_{{ loop.index }}" class="form-control mb-2" placeholder="Enter reference number" required>
-                    <button type="submit" name="status" value="Paid" class="btn btn-sm btn-success">Paid</button>
+                    <input type="text" name="ref_receipt" id="ref_input_{{ loop.index }}" class="form-control mb-2" placeholder="Enter reference number" >
+                    <button type="submit" name="decline" value="Declined" class="btn btn-sm btn-danger">Declined</button>
+                    <button type="submit" name="status" value="Paid" class="btn btn-sm btn-success">Confirm</button>
                  
                   {% endif %}
                 </form> 
