@@ -28,7 +28,7 @@ app.config['EMAIL_PASSWORD'] = 'iocv jahk rprh hijv'
 bcrypt = Bcrypt(app) 
 #csrf = CSRFProtect(app)
 #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
-
+# db.createUser({ user: "Proware", pwd: "Stinovalichesproware-15", roles: [ { role: "root", db: "admin" } ] })
 #admin blueprint
 app.register_blueprint(itembp)
 app.register_blueprint(orderbp)
