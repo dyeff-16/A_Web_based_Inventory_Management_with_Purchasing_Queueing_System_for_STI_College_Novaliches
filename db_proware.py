@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 
-# dbClient = MongoClient("mongodb+srv://stinovalichesproware:!Stinovalichesproware_15@prowarestinovaliches.fy5dqzc.mongodb.net/")
-dbClient = MongoClient("mongodb://Proware:Stinovalichesproware-15@72.60.196.33:27017/admin")
+dbClient = MongoClient("mongodb+srv://stinovalichesproware:!Stinovalichesproware_15@prowarestinovaliches.fy5dqzc.mongodb.net/")
+# dbClient = MongoClient("mongodb://Proware:Stinovalichesproware-15@72.60.196.33:27017/admin")
 
 db_admin = dbClient.Proware
 db_items = db_admin.items  # Collection for items/products
