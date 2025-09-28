@@ -11,7 +11,7 @@
         {% endif %}
         {% endwith %}
 
-        <form action="{{ url_for('login.login_') }}" method="POST" id="loginform">
+        <form action="{{ url_for('login.login_') }}" method="POST" id="loginform" onsubmit="return validateTerms()">
             <h2 class="text-center fw-bold mb-4 text-primary">Login</h2>
 
             <div class="mb-3">
@@ -21,7 +21,12 @@
 
             <div class="mb-3">
                 <label for="password" class="form-label fw-semibold">Enter your password</label>
-                <input class="form-control rounded-3" type="password" id="password" name="password" required placeholder=""/>
+                <div class="input-group">
+                    <input class="form-control rounded-start-3" type="password" id="password" name="password" required placeholder=""/>
+                    <button class="btn btn-outline-light border" type="button" onclick="togglePassword()">
+                        <i class="bi bi-eye text-secondary" id="toggleIcon"></i>
+                    </button>
+                </div>
             </div>
 
             <div class="form-check">
@@ -80,5 +85,27 @@
                 termsCheckbox.checked = true; 
             });
         });
-        </script>
+        function validateTerms() {
+          const termsCheckbox = document.getElementById("termscondition");
+          if (!termsCheckbox.checked) {
+              alert("You must read and agree to the Terms & Conditions before logging in.");
+              return false;
+            return true;
+        }
+        }
+        function togglePassword() {
+          const passwordInput = document.getElementById("password");
+          const icon = document.getElementById("toggleIcon");
+
+          if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            icon.classList.remove("bi-eye");
+            icon.classList.add("bi-eye-slash");
+          } else {
+            passwordInput.type = "password";
+            icon.classList.remove("bi-eye-slash");
+            icon.classList.add("bi-eye");
+          }
+        }
+</script>
 {%endblock%}
