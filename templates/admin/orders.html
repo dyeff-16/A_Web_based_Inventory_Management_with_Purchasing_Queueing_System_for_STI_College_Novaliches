@@ -103,8 +103,8 @@
           <p class="mb-1"><strong>Status:</strong> {{ order.status }}</p>
           <p class="mb-1"><strong>Items Ordered:</strong></p>
           <ul class="mb-2">
-            {% if order["items"]%}
-              {% for item in order["items"] %}
+          {% if order.items() %}
+            {% for item in order.items() %}
               <li>
                 {{ item.item_name }}
                 {% if item.size != 'N/A' %} - {{ item.size }}{% endif %}

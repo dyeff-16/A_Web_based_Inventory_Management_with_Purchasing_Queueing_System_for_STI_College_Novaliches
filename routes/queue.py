@@ -15,11 +15,11 @@ def queue_user():
         user_session = session['user']
         email_session = user_session['email']
 
-        now_serving_order = db_orders.find_one({"queue_status": "queue"}, sort=[("_id", 1)])
+        now_serving_order = db_orders.find_one({'status': 'Paid',"queue_status": "queue"}, sort=[("_id", 1)])
         now_serving = now_serving_order["reference_number"] if now_serving_order else None
 
-        queue_orders = list(db_orders.find({"queue_status": "queue"}).sort("_id", 1))
-        skip_orders = list(db_orders.find({"queue_status": "skipped"}).sort("_id", 1))
+        queue_orders = list(db_orders.find({'status': 'Paid',"queue_status": "queue"}).sort("_id", 1))
+        skip_orders = list(db_orders.find({'status': 'Paid',"queue_status": "skipped"}).sort("_id", 1))
 
         user_ref_num = session.get("ref_num")
 
