@@ -69,6 +69,7 @@ def place_order():
 
     # Format items with only essential fields
     ordered_items = [{
+        'item_id': item['item_id'],
         'item_name': item['item_name'],
         'itemCode': item['itemCode'],
         'quantity': item['item_quantity'],

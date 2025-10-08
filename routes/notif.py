@@ -1,13 +1,13 @@
 import base64
 from datetime import datetime
-from flask import Blueprint, Flask, url_for, redirect, render_template, session, flash, request
+from flask import Blueprint, jsonify, url_for, redirect, render_template, session, flash, request
 import pytz
 from db_proware import *
 
 
 notifbp= Blueprint('notif', __name__, url_prefix='/notification')
 
-@notifbp.route('/notificaiton')
+@notifbp.route('/notificaiton', methods=['POST'])
 def notification():
   if 'user' not in session:
         return redirect(url_for('login.login_'))
@@ -57,6 +57,18 @@ def purchase():
 
     return render_template('purchase.html', orders=user_orders, std_id=std_id, name=name, email=email)
 
+@notifbp.route('/getImageItem', methods=['GET','POST'])
+def getItemImage():
+    data = request.get_json()
+    _id = data.get('item_id')
+
+    item = db_items.find_one({'_id': _id})
+    if item and 'image' in item:
+        image = item['image']
+        return jsonify({'imageBase64': image}), 200
+    else:
+        return jsonify({"NO IMAGE FOUND"}), 400
+    
 @notifbp.route('/upload_receipt', methods=['POST'])
 def upload_receipt():
     if 'img_reciept' in request.files and request.files['img_reciept'].filename != '':

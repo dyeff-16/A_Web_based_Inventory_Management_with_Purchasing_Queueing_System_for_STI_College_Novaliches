@@ -8,7 +8,7 @@
     <div class="container-fluid d-flex justify-content-center">
       <div class="navbar" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-          <span class="m-5 h4 text-light fw-bold text-warning"><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.purchase')}}">Placed Order</a></span>
+          <span class="m-5 h4 text-light fw-bold text-warning"><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.purchase')}}">Orders</a></span>
           <span class="m-5 h4 text-light" ><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.paid')}}">Paid Order</a></span>
           <span class="m-5 h4 text-light" ><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.claim')}}">Claimed Order</a></span>
           <span class="m-5 h4 text-light"><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.order_history')}}">All History</a></span>
@@ -31,11 +31,30 @@
                     <div class="m-3">
                     {%if order['items']%}
                         {% for item in order['items']%}
-                        <li>
-                            {{ item.item_name }}
-                            {% if item.size != 'N/A' %} - {{ item.size }}{% endif %}
-                            - {{ item.quantity }} pcs - Price: {{ item.price }}
-                        </li>
+                       <div class="d-flex align-items-start mb-3" style="max-width: 500px;">
+                          <!-- Image -->
+                          <img 
+                            style="width: 100px; height: 100px; object-fit: cover; border: solid 1px rgb(237, 237, 237);" 
+                            id="item-image-{{ item.item_id }}" 
+                            data-item-id="{{ item.item_id }}" 
+                            alt="Item image"
+                          >
+                          
+                          <!-- Text details -->
+                          <div class="ms-3">
+                            <h5 class="mb-1">{{ item.item_name }}</h5>
+                            {% if item.size != 'N/A' %}
+                              <p class="mb-1 text-muted">Size: {{ item.size }}</p>
+                            {% endif %}
+                            <p class="mb-1">Quantity: {{ item.quantity }} pcs</p>
+                            <p class="mb-0 fw-semibold">Price: ₱{{ item.price }}.00</p>
+                          </div>
+                        </div>
+                         <script>
+                          document.addEventListener('DOMContentLoaded', function() {
+                            getImageItem('{{ item.item_id }}');
+                          });
+                        </script>
                         {% endfor %}
                     {%endif%}
                 <form action="{{url_for('notif.claim')}}" method="POST">
@@ -53,4 +72,5 @@
 {% endif %}
 
 </div>
+<script src="/static/orders.js"></script>
 {% endblock %}

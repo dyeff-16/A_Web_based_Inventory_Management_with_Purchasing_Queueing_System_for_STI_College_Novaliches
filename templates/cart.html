@@ -26,13 +26,13 @@
 
                         <div class="d-flex align-items-center mb-2">
                             <label class="me-2">Quantity:</label>
-                            <a href="{{ url_for('cart.update_quantity', item_id=item.item_id, item_code=item.itemCode, item_quantity=item.item_quantity - 1) }}" class="btn btn-sm btn-outline-primary me-2">-</a>
-                            <span id="qty-{{ item.itemCode }}" class="fw-semibold">{{ item.item_quantity }}</span>
-                            <a href="{{ url_for('cart.update_quantity', item_id=item.item_id, item_code=item.itemCode, item_quantity=item.item_quantity + 1) }}" class="btn btn-sm btn-outline-primary ms-2">+</a>
+                            <a onclick="stockButton('minus', '{{item.itemCode}}', '{{item.item_id}}', event)" class="btn btn-sm btn-outline-primary me-2">-</a>
+                            <span id="getCartItem_{{item.item_id}}" class="fw-semibold">{{item.item_quantity}}</span>
+                            <a onclick="stockButton('add', '{{item.itemCode}}', '{{item.item_id}}', event)" class="btn btn-sm btn-outline-primary ms-2">+</a>
                         </div>
                         <p class="mb-0"><strong>Total:</strong> ₱ {{ item.total_amount }}</p>
                     </div>
-
+ <!--href="{{ url_for('cart.update_quantity', item_id=item.item_id, item_code=item.itemCode, item_quantity=item.item_quantity - 1) }}-->
                     <div class="ms-auto">
                         <a href="{{ url_for('cart.remove_from_cart', item_id=item.item_id, item_code=item.itemCode, item_category=item.item_category) }}" class="btn btn-sm btn-danger">Remove</a>
                     </div>  
@@ -61,15 +61,5 @@
 
 </div>
 
-<script>
-    function updateTotal() {
-        let total = 0;
-        document.querySelectorAll('.select-item').forEach(function(checkbox) {
-            if (checkbox.checked) {
-                total += parseFloat(checkbox.getAttribute('data-price'));
-            }
-        });
-        document.getElementById('selected-total').textContent = total.toFixed(2);
-    }
-</script>
+<script src="/static/cart.js"></script>
 {% endblock %}
