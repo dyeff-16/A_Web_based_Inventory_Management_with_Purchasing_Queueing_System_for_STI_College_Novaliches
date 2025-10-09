@@ -32,7 +32,7 @@ function confirmYes(index) {
 }
 
 function getImageItem(item_id){
-    fetch('/notification/getImageItem', {
+    fetch('/purchase/getImageItem', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({item_id: item_id})
@@ -50,3 +50,18 @@ function getImageItem(item_id){
         console.error('Error loading image:', error);
     });
 }
+
+    function setStatus(ref_num){
+        fetch('/purchase/setClaim', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ref_num: ref_num})
+        })
+        .then(r => r.json())
+        .then(data => {
+            console.log(data.message)
+            if(data.redirect_url){
+              window.location.href = data.redirect_url;
+            }
+        })
+    }

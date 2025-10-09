@@ -7,6 +7,7 @@ from routes.login import loginbp
 from routes.item_details import itemdt_bp
 from routes.check_out import check_outbp
 from routes.notif import notifbp
+from routes.purchase import purchasebp
 
 from routes.admin.items import itembp
 from routes.admin.orders import orderbp
@@ -44,6 +45,7 @@ app.register_blueprint(loginbp)
 app.register_blueprint(itemdt_bp)
 app.register_blueprint(check_outbp)
 app.register_blueprint(notifbp)
+app.register_blueprint(purchasebp)
 app.register_blueprint(queuebp)
 
 

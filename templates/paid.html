@@ -8,10 +8,10 @@
     <div class="container-fluid d-flex justify-content-center">
       <div class="navbar" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-          <span class="m-5 h4 text-light fw-bold text-warning"><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.purchase')}}">Orders</a></span>
-          <span class="m-5 h4 text-light" ><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.paid')}}">Paid Order</a></span>
-          <span class="m-5 h4 text-light" ><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.claim')}}">Claimed Order</a></span>
-          <span class="m-5 h4 text-light"><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.order_history')}}">All History</a></span>
+          <span class="m-5 h4 text-light fw-bold text-warning"><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('purchase.purchase')}}">Orders</a></span>
+          <span class="m-5 h4 text-light" ><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('purchase.paid')}}">Paid Order</a></span>
+          <span class="m-5 h4 text-light" ><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('purchase.claim')}}">Claimed Order</a></span>
+          <span class="m-5 h4 text-light"><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('purchase.order_history')}}">All History</a></span>
         </div>
       </div>
     </div>
@@ -57,9 +57,9 @@
                         </script>
                         {% endfor %}
                     {%endif%}
-                <form action="{{url_for('notif.claim')}}" method="POST">
+                <form>
                   <input type="hidden" value="{{order.email}}" name="email">
-                <button name="btn_claim" class="btn btn-dark mt-3" value="{{order.reference_number}}" type="submit">Claim</button>
+                <button onclick="setStatus('{{order.reference_number}}')" name="btn_claim" class="btn btn-dark mt-3" value="{{order.reference_number}}" type="submit">Claim</button>
               </form>
               </div>
             </div>

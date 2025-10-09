@@ -129,7 +129,7 @@ def place_order():
     for item in selected_ids:
         db_cart.delete_one({'email': get_email(), 'itemCode': item})
 
-    return redirect(url_for('notif.purchase'))
+    return redirect(url_for('purchase.purchase'))
 
 
 def send_order_confirmation(to_email, fullname, student_id, ref_number, date_str, time_str, total_amount, ordered_items):

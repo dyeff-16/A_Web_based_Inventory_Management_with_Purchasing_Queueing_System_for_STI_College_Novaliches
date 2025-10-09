@@ -7,10 +7,10 @@
     <div class="container-fluid d-flex justify-content-center">
       <div class="navbar" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-          <span class="m-5 h4 text-light fw-bold text-warning"><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.purchase')}}">Orders</a></span>
-          <span class="m-5 h4 text-light" ><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.paid')}}">Paid Order</a></span>
-          <span class="m-5 h4 text-light" ><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.claim')}}">Claimed Order</a></span>
-          <span class="m-5 h4 text-light"><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('notif.order_history')}}">All History</a></span>
+          <span class="m-5 h4 text-light fw-bold text-warning"><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('purchase.purchase')}}">Orders</a></span>
+          <span class="m-5 h4 text-light" ><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('purchase.paid')}}">Paid Order</a></span>
+          <span class="m-5 h4 text-light" ><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('purchase.claim')}}">Claimed Order</a></span>
+          <span class="m-5 h4 text-light"><a class="m-3 h4 text-light" style="text-decoration: none;" href="{{url_for('purchase.order_history')}}">All History</a></span>
         </div>
       </div>
     </div>
@@ -60,7 +60,7 @@
                 </div>
                                     <!-- ✅ Issuance Slip Button -->
                 <button class="btn btn-success btn-sm mt-3 mb-2 " data-bs-toggle="modal" data-bs-target="#salesModal{{ loop.index }}">
-                    Issuance Slip
+                    Slip
                 </button>
 
                 <!-- ✅ Issuance Slip Modal -->
@@ -73,7 +73,7 @@
                         <small class="text-muted">SALES ISSUANCE SLIP</small>
                         <button type="button" class="btn-close position-absolute end-0 top-0 m-3" data-bs-dismiss="modal"></button>
                       </div>
-
+                     
                       <div class="modal-body">
                         <div class="row mb-2">
                           <div class="col-md-6">
@@ -131,9 +131,9 @@
                   </div>
                 </div>
                 <!-- End Issuance Slip Modal -->    
-                                {% if not order.receipt %}
+            {% if not order.receipt %}
             <!-- Upload Receipt Form -->
-            <form id="uploadForm{{ loop.index }}" action="{{ url_for('notif.upload_receipt') }}" method="post" enctype="multipart/form-data">
+            <form id="uploadForm{{ loop.index }}" action="{{ url_for('purchase.upload_receipt') }}" method="post" enctype="multipart/form-data">
               <input type="hidden" name="ref_number" value="{{ order.reference_number }}">
               <input type="file" name="img_reciept" class="form-control mb-2 mt-3" required id="fileInput{{ loop.index }}">
               <button type="button" class="btn btn-sm btn-dark" onclick="showUploadModal('{{ loop.index }}')">Upload Receipt</button>

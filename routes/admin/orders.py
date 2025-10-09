@@ -1,7 +1,7 @@
 from datetime import datetime
 from email.message import EmailMessage
 import smtplib
-from flask import Flask, current_app, url_for, redirect, render_template, session, request, Blueprint
+from flask import Flask, current_app, jsonify, url_for, redirect, render_template, session, request, Blueprint
 import pytz
 from db_proware import *
 
@@ -52,7 +52,43 @@ def orders_list():
         orders = db_orders.find().sort([("order_date", -1), ("order_time", -1)])
 
     return render_template('admin/orders.html', orders=list(orders))
-    
+
+@orderbp.route('/setDeclined', methods=['POST'])
+def setDeclined():
+    data = request.get_json()
+    ref_num = data.get('ref_num')
+    reason  = data.get('reason')
+
+    ph_time = datetime.now(pytz.timezone('Asia/Manila'))
+    date_str = ph_time.strftime('%Y-%m-%d')
+    time_str = ph_time.strftime('%H:%M:%S')
+
+    order = db_orders.find_one({'reference_number': ref_num})
+    db_orders.update_one(
+            {"reference_number": ref_num},
+            {"$unset": {"receipt": "",
+                        "status": "Placed_Order"}}
+        )
+    db_notification.update_one(
+                {"reference_number": ref_num, "email": order['email']},
+                {
+                    "$push": {
+                        "thread": {
+                            "status": "Declined",
+                            "Reason": reason,
+                            "order_date": date_str,
+                            "order_time": time_str,
+
+                        }
+                    }
+                },
+                upsert=True
+            )
+    return jsonify({
+        "message": "declined",
+        "redirect_url": url_for('orders.orders_list')  # or wherever you want to go
+    })
+
 @orderbp.route('/update_order_status', methods=['POST'])
 def update_order_status():
    
@@ -62,14 +98,34 @@ def update_order_status():
     rfr_num = request.form.get('rfr_num')
     new_status = request.form.get('status')
     ref_receipt = request.form.get('ref_receipt')
-    decline = request.form.get('decline')
     
-    if decline:
-        db_orders.update_one(
-            {"reference_number": rfr_num},
-            {"$unset": {"receipt": ""}}
-        )
-        print(decline)
+    ph_time = datetime.now(pytz.timezone('Asia/Manila'))
+    date_str = ph_time.strftime('%Y-%m-%d')
+    time_str = ph_time.strftime('%H:%M:%S')  # military time
+
+    # if decline:
+    #     order = db_orders.find_one({'reference_number': rfr_num})
+    #     db_orders.update_one(
+    #         {"reference_number": rfr_num},
+    #         {"$unset": {"receipt": "",
+    #                     "status": "Placed_Order"}}
+    #     )
+    #     db_notification.update_one(
+    #             {"reference_number": rfr_num, "email": order['email']},
+    #             {
+    #                 "$push": {
+    #                     "thread": {
+    #                         "status": "Declined",
+    #                         "Reason": reason,
+    #                         "order_date": date_str,
+    #                         "order_time": time_str,
+
+    #                     }
+    #                 }
+    #             },
+    #             upsert=True
+    #         )
+    #     print(decline)
     if rfr_num and new_status and ref_receipt:
         db_orders.update_one(
             {"reference_number": rfr_num},
@@ -83,11 +139,6 @@ def update_order_status():
             {"$set": {"status": new_status}}
         )
         print(new_status)
-    ph_time = datetime.now(pytz.timezone('Asia/Manila'))
-    date_str = ph_time.strftime('%Y-%m-%d')
-    time_str = ph_time.strftime('%H:%M:%S')  # military time
-    
-
     
     order = db_orders.find_one({'reference_number': rfr_num})
     if order['status'] == "Paid":

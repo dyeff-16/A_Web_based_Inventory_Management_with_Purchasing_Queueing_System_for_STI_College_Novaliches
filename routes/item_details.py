@@ -1,5 +1,6 @@
 from datetime import datetime
 from flask import Flask, url_for, redirect, render_template, session, flash, request, Blueprint
+import pytz
 from db_proware import *
 from flask_wtf.csrf import CSRFProtect
 from flask_wtf import FlaskForm
@@ -222,8 +223,9 @@ def preorder():
 
     user_email = session['user']['email']
     item_id = request.form.get("item_id")
+    item_name = request.form.get('item_name')
     size_selection = request.form.get("size_selection")  # only exists for size-based items
-
+    
     # default values
     item_code = None
     size = None
@@ -236,13 +238,23 @@ def preorder():
     else:
         # non-size item (from hidden input)
         item_code = request.form.get("item_code")
-
+        price = int(request.form.get('item_price'))
+        
+    ph_time = datetime.now(pytz.timezone('Asia/Manila'))
+    date_str = ph_time.strftime('%Y-%m-%d')
+    time_str = ph_time.strftime('%H:%M:%S')  # military time
+    
     preorder_doc = {
         "email": user_email,
+        "item_name": item_name,
+        "item_id": item_id,
         "itemCode": item_code,
+        "item_price": price,
         "size": size if size_selection else None,
-        "status": "pending",   # pending until restock
-        "created_at": datetime.utcnow()
+        "status": "pre-order",   
+        "created_at": ph_time,
+        "date": date_str,
+        "time": time_str
     }
 
     # insert into preorders collection

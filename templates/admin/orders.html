@@ -60,15 +60,17 @@
                   <img src="data:image/png;base64,{{ order.receipt }}" alt="receipt" style="max-width: 100%;">
 
                  <form class="item_code" action="{{ url_for('orders.update_order_status') }}" method="POST">
-                    <input type="hidden" name="rfr_num" value="{{ order.reference_number }}">
+                    <input type="hidden" id="rfr_num" name="rfr_num" value="{{ order.reference_number }}">
                     <input type="hidden" name="user_email" value="{{ order.email }}">
                     <input type="hidden" name="student_id" value="{{ order.student_id }}">
                     {% if order.receipt and order.status not in ['Paid', 'Claim', 'Claimed'] %}
                  
                     <label for="ref_input_{{ loop.index }}" class="form-label mt-2">Enter Reference Number:</label>
                     <input type="text" name="ref_receipt" id="ref_input_{{ loop.index }}" class="form-control mb-2" placeholder="Enter reference number" >
-                    <button type="submit" name="decline" value="Declined" class="btn btn-sm btn-danger">Declined</button>
-                    <button type="submit" name="status" value="Paid" class="btn btn-sm btn-success">Confirm</button>
+                    <button type="submit" name="status" value="Paid" class="btn btn-sm btn-success mb-2">Confirm</button>                    
+                    <input type="text" name="reason" id="reason_input_{{ loop.index }}" class="form-control mb-2" placeholder="Enter Reason" >
+                    <button type="button"class="btn btn-sm btn-danger" onclick="setDeclined('{{ loop.index }}')">Declined</button>
+                    
                  
                   {% endif %}
                 </form> 
@@ -124,4 +126,32 @@
     <p>No orders available.</p>
   {% endif %}
 </div>
+<script>
+function setDeclined(idx) {
+  const reason = document.getElementById(`reason_input_${idx}`).value;
+  const ref_num = document.getElementById(`rfr_num`).value;
+
+  fetch('/order/setDeclined', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },  // <-- fix
+    body: JSON.stringify({ reason, ref_num })
+  })
+  .then(r => r.json())
+  .then(data => {
+    console.log(data.message || 'ok');
+    if (data.redirect_url) {
+      window.location.href = data.redirect_url;
+    } else {
+      // optional: give quick feedback without redirect
+      alert('Order declined.');
+      // or reload:
+      // location.reload();
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    alert('Failed to decline.');
+  });
+}
+</script>
 {% endblock %}

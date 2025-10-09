@@ -111,6 +111,14 @@ def update_quantity():
                                 "total_amount": total_amount
                             }), 200
 
+@cartbp.route('/pre-order')
+def preOrder():
+    if 'user' not in session:
+        return redirect(url_for('login.login_'))
+    user = session.get('user')
+    email = user.get('email')
+    preOrderUser = list(db_preorder.find({'email': email}).sort([("order_date", -1), ("order_time", -1)]))
+    return render_template('pre-order.html',preOrderUser = preOrderUser)
 
 # @cartbp.route('/update_quantity', methods=['POST','GET'])
 # def update_quantity():

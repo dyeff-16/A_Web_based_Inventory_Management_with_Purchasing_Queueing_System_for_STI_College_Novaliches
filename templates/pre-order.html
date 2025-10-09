@@ -1,0 +1,34 @@
+{% extends "index.html" %}
+{% block content %}
+<div class="container m-1">
+    <h2 class="h1 fw-bold m-4 mb-5 text-primary">Pre-Orders</h2>
+    {%if preOrderUser%}
+        {%for preOrder in preOrderUser%}
+            <div class="m-3 border p-3">
+                       <div class="d-flex align-items-start mb-3" style="max-width: 500px;">
+                          <img 
+                            style="width: 100px; height: 100px; object-fit: cover; border: solid 1px rgb(237, 237, 237);" 
+                            id="item-image-{{ preOrder.item_id }}" 
+                            data-item-id="{{ preOrder.item_id }}" 
+                            alt="Item image"
+                          >
+                 <div class="ms-3">
+                            <h5 class="mb-1">{{ preOrder.item_name }}</h5>
+                            {% if preOrder.size %}
+                              <p class="mb-1 fw">Size: {{ preOrder.size }}</p>
+                            {% endif %}
+                            <p class="mb-0 fw">Price: ₱{{ preOrder.item_price }}.00</p>
+                          </div>
+                        </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                            getImageItem('{{ preOrder.item_id }}');
+                        });
+                </script>
+            </div>
+        {%endfor%}
+    {%endif%}
+
+</div>
+<script src="/static/orders.js"></script>
+{% endblock %}
