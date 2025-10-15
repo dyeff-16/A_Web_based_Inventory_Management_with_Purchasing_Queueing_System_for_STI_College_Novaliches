@@ -1,43 +1,10 @@
 import csv
 import io
-from bson import ObjectId, Regex
-from flask import Blueprint, redirect, render_template, request, session, url_for
+from flask import Blueprint, current_app, jsonify, redirect, render_template, request, session, url_for
 from db_proware import *
 from routes.audit_log import audit_log
 
 system_adminbp = Blueprint('system_admin', __name__, url_prefix='/system_admin')
- 
-    
-# @system_adminbp.route('/login', methods=['GET', 'POST'])
-# def login():
-#     if 'sys_admin' in session:
-#         return redirect(url_for('index'))
-
-#     if request.method == 'POST':
-#         email = request.form['email']
-#         password = request.form['password']
-#         sys_admin = db_account.find_one({"email": email})
-#         print(sys_admin)
-
-#         if sys_admin:
-#             if sys_admin['password'] == password:
-#                 if sys_admin.get('roles') == 'system_admin':
-#                     session['system_admin'] = {
-#                         'fullname': sys_admin['fullname'],
-#                         'email': sys_admin['email'],
-#                         'roles': sys_admin['roles'],}
-#                     return redirect(url_for('system_admin'))
-#                 else:
-#                     print("Access denied: Not a system admin.")
-#                     return render_template('login.html')
-#             else:
-#                 print("Incorrect password.")
-#                 return render_template('login.html')
-#         else:
-#              print("Email not found.")
-#              return render_template('login.html')
-
-#     return render_template('login.html')
 
 @system_adminbp.route('/logout', methods=['GET', 'POST'])
 def logout():
@@ -46,59 +13,50 @@ def logout():
         session.pop('user')
    return redirect(url_for('login.login_'))
 
-@system_adminbp.route('/edit_account/<account_id>', methods=['GET', 'POST'])
-def edit_account(account_id):
-    if 'user'in session:
-        #audit_log("Edit Account Page")
-        account = db_account.find_one({'_id': ObjectId(account_id)})
+@system_adminbp.route('/edit_account/<int:student_id>', methods=['GET', 'POST'])
+def edit_account(student_id):
 
-        if not account:
-            print("Account not found", "danger")
-            return redirect(url_for('accounts'))
+    if 'user' not in session:
+        return redirect(url_for('login.login_'))
+    
+    account = db_account.find_one({'student_id': student_id})
 
-        if request.method == 'POST':
-            new_role = request.form.get('role')
-            new_status = request.form.get('status')
-            new_permissions = request.form.getlist('permissions')  
+    if not account:
+        print("Account not found", "danger")
+        return redirect(url_for('system_admin.accounts'))
 
-            db_account.update_one(
-                {'_id': ObjectId(account_id)},
+    return render_template('system_admin/edit_accounts.html', account=account)
+
+
+@system_adminbp.route('/submitRoles', methods=['POST'])
+def submitRoles():
+    data = request.get_json()
+    email = data.get('email')
+    roles = data.get('roles')
+    status = data.get('status')
+    productPermission = data.get('productPermission')
+    reportsPermission = data.get('reportsPermission')
+    ordersPermission = data.get('ordersPermission')
+    queuePermission = data.get('queuePermission')
+
+    dictPermission = {
+        'product': productPermission,
+        'report': reportsPermission,
+        'orders': ordersPermission,
+        'queue': queuePermission
+    }
+    
+    db_account.update_one(
+                {'email': email},
                 {'$set': {
-                    'role': new_role,
-                    'status': new_status,
-                    'permissions': new_permissions
+                    'roles': roles,
+                    'status': status,
+                    'permissions': dictPermission
                 }}
             )
-
-            print("Account updated successfully", "success")
-            #audit_log("Edit Account Modified")
-            return redirect(url_for('system_admin.accounts'))
-
-        return render_template('system_admin/edit_accounts.html', account=account)
-    else:
-        return redirect(url_for('login.login_'))
-
-@system_adminbp.route('/accounts', methods=['GET', 'POST'])
-def accounts():
-    if 'user'in session:
-        #audit_log("Viewed Accounts")
-        search = request.form.get('search', '').strip()
-        filter_by = request.form.get('filter_by', 'email')  
-
-        if request.method == 'POST' and search:
-            query = {}
-            if filter_by == 'email':
-                query = {'email': {'$regex': search, '$options': 'i'}}
-            elif filter_by == 'role':
-                query = {'role': {'$regex': search, '$options': 'i'}}
-            accounts = list(db_account.find(query))
-        else:
-            accounts = list(db_account.find())
-
-        return render_template('system_admin/accounts.html', accounts=accounts, search=search, filter_by=filter_by)
-    else:
-        return redirect(url_for('login.login_'))
-
+    return jsonify({
+        'message': 'success update account'
+    })    
 @system_adminbp.route('/dt_mgrt', methods=['GET', 'POST'])
 def data_mgrt():
     if 'user'in session:
@@ -160,33 +118,130 @@ def audit_log_access():
     else:
         return redirect(url_for('login.login_'))
 
-@system_adminbp.route('/audit-log')
+@system_adminbp.route('/audit-log', methods=['GET', 'POST'])
 def audit_log():
-    if 'user'in session:
-        #audit_log("Audit Log Viewing")
-        query = request.args.get('query', '').strip().lower()
-        filter_type = request.args.get('filter', 'all')
-
-        filter_query = {}
-
-        if query:
-            if filter_type == 'date':
-                filter_query['timestamp'] = {
-                    "$regex": Regex(query, "i")
-                }
-            elif filter_type == 'email':
-                filter_query['admin_email'] = {'$regex': query, '$options': 'i'}
-            elif filter_type == 'action':
-                filter_query['action'] = {'$regex': query, '$options': 'i'}
-            else:
-                filter_query['$or'] = [
-                    {'admin_email': {'$regex': query, '$options': 'i'}},
-                    {'action': {'$regex': query, '$options': 'i'}},
-                    {'timestamp': {'$regex': query, '$options': 'i'}}
-                ]
-
-        logs = list(db_auditlog.find(filter_query).sort('timestamp', -1))
-        return render_template('system_admin/audit_log.html', logs=logs, query=query, filter_type=filter_type)
-    else:
+    if 'user' not in session:
         return redirect(url_for('login.login_'))
+    
+    return render_template('system_admin/audit_log.html')
 
+@system_adminbp.route('/auditLog', methods=['GET', 'POST'])
+def auditlog():
+    if request.method == 'POST':
+        data = request.get_json(silent=True) or request.form or {}
+        query = (data.get('inputAuditlog') or '').strip()
+        filter_type = (data.get('selectFilter') or 'all').strip()
+    else:
+        query, filter_type = '', 'all'
+
+    filter_query = {}
+
+    if query:
+        rx = {'$regex': query, '$options': 'i'}
+        if filter_type == 'datetime':
+            filter_query['datetime'] = rx
+        elif filter_type == 'email':
+            filter_query['email'] = rx
+        elif filter_type == 'action':
+            filter_query['action'] = rx
+        else:
+            filter_query['$or'] = [
+                {'email': rx},
+                {'datetime': rx},
+                {'action': rx}
+            ]
+    audit_log = list(
+        db_auditlog.find(filter_query, {'_id': 0}).sort('_id', -1)
+    )
+
+    return jsonify({'auditlog': audit_log})
+
+@system_adminbp.route('/accounts', methods=['GET', 'POST'])
+def accounts():
+    if 'user' not in session:
+        return redirect(url_for('login.login_'))
+    
+    return render_template('system_admin/accounts.html')
+     
+@system_adminbp.route('/getAccount', methods=['GET','POST'])
+def getAccount():
+    if 'user' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+
+    per_page = 20
+
+    if request.method == 'GET':
+        accounts = list(db_account.find({}).limit(per_page))
+        for acc in accounts:
+            acc['_id'] = str(acc['_id'])
+        return jsonify({'accounts': accounts, 'message': 'Loaded first 20 (GET)'})
+
+    
+    data   = request.get_json()
+    search = (data.get('searchInput')  or '').strip()
+    status = (data.get('statusSelect') or '').strip().lower()
+    role   = (data.get('roleSelect')   or '').strip().lower()
+
+
+    IGNORED = {'', 'all', 'any', 'role', 'status', 'select'}
+    query = {}
+
+    if search:
+        regex = {'$regex': search, '$options': 'i'}
+        query['$or'] = [
+            {'email': regex},
+            {'roles': regex},    
+            {'status': regex},
+        ]
+
+    if status not in IGNORED:
+        query['status'] = {'$regex': f'^{status}$', '$options': 'i'}
+
+    if role not in IGNORED:
+        query['roles'] = {'$regex': role, '$options': 'i'}
+
+    accounts = list(db_account.find(query).limit(per_page))
+    for acc in accounts:
+        acc['_id'] = str(acc['_id'])
+
+    return jsonify({'accounts': accounts, 'message': 'Search results (POST)', 'query': query})
+
+@system_adminbp.before_app_request
+def maintenance_block():
+    # paths that must always work
+    allowed_paths = {
+        '/system_admin', 
+        '/system_admin/maintenance',       # maintenance page itself
+        '/system_admin/toggle_maintenance' # your admin toggle endpoint (POST)
+    }
+    # always allow static files
+    if request.path.startswith('/static/'):
+        return None
+
+    is_maintenance = bool(current_app.config.get('MAINTENANCE_MODE'))
+    is_logged_in  = bool(session.get('user_id'))   # <- use your actual login key
+
+    # If maintenance ON and user is NOT logged in → block to maintenance page
+    if is_maintenance and not is_logged_in:
+        if request.path in allowed_paths:
+            return None
+
+        # If it's an API call expecting JSON
+        if request.accept_mimetypes.best == 'application/json':
+            return jsonify({"status": "maintenance", "message": "Service temporarily unavailable."}), 503
+
+        # Otherwise show the maintenance page
+        return redirect(url_for('system_admin.maintenance_page'))
+    
+@system_adminbp.route('/maintenance')
+def maintenance_page():
+    return render_template('system_admin/maintenance.html'), 503
+
+@system_adminbp.route('/toggle_maintenance', methods=['POST'])
+def toggle_maintenance():
+    # Only allow admins to call this (add your own admin check)
+    current_app.config['MAINTENANCE_MODE'] = not current_app.config.get('MAINTENANCE_MODE', False)
+    return {
+        "maintenance": current_app.config['MAINTENANCE_MODE'],
+        "message": "🛠 ON" if current_app.config['MAINTENANCE_MODE'] else "✅ OFF"
+    }

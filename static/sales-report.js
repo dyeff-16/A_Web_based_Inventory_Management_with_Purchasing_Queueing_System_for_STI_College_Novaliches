@@ -13,7 +13,7 @@
                 data.result.forEach(result => {
                     result.items.forEach(item => {
                         const code = item.itemCode;
-                        const amt = Number(item.subtotal ?? 0); // or item.total_amount
+                        const amt = Number(item.subtotal ?? 0); 
 
                         if (combined[code]) {
                         combined[code].total += amt;
@@ -36,7 +36,7 @@
 
                     tdName.innerText  = combined[code].name;
                     tdCode.innerText  = code;
-                    tdTotal.innerText = combined[code].total; // format if you want
+                    tdTotal.innerText = combined[code].total; 
 
                     row.appendChild(tdName);
                     row.appendChild(tdCode);
@@ -177,4 +177,5 @@
     dateEnd.style.display       = show;
     textStartDate.style.display = show;
     textEndDate.style.display   = show;
+    
     }

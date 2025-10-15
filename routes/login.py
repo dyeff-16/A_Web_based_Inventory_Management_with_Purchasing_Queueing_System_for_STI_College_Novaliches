@@ -1,6 +1,5 @@
 from email.message import EmailMessage
 import random
-import re
 import smtplib
 import bcrypt
 from flask import Flask, url_for, redirect, render_template, session, flash, request, Blueprint
@@ -140,7 +139,7 @@ def otp_verification_login():
 
             # Reset IP failure count on success
             failed_otp_attempts.pop(ip, None)
-            check_roles_user = check_role("Student")
+            check_roles_user = check_role("student")
             check_roles_admin = check_role("admin")
             check_roles_system_admin = check_role("system_admin")
             

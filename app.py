@@ -49,13 +49,6 @@ app.register_blueprint(purchasebp)
 app.register_blueprint(queuebp)
 
 
-def check_role(required_role):
-    if 'user' not in session:
-        return redirect(url_for('login.login_'))
-    if session['user']['roles'] == required_role:
-        return True 
-    return False
-
 @app.route('/', methods=['GET','POST'])
 def dashboard():
     if 'user' in session:
@@ -78,9 +71,6 @@ def home():
         items = db_items.find({'item_category': {'$regex': category, '$options': 'i'}})
 
     #check roles dito   
-    check_roles = check_role("Student")
-    if not check_roles:
-        return redirect(url_for('dashboard'))
     
     return render_template('index.html', items=items)
 
@@ -89,9 +79,6 @@ def admin():
     if 'user' not in session:
         return redirect(url_for('login.login_'))
     
-    check_roles = check_role("admin")
-    if not check_roles:
-        return redirect(url_for('dashboard'))
     
     return render_template('admin.html')
     
@@ -100,9 +87,6 @@ def system_admin():
     if 'user' not in session:
         return redirect(url_for('login.login_'))
     
-    check_roles = check_role("system_admin")
-    if not check_roles:
-        return redirect(url_for('dashboard'))
     
     return render_template('system_admin.html')
 

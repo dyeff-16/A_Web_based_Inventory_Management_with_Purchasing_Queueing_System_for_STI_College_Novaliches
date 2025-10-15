@@ -1,48 +1,113 @@
-{%extends 'system_admin.html'%}
-{%block content%}
+{% extends 'system_admin.html' %}
+{% block content %}
+
 <div class="container-fluid mt-4">
-    <h2 class="pb-3 text-center">Accounts</h2>
-    <div class="row justify-content-center">
-      <div class="col-8">
-        <form method="POST" action="{{url_for('system_admin.accounts')}}" class="d-flex align-items-center gap-2 mb-4 flex-wrap">
-          <input type="text" name="search" placeholder="Search here" class="form-control" style="max-width: 300px;">
-          <select name="filter_by" class="form-select" style="max-width: 200px;">
-            <option value="role">Role</option>
-            <option value="email">Email</option>
+  <h1 class="pb-3 text-dark">User Management</h1>
+  <div class="row justify-content-center">
+    <div class="col-lg-10 col-12">
+      
+      <!-- Filter & Action Section -->
+      <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+        
+        <!-- Search Bar -->
+        <div class="input-group position-relative" style="max-width: 400px;">
+          <i class="bi bi-search position-absolute" style="left: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; z-index: 10;"></i>
+          <input type="text" id="searchInput" name="search" placeholder="Search here" class="form-control" style="padding-left: 35px;">
+          <button class="btn btn-outline-secondary" type="button" onclick="searchAccount()" id="searchButton">Search</button>
+        </div>
+
+        <!-- Role Select -->
+        <div class="input-group" style="width: 220px;">
+          <label class="input-group-text d-flex align-items-center gap-2" for="roleSelect" style="border-radius: 8px 0 0 8px;">
+            <i class="bi bi-person"></i>
+            Role
+          </label>
+          <select class="form-select" id="roleSelect" name="role" style="border-radius: 0 8px 8px 0;">
+            <option value="all">All Roles</option>
+            <option value="system_admin">System Admin</option>
+            <option value="admin">Admin</option>
+            <option value="Student">Student</option>
           </select>
-          <button type="submit" class="btn btn-outline-dark">Search</button>
-        </form>
+        </div>
+
+        <!-- Status Select -->
+        <div class="input-group" style="width: 220px;">
+          <label class="input-group-text d-flex align-items-center gap-2" for="statusSelect" style="border-radius: 8px 0 0 8px;">
+            <i class="bi bi-lightbulb"></i>
+            Status
+          </label>
+          <select class="form-select" id="statusSelect" name="status" style="border-radius: 0 8px 8px 0;">
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+
+        <!-- Import Button -->
+        <div class="ms-auto d-flex gap-2">
+          <a href="{{url_for('system_admin.data_mgrt')}}" style="text-decoration: none; justify-content: center;">
+            <button class="btn btn-outline-secondary d-flex align-items-center gap-2" style="border-radius: 8px;">
+              <i class="bi bi-cloud-download">Import</i>
+            </button>
+          </a>
+        </div>
       </div>
-    </div>
-{% if accounts %}
-      <div class="row justify-content-center">
-      <div class="col-8">
-        <table class="table table-bordered table-striped">
+
+      <!-- Table Section -->
+      <div class="table-responsive">
+              <!-- Pagination -->
+      <nav aria-label="User table pagination">
+        <ul class="pagination justify-content-end">
+          <li class="page-item disabled">
+            <a class="page-link" href="#"><i class="bi bi-chevron-left"></i></a>
+          </li>
+          <li class="page-item active"><a class="page-link">1</a></li>
+          <li class="page-item">
+            <a class="page-link" href="#"><i class="bi bi-chevron-right"></i></a>
+          </li>
+        </ul>
+      </nav>
+        <table class="table table-bordered table-hover mb-4">
           <thead class="table-light text-center">
-            <tr>
-              <th style="max-width: 600px;">Email</th>
+            <tr class="table-dark">
+              <th style="width: 50%;">Email</th>
               <th>Role</th>
               <th>Status</th>
-              <th>Edit</th>
+              <th>Action</th>
             </tr>
           </thead>
-          <tbody>
-                    {% for acc in accounts %}
-                    <tr>
-                        <td>{{ acc.email }}</td>
-                        <td>{{ acc.role }}</td>
-                        <td>{{ acc.status }}</td>
-                        <td><a href="{{url_for('system_admin.edit_account', account_id=acc._id)}}"><button type="submit" class="btn btn-outline-dark btn-sm align-items-center">Edit</button></a></td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-{% else %}
-    <p class="text-center mt-4">No accounts found.</p>
+          <tbody id="bodyAccount">
+          
+          </tbody>
+        </table>
       </div>
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
-{% endif %}
 
-{%endblock%}
+    </div>
+  </div>
+</div>
+<script src="/static/systemAdminAcc.js"></script>
+<!-- Bootstrap Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom Styles -->
+<style>
+  .form-control:focus,
+  .btn:focus,
+  .page-link:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+  .table th,
+  .table td {
+    vertical-align: middle;
+  }
+  .page-item.active .page-link {
+    background-color: #212529;
+    border-color: #212529;
+  }
+  .table {
+    margin-top: 10px; /* Adds spacing below filters */
+  }
+</style>
+
+{% endblock %}

@@ -31,8 +31,8 @@ def getRangeReports():
 @reportbp.route('/weekly', methods=['GET'])
 def getWeeklyReports():
   current_time = datetime.now(pytz.timezone('Asia/Manila'))
-  start_week = current_time - timedelta(days=current_time.weekday())  # Monday
-  end_week = start_week + timedelta(days=6)  # Sunday
+  start_week = current_time - timedelta(days=current_time.weekday())  
+  end_week = start_week + timedelta(days=6)  
   order = db_orders_history.find()
   result = []
 
