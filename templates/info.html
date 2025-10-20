@@ -2,21 +2,18 @@
 {% block content %}
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 70vh;">
   <div class="card shadow-sm border-light p-4" style="max-width: 400px; width: 100%;">
-
-
-    <form id="otp-form" method="POST" action="{{url_for('login.info')}}">
+  
         <h3 class="text-center fw-bold text-primary mb-4">Find Your Account</h3>
 
         <div class="mb-3">
           <label for="info" class="form-label fw-semibold">Enter Email</label>
-          <input type="text" id="info" name="info_" class="form-control text-center fw-bold" style="width: 350px;" required>
+          <input type="text" id="email" name="info_" class="form-control text-center fw-semibold" style="width: 350px;" required>
         </div>
 
         <div class="d-grid">
-          <button class="btn btn-primary fw-bold" id="btnverify" name="verify" type="submit">Verify OTP</button>
+          <button onclick="findAccount()" class="btn btn-primary fw-bold" id="btnverify" name="verify" type="submit">Submit</button>
         </div>
-    </form>
 </div>
 </div>
-
+<script src="/static/login.js"></script>
 {%endblock%}

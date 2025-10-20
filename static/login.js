@@ -38,7 +38,6 @@
             })
 
     }
-
    
     let time = 60; 
     window.onload = function() {
@@ -129,6 +128,7 @@
         document.getElementById(prevId).focus();
     }
     }
+
     function emailOTP() {
         let inputOTP = document.getElementById("otp1").value +
             document.getElementById("otp2").value +
@@ -214,6 +214,83 @@
             })
     }
 
+    function findAccount(){
+        const email = document.getElementById('email').value;
+        document.getElementById('btnverify').disabled = true;
+
+        fetch('/auth/enter_info', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if(data.success){
+                window.location.href = '/auth/otp_verify_password'
+                document.getElementById('btnverify').disabled = false;
+            }else{
+                alert(data.message);
+                document.getElementById('btnverify').disabled = false;
+
+            }
+        })
+    }
+    function resetpasswordOTP(){
+      let inputOTP = document.getElementById("otp1").value +
+            document.getElementById("otp2").value +
+            document.getElementById("otp3").value +
+            document.getElementById("otp4").value +
+            document.getElementById("otp5").value +
+            document.getElementById("otp6").value;
+
+        document.getElementById('btnOTP').disabled = true;  
+        fetch('/auth/otp_verify_password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ inputOTP })
+        })
+            .then(response => response.json())
+            .then(data => {
+
+                if (data.success) {
+                    window.location.href = '/auth/reset_password'
+                }
+
+                if (data.message) {
+                    alert(data.message);
+                    document.getElementById('btnOTP').disabled = false;
+                }
+
+            })
+    }
+    function forceChangePassword(){
+      let inputOTP = document.getElementById("otp1").value +
+            document.getElementById("otp2").value +
+            document.getElementById("otp3").value +
+            document.getElementById("otp4").value +
+            document.getElementById("otp5").value +
+            document.getElementById("otp6").value;
+
+        document.getElementById('btnOTP').disabled = true;  
+        fetch('/auth/otp_force_change_password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ inputOTP })
+        })
+            .then(response => response.json())
+            .then(data => {
+
+                if (data.success) {
+                    window.location.href = '/auth/force_change_password'
+                }
+
+                if (data.message) {
+                    alert(data.message);
+                    document.getElementById('btnOTP').disabled = false;
+                }
+
+            })
+    }
     document.addEventListener('DOMContentLoaded', () => {
         const el = document.getElementById('otpTimer');
         const remaining = Number(el.dataset.remaining || 0);

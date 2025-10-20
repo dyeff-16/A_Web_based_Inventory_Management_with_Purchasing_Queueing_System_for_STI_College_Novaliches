@@ -1,29 +1,122 @@
 {% extends "index.html" %}
 {% block content %}
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 70vh;">
-  <div class="card shadow-sm border-light p-4" style="max-width: 400px; width: 100%;">
+<style>
+  body {
+    background: #f8f9fa;
+    font-family: 'Segoe UI', sans-serif;
+  }
 
-    <!-- Flash message block updated to show only the latest message -->
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div class="alert alert-warning text-center mb-3">
-          {{ messages[0] }}
-        </div>
-      {% endif %}
-    {% endwith %}
+  .verify-card {
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    max-width: 460px;
+    width: 100%;
+  }
 
-    <form id="otp-form" method="POST" action="{{url_for('login.otp_force_change_password')}}">
-        <h3 class="text-center fw-bold text-primary mb-4">One-Time Password Verification</h3>
+  .verify-header {
+    border-bottom: 1px solid #dee2e6;
+    text-align: center;
+    padding-bottom: 0.5rem;
+  }
 
-        <div class="mb-3">
-          <label for="otp_verification" class="form-label fw-semibold">Enter One-Time Password:</label>
-          <input type="text" style="width: 350px;" id="otp_verification" name="otp_verification" class="form-control text-center fw-bold" placeholder="••••••" required>
-        </div>
+  .verify-header h4 {
+    color: #0d6efd;
+    font-weight: 700;
+  }
 
-        <div class="d-grid">
-          <button class="btn btn-primary fw-bold" id="btnverify" name="verify" type="submit">Verify OTP</button>
-        </div>
+  .verify-header p {
+    color: #6c757d;
+    font-size: 0.9rem;
+  }
+
+  .verification-code {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .verification-code input {
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border: 2px solid #dee2e6;
+    border-radius: 0.5rem;
+    transition: 0.3s;
+  }
+
+  .verification-code input:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+    outline: none;
+  }
+
+  .btn-outline-primary,
+  .btn-outline-success {
+    font-weight: 600;
+    border-width: 2px;
+  }
+
+  .hover-yellow:hover {
+    background-color: #f9dc5c !important;
+    color: #212529 !important;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-outline-primary:hover,
+  .btn-outline-success:hover {
+    color: #fff;
+  }
+</style>
+
+
+<main class="container d-flex justify-content-center align-items-center min-vh-100 p-3">
+  <div class="verify-card p-4">
+
+    <form class="mb-4">
+      <p class="text-muted small mb-2 text-center">
+        <i class="bi bi-shield-check me-1"></i>
+        Enter the 6-digit code sent to your chosen method
+      </p>
+      <div class="text-center mb-2">
+        <p>We sent the code to <a class="a" style="text-decoration: none;">{{email}}</a></p>
+      </div>
+      <div class="text-center mb-2">
+        <span id="otpTimer" class="text-muted small" data-remaining="{{ timer|int }}"></span>
+      </div>
+      <div class="verification-code">
+        <input type="text" id="otp1" maxlength="1" oninput="moveNext(this, 'otp2')" onkeydown="moveBack(event, null)"
+          required>
+        <input type="text" id="otp2" maxlength="1" oninput="moveNext(this, 'otp3')" onkeydown="moveBack(event, 'otp1')"
+          required>
+        <input type="text" id="otp3" maxlength="1" oninput="moveNext(this, 'otp4')" onkeydown="moveBack(event, 'otp2')"
+          required>
+        <input type="text" id="otp4" maxlength="1" oninput="moveNext(this, 'otp5')" onkeydown="moveBack(event, 'otp3')"
+          required>
+        <input type="text" id="otp5" maxlength="1" oninput="moveNext(this, 'otp6')" onkeydown="moveBack(event, 'otp4')"
+          required>
+        <input type="text" id="otp6" maxlength="1" onkeydown="moveBack(event, 'otp5')" oninput="combineOTP()" required>
+      </div>
+
+      <div class="d-grid gap-2">
+        <button id="btnOTP" type="button" class="btn btn-primary fw-bold" onclick="forceChangePassword()">Submit</button>
+        <!-- <a href="{{ url_for('home') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-x-circle me-1"></i> Cancel
+          </a> -->
+      </div>
+
+      <div class="text-center mt-4">
+        <p class="text-muted small mb-2">Didn’t receive the code?</p>
+        <button id="resendBtn" onclick="resendEmail()" style="background:none;border:none;color:#0d6efd;cursor:pointer;">
+          <i class="bi bi-arrow-clockwise me-1"></i><span id="resendText">Resend Code</span>
+        </button>
+
+      </div>
     </form>
-</div>
-</div>
+  </div>
+</main>
+<script src="/static/login.js"></script>
 {% endblock %}

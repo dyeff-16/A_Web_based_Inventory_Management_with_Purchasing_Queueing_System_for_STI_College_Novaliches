@@ -388,27 +388,32 @@ def sms_otp():
 
 @loginbp.route("/enter_info", methods=['GET', 'POST'])
 def info():
-    if request.method == 'POST':
-        info_value = request.form.get('info_')
 
-        acc = db_account.find_one({'email': info_value})
+    if request.method == 'POST':
+        data = request.get_json()
+        email = data.get('email')
+
+        acc = db_account.find_one({'email': email})
         if acc:            
             otp = ''.join([str(random.randint(0, 9)) for _ in range(6)])
-            session['otp_pending'] = {'email': info_value, 'otp': otp}
-            send_otp_email(info_value, otp)
+            session['otp_pending'] = {'email': email, 'otp': otp, 'otp_created_at': datetime.utcnow().isoformat()}
+            send_otp_email(email, otp)
             flash("OTP has been sent to your email.")
-            return redirect(url_for('login.otp_VerifyPassword'))
+            return jsonify({'success': True})
         else:
-            return render_template("info.html")
+            return jsonify({'message': 'account not found'})
 
     return render_template("info.html")
 
 @loginbp.route('/otp_verify_password', methods=['GET', 'POST'])
 def otp_VerifyPassword():
     if 'otp_pending' not in session:
-        flash("Session expired. Please start again.")
         return redirect(url_for('login.info'))
-
+    
+    session_email = session['otp_pending']
+    otp_time = datetime.fromisoformat(session_email['otp_created_at'])
+    elapsed = (datetime.utcnow() - otp_time).total_seconds()
+    remaining = max(0, 300 - int(elapsed)) 
     ip = request.remote_addr
     now = datetime.utcnow()
 
@@ -419,33 +424,37 @@ def otp_VerifyPassword():
                 block_time_left = BLOCK_TIME - (now - attempt_info['last_attempt'])
                 block_minutes = block_time_left.seconds // 60
                 block_seconds = block_time_left.seconds % 60
-                flash(f'Too many failed attempts. Your IP is blocked for {block_minutes} minutes and {block_seconds} seconds. Please try again later.')
-                return render_template("otp_ResetPassword.html")
+                message = f'Too many failed attempts. Your IP is blocked for {block_minutes} minutes and {block_seconds} seconds. Please try again later.'
+                return jsonify({ 'message': message})
             else:
                 failed_otp_attempts.pop(ip)
 
     if request.method == 'POST':
-        user_otp = request.form.get('otp_verification')
+
+        data = request.get_json()
+        user_otp = data.get('inputOTP')
+
         otp_data = session['otp_pending']
 
         if user_otp == otp_data['otp']:
             session['usr_resetpassword'] = {'email': otp_data['email']}
             session.pop('otp_pending', None)
             failed_otp_attempts.pop(ip, None)  
-            flash("OTP verified successfully. Please reset your password.")
-            return redirect(url_for('login.reset_password'))
+
+            return jsonify({'success': True})
         else:
-            flash("Invalid OTP. Please try again.")
             failed_otp_attempts.setdefault(ip, {'count': 0, 'last_attempt': now})
             failed_otp_attempts[ip]['count'] += 1
             failed_otp_attempts[ip]['last_attempt'] = now
 
-    return render_template("otp_ResetPassword.html")
+            return jsonify({'message': 'invalid code'})
+        
+    return render_template("otp_ResetPassword.html", email=session_email['email'], timer=remaining)
 
 @loginbp.route("/reset_password", methods=['GET', 'POST'])
 def reset_password():
+    
     if 'usr_resetpassword' not in session:
-        flash("Unauthorized access.")
         return redirect(url_for('login.info'))
 
     if request.method == 'POST':
@@ -465,12 +474,19 @@ def reset_password():
 
     return render_template("reset_password.html")
 
+
+
 @loginbp.route('/otp_force_change_password', methods=['POST','GET'])
 def otp_force_change_password():
-    if 'pending_change_password' not in session:
-        flash("Session expired. Please start again.")
-        return redirect(url_for('login.info'))
+
+    if "pending_change_password" not in session:
+        return redirect(url_for("login.login_"))
     
+    pending_cpass = session['pending_change_password']
+    otp_time = datetime.fromisoformat(pending_cpass['otp_created_at'])
+    elapsed = (datetime.utcnow() - otp_time).total_seconds()
+    remaining = max(0, 300 - int(elapsed)) 
+    print(pending_cpass)
     ip = request.remote_addr
     now = datetime.utcnow()
 
@@ -481,36 +497,39 @@ def otp_force_change_password():
                 block_time_left = BLOCK_TIME - (now - attempt_info['last_attempt'])
                 block_minutes = block_time_left.seconds // 60
                 block_seconds = block_time_left.seconds % 60
-                flash(f'Too many failed attempts. Your IP is blocked for {block_minutes} minutes and {block_seconds} seconds. Please try again later.')
-                return render_template("otp_f_change_pass.html")
+                message = f'Too many failed attempts. Your IP is blocked for {block_minutes} minutes and {block_seconds} seconds. Please try again later.'
+                return jsonify({ 'message': message})
             else:
                 failed_otp_attempts.pop(ip)
 
     if request.method == 'POST':
-        user_otp = request.form.get('otp_verification')
+        data = request.get_json()
+        user_otp = data.get('inputOTP')
         otp_data = session['pending_change_password']
 
         if user_otp == otp_data['otp']:
+
             session['pending_change_password'] = {'email': otp_data['email']}
             failed_otp_attempts.pop(ip, None)  
-            flash("OTP verified successfully. Please reset your password.")
-            return redirect(url_for('login.force_change_password'))
+            return jsonify({'success': True})
         else:
-            flash("Invalid OTP. Please try again.")
+        
             failed_otp_attempts.setdefault(ip, {'count': 0, 'last_attempt': now})
             failed_otp_attempts[ip]['count'] += 1
             failed_otp_attempts[ip]['last_attempt'] = now
-    return render_template("otp_f_change_pass.html")
+            return jsonify({'message': 'invalid code'})
+
+    return render_template("otp_f_change_pass.html", email=pending_cpass['email'], timer=remaining )
 
 @loginbp.route("/force_change_password", methods=["GET", "POST"])
 def force_change_password():
     # Make sure user is in pending_change_password session
     if "pending_change_password" not in session:
-        flash("Session expired. Please login again.")
         return redirect(url_for("login.login_"))
 
     user_data = session["pending_change_password"]
     email = user_data["email"]
+    number = request.form.get('number')
 
     if request.method == "POST":
         new_password = request.form.get("password")
@@ -531,7 +550,7 @@ def force_change_password():
                 "$set": {
                     "password": new_password,   # you can hash it with bcrypt or werkzeug if needed
                     "force_change_password": False,
-                    "updated_at": datetime.utcnow()
+                    "number": number
                 }
             }
         )
