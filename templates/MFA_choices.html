@@ -1,0 +1,158 @@
+{% extends "index.html" %}
+{% block content %}
+<style>
+    body {
+        background: #f8f9fa;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .verify-card {
+        background: #fff;
+        border-radius: 1rem;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        max-width: 460px;
+        width: 100%;
+    }
+
+    .verify-header {
+        border-bottom: 1px solid #dee2e6;
+        text-align: center;
+        padding-bottom: 0.5rem;
+    }
+
+    .verify-header h4 {
+        color: #0d6efd;
+        font-weight: 700;
+    }
+
+    .verify-header p {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .verification-code {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin: 1.5rem 0;
+    }
+
+    .verification-code input {
+        width: 50px;
+        height: 50px;
+        text-align: center;
+        font-size: 1.2rem;
+        font-weight: 600;
+        border: 2px solid #dee2e6;
+        border-radius: 0.5rem;
+        transition: 0.3s;
+    }
+
+    .verification-code input:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+        outline: none;
+    }
+
+    .btn-outline-primary,
+    .btn-outline-success {
+        font-weight: 600;
+        border-width: 2px;
+    }
+
+    .hover-yellow:hover {
+        background-color: #ffc107 !important;
+        /* Bootstrap warning color */
+        color: #212529 !important;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-outline-primary:hover,
+    .btn-outline-success:hover {
+        color: #fff;
+    }
+</style>
+
+<main class="container d-flex justify-content-center align-items-center min-vh-100 p-3">
+    <div class="verify-card p-4">
+
+        <!-- Header -->
+        <div class="verify-header mb-4">
+            <h4>STI Novaliches Proware</h4>
+            <p>Account Verification</p>
+        </div>
+
+
+        <p class="text-muted small mb-3 text-start">
+            <i class="bi bi-info-circle me-1"></i>
+            Choose how you’d like to receive your verification code
+        </p>
+
+        <div class="d-grid gap-3">
+            <button id="emailEvent" type="submit" name="method" value="email"
+                class="btn text-start text-dark bg-white py-3 border-0 hover-yellow">
+                <i class="bi bi-envelope me-2"></i> Verify via Email
+            </button>
+
+            <button id="mobileEvent" type="submit" name="method" value="mobile"
+                class="btn text-start text-dark bg-white py-3 border-0 hover-yellow">
+                <i class="bi bi-phone me-2"></i> Verify via Mobile Number
+            </button>
+
+            <button id="cancelEvent" type="submit" name="method" value="mobile" class="w-25">Cancel</button>
+        </div>
+
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const emailBtn = document.getElementById('emailEvent');
+        const mobileBtn = document.getElementById('mobileEvent');
+
+        emailBtn.addEventListener('click', () => {
+            emailBtn.disabled = true;
+            mobileBtn.disabled = true;
+            fetch('/auth/login-mfa', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email_otp: true })
+            })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.email) window.location.href = '/auth/otp_login';
+                    else console.error('Email OTP failed:', data);
+
+                    emailBtn.disabled = false;
+                    mobileBtn.disabled = true;
+
+                })
+                .catch(console.error);
+        });
+
+        mobileBtn.addEventListener('click', () => {
+            emailBtn.disabled = true;
+            mobileBtn.disabled = true;
+            fetch('/auth/login-mfa', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sms_otp: true })
+            })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.sms) window.location.href = '/auth/sms_login';
+                    else console.error('SMS OTP failed:', data);
+
+                    emailBtn.disabled = false;
+                    mobileBtn.disabled = true;
+                })
+                .catch(console.error);
+        });
+    });
+
+
+    document.getElementById('cancelEvent').addEventListener('click', () => {
+        window.location.href = '/auth/cancel_verification';
+    })
+</script>
+
+{% endblock %}

@@ -82,7 +82,7 @@
         Enter the 6-digit code sent to your chosen method
       </p>
       <div class="text-center mb-2">
-        <p>We sent the code to <a class="a" style="text-decoration: none;">{{email}}</a></p>
+        <p>We sent the code to <a class="a" style="text-decoration: none;">{{number}}</a></p>
       </div>
       <div class="text-center mb-2">
         <span id="otpTimer" class="text-muted small" data-remaining="{{ timer|int }}"></span>
@@ -110,11 +110,10 @@
 
       <div class="text-center mt-4">
         <p class="text-muted small mb-2">Didn’t receive the code?</p>
-        <button id="resendBtn" onclick="resendEmail()" style="background:none;border:none;color:#0d6efd;cursor:pointer;"
-          disabled>
-          <i class="bi bi-arrow-clockwise me-1"></i>
-          <span id="resendText">Resend Code</span>
+        <button id="resendBtn" onclick="resendSMS()" style="background:none;border:none;color:#0d6efd;cursor:pointer;">
+          <i class="bi bi-arrow-clockwise me-1"></i><span id="resendText">Resend Code</span>
         </button>
+
       </div>
     </form>
   </div>

@@ -1,12 +1,13 @@
 from email.message import EmailMessage
 import random
 import smtplib
+import requests
 import bcrypt
-from flask import Flask, url_for, redirect, render_template, session, flash, request, Blueprint
+from flask import jsonify, url_for, redirect, render_template, session, flash, request, Blueprint
 from db_proware import *
 from flask_bcrypt import Bcrypt
 from flask import current_app
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 loginbp = Blueprint('login', __name__, url_prefix='/auth')
 
@@ -14,7 +15,7 @@ bcrypt = Bcrypt()
 
 failed_otp_attempts = {}  # { 'IP': { 'count': int, 'last_attempt': datetime } }
 failed_signup_attempts = {}  # { 'IP': { 'count': int, 'last_attempt': datetime } }
-BLOCK_TIME = timedelta(minutes=10)
+BLOCK_TIME = timedelta(minutes=5)
 MAX_ATTEMPTS = 5
 
 
@@ -25,33 +26,61 @@ def check_role(required_role):
         return True 
     return False
 
-@loginbp.route("/login", methods=['POST', 'GET'])
-def login_():   
+@loginbp.route('/logout', methods=['GET','POST'])
+def logout():
+    if 'user' in session:
+        print("logout user")
+        session.pop('user')
+    return redirect(url_for('dashboard'))
+
+@loginbp.route('/resend_sms', methods=['POST'])
+def resendSMS():
+    if 'login_pending' not in session:
+        return jsonify({'success': False, 'error': 'no_session'}), 401
+
+    login_pending = session['login_pending']
+    new_otp = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+    login_pending['otp'] = new_otp
+    session['login_pending'] = login_pending
+
+    send_otp_sms(login_pending['number'], new_otp)
+    print("New OTP:", new_otp)
+    return jsonify({'success': True})
+
+@loginbp.route('/resend_email', methods=['POST'])
+def resendEmail():
+    if 'login_pending' not in session:
+        return jsonify({'success': False, 'error': 'no_session'}), 401
+
+    login_pending = session['login_pending']
+    new_otp = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+    login_pending['otp'] = new_otp
+    session['login_pending'] = login_pending
+
+    send_otp_email(login_pending['email'], new_otp)
+    print("New OTP:", new_otp)
+    print(login_pending)
+    return jsonify({'success': True})
+
+@loginbp.route('/cancel_verification')
+def cancel_verification():
+
+    session.pop('login_pending', None)
+    return redirect(url_for('login.login_')) 
+
+@loginbp.route('/postLogin', methods=['POST'])
+def login():
+
     if 'user' in session:
         return redirect(url_for('home'))
 
-    termsadcondition = db_info.find_one({"info": "terms and condition"})
-    ip = request.remote_addr
-    now = datetime.utcnow()
-
-    # Block IP if too many failed attempts
-    if ip in failed_otp_attempts:
-        attempt_info = failed_otp_attempts[ip]
-        if attempt_info['count'] >= MAX_ATTEMPTS:
-            if now - attempt_info['last_attempt'] < BLOCK_TIME:
-                block_time_left = BLOCK_TIME - (now - attempt_info['last_attempt'])
-                block_minutes = block_time_left.seconds // 60
-                block_seconds = block_time_left.seconds % 60
-                flash(f'Too many failed attempts. Your IP is blocked for {block_minutes} minutes and {block_seconds} seconds. Please try again later.')
-                return render_template('login.html')
-            else:
-                # Reset block after BLOCK_TIME
-                failed_otp_attempts.pop(ip)
-
     if request.method == 'POST': 
-        email = request.form['email']
-        password = request.form['password']        
+
+        data = request.get_json()
+        email = data.get('inputEmail')
+        password = data.get('inputPassword')       
         user = db_account.find_one({ "email" : email})
+
         if user:
             # if bcrypt.check_password_hash(user['password'], password):
             if password == user['password']:
@@ -64,40 +93,101 @@ def login_():
                         'otp_created_at': datetime.utcnow().isoformat(),
                         'otp_attempts': 0
                     }
+                    
                     send_otp_email(user['email'], otp)
-                    return redirect(url_for('login.otp_force_change_password'))
+                    # return redirect(url_for('login.otp_force_change_password'))
+                    return jsonify({
+                        'change_force_password': True
+                    })
                 
-                otp = ''.join([str(random.randint(0, 9)) for _ in range(6)])
                 session['login_pending'] = {
                         'fullname': user['fullname'],
+                        'number': user['number'],
                         'email': user['email'],
                         'student_id': user['student_id'],
                         'roles': user['roles'],
-                        'otp': otp,
-                        'otp_created_at': datetime.utcnow().isoformat(),
                         'otp_attempts': 0
                     }
 
-                send_otp_email(email, otp)
-                print("Login OTP sent")
-                return redirect(url_for('login.otp_verification_login'))
+                # send_otp_email(email, otp)
+                # print("Login OTP sent")
+                # return redirect(url_for('login.otp_verification_login'))
+                return jsonify({
+                    'login_pending': True
+                })
             else:
                 print("Incorrect password")
-                flash('Incorrect email or password')
+
+                return jsonify({
+                    'message': "Incorrect password"
+                })
         else:
             print('Account not found')
-            flash('Incorrect email or password')
+            return jsonify({
+                    'message': "Incorrect Email"
+                })
 
-    return render_template('login.html', tc=termsadcondition)
+@loginbp.route("/login")
+def login_():   
+    if 'user' in session:
+        return redirect(url_for('home'))
 
-@loginbp.route('/otp_login', methods=['GET', 'POST'])
-def otp_verification_login():
+    return render_template('login.html')
+
+@loginbp.route('/login-mfa', methods=['GET', 'POST'])
+def MFA():
+
+    if 'user' in session:
+        return redirect(url_for('home'))
+    
+    if 'login_pending' not in session:
+        return redirect(url_for('login.login_'))
+
+    lp = session['login_pending']
+
+    if request.method == 'POST':
+        data = request.get_json(silent=True) or {}
+        sms_flag   = data.get('sms_otp')
+        email_flag = data.get('email_otp')
+
+        if sms_flag:
+            otp = ''.join(str(random.randint(0, 9)) for _ in range(6))
+            lp['otp'] = otp
+            lp['otp_created_at'] = datetime.utcnow().isoformat()
+            session['login_pending'] = lp         
+            number = lp.get('number')
+           
+            send_otp_sms(number, otp)
+            
+            print("SMS OTP Session:", session['login_pending'])
+            return jsonify({'sms': True})
+
+        if email_flag:
+            otp = ''.join(str(random.randint(0, 9)) for _ in range(6))
+            lp['otp'] = otp
+            lp['otp_created_at'] = datetime.utcnow().isoformat()
+            session['login_pending'] = lp         
+            email_addr = lp.get('email')           
+          
+            send_otp_email(email_addr, otp)
+               
+            print("EMAIL OTP Session:", session['login_pending'])
+            return jsonify({'email': True})
+
+        return jsonify({'error': 'bad_request'}), 400
+
+
+    return render_template('MFA_choices.html')
+
+@loginbp.route('/otpValidationLogin', methods=['GET', 'POST'])
+def otpValidationLogin():
+
     if 'user' in session:
         return redirect(url_for('home'))
 
     login_pending = session.get('login_pending')
     if not login_pending:
-        flash('Session expired. Please login again.')
+        print('Session expired. Please login again.')
         return redirect(url_for('login.login_'))
 
     ip = request.remote_addr
@@ -108,25 +198,39 @@ def otp_verification_login():
         attempt_info = failed_otp_attempts[ip]
         if attempt_info['count'] >= MAX_ATTEMPTS:
             if now - attempt_info['last_attempt'] < BLOCK_TIME:
-                flash('Too many failed attempts from your IP. Try again later.')
-                return render_template('otp_login.html')  # Render the page instead of redirecting
+                print('Too many failed attempts. Try again later.')
+                return jsonify({
+                    'back_to_login': True,
+                    'message': 'Too many failed attempts. Try again later.'
+                })
             else:
                 # Reset block after BLOCK_TIME
                 failed_otp_attempts.pop(ip)
 
     if request.method == 'POST':
-        user_otp = request.form['otp_verification']
+        data = request.get_json()
+        user_otp = data.get('inputOTP')
         otp_time = datetime.fromisoformat(login_pending['otp_created_at'])
+        timer = (datetime.utcnow() - otp_time).total_seconds()
 
         if datetime.utcnow() - otp_time > timedelta(minutes=5):
+            #mag pop ung session pag naubos ung time
             session.pop('login_pending')
-            flash('OTP expired. Please login again.')
-            return render_template('otp_login.html')  # Render the page instead of redirecting
+            print('OTP expired. Please login again.')
+            return jsonify({
+                'back_to_login': True,
+                'message': 'OTP expired. Please login again.'
+            })
+
 
         if login_pending['otp_attempts'] >= 5:
+            #mag pop ung session pag naubos attempts
             session.pop('login_pending')
-            flash('Too many attempts. Please login again.')
-            return render_template('otp_login.html')  # Render the page instead of redirecting
+            print('Too many attempts. Please login again.')
+            return jsonify({
+                'back_to_login', True,
+                'message' 'Too many attempts. Please login again.'
+            }) 
 
         if user_otp == login_pending['otp']:
             session['user'] = {
@@ -135,65 +239,152 @@ def otp_verification_login():
                 'student_id': login_pending['student_id'],
                 'roles': login_pending['roles'],
             }
+            #tugma otp mag pop login pending sa otp
             session.pop('login_pending')
-
-            # Reset IP failure count on success
+            user = session.get('user')
+            # Reset ip failure count on success
             failed_otp_attempts.pop(ip, None)
-            check_roles_user = check_role("student")
-            check_roles_admin = check_role("admin")
-            check_roles_system_admin = check_role("system_admin")
-            
-            if check_roles_user:
-                return redirect(url_for('home'))
-            elif check_roles_admin:
-                return redirect(url_for('admin'))
-            elif check_roles_system_admin:
-                return redirect(url_for('system_admin'))
+            return jsonify({
+                'success': True,
+                'roles': user['roles']
+            })
 
         else:
             login_pending['otp_attempts'] += 1
             session['login_pending'] = login_pending
-            flash('Invalid OTP. Try again.')
+            print('Invalid OTP. Try again.')
 
-            # Track IP failed attempts
+            # Track ip failed attempts
             failed_otp_attempts.setdefault(ip, {'count': 0, 'last_attempt': now})
             failed_otp_attempts[ip]['count'] += 1
             failed_otp_attempts[ip]['last_attempt'] = now
-
-    return render_template('otp_login.html')
-
-@loginbp.route('/logout', methods=['GET','POST'])
-def logout():
+        
+            return jsonify({
+            'message' : 'Invalid OTP. Try again.'
+            })
+         
+@loginbp.route('/otp_login', methods=['GET', 'POST'])
+def otp_verification_login():
     if 'user' in session:
-        print("logout user")
-        session.pop('user')
-    return redirect(url_for('dashboard'))
+        return redirect(url_for('home'))
+    
+    if 'login_pending' not in session:
+        return redirect(url_for('login.login_'))
+    
+    lp = session.get('login_pending')
+    otp_created = lp.get('otp_created_at')
 
-def send_otp_email(to_email, otp):
-    msg = EmailMessage()
-    msg['Subject'] = 'Proware OTP verification'
-    msg['From'] = current_app.config['EMAIL_USER']
-    msg['To'] = to_email
-    msg.set_content(f"""Good day!
+    if not otp_created:
+        print(lp)
+        return redirect(url_for('login.MFA'))
 
-Thank you for using STI ProWare!
+    
+    login_pending = session.get('login_pending')
+    otpEmail = login_pending['email']
+    otp_time = datetime.fromisoformat(login_pending['otp_created_at'])
+    elapsed = (datetime.utcnow() - otp_time).total_seconds()
+    remaining = max(0, 300 - int(elapsed)) 
 
-Warning: Do not give this to anyone. This code can be used to login to your account.
+    return render_template('otp_login.html', timer=remaining, email=otpEmail)
 
-Your One-Time Password (OTP) is given below. It is valid for the next 5 minutes.
+@loginbp.route('/sms_otp', methods=['GET', 'POST'])
+def smsValidationLogin():
+    if 'user' in session:
+        return redirect(url_for('home'))
 
-One-Time Password (OTP): {otp}
+    login_pending = session.get('login_pending')
+    if not login_pending:
+        print('Session expired. Please login again.')
+        return redirect(url_for('login.login_'))
 
-If you did not request this code, please disregard this message.
+    ip = request.remote_addr
+    now = datetime.utcnow()
 
-Warm regards,
-ProWare
-""")
+    # Block IP if too many failed attempts
+    if ip in failed_otp_attempts:
+        attempt_info = failed_otp_attempts[ip]
+        if attempt_info['count'] >= MAX_ATTEMPTS:
+            if now - attempt_info['last_attempt'] < BLOCK_TIME:
+                print('Too many failed attempts. Try again later.')
+                return jsonify({
+                    'back_to_login': True,
+                    'message': 'Too many failed attempts. Try again later.'
+                })
+            else:
+                # Reset block after BLOCK_TIME
+                failed_otp_attempts.pop(ip)
 
-    with smtplib.SMTP('smtp.gmail.com', 587) as server:
-        server.starttls()
-        server.login(current_app.config['EMAIL_USER'], current_app.config['EMAIL_PASSWORD'])
-        server.send_message(msg)
+    if request.method == 'POST':
+        data = request.get_json()
+        user_otp = data.get('inputOTP')
+        otp_time = datetime.fromisoformat(login_pending['otp_created_at'])
+        timer = (datetime.utcnow() - otp_time).total_seconds()
+
+        if datetime.utcnow() - otp_time > timedelta(minutes=5):
+            #mag pop ung session pag naubos ung time
+            session.pop('login_pending')
+            print('OTP expired. Please login again.')
+            return jsonify({
+                'back_to_login': True,
+                'message': 'OTP expired. Please login again.'
+            })
+
+
+        if login_pending['otp_attempts'] >= 5:
+            #mag pop ung session pag naubos attempts
+            session.pop('login_pending')
+            print('Too many attempts. Please login again.')
+            return jsonify({
+                'back_to_login', True,
+                'message' 'Too many attempts. Please login again.'
+            }) 
+
+        if user_otp == login_pending['otp']:
+            session['user'] = {
+                'fullname': login_pending['fullname'],
+                'email': login_pending['email'],
+                'student_id': login_pending['student_id'],
+                'roles': login_pending['roles'],
+            }
+            #tugma otp mag pop login pending sa otp
+            session.pop('login_pending')
+            user = session.get('user')
+            # Reset ip failure count on success
+            failed_otp_attempts.pop(ip, None)
+            return jsonify({
+                'success': True,
+                'roles': user['roles']
+            })
+
+        else:
+            login_pending['otp_attempts'] += 1
+            session['login_pending'] = login_pending
+            print('Invalid OTP. Try again.')
+
+            # Track ip failed attempts
+            failed_otp_attempts.setdefault(ip, {'count': 0, 'last_attempt': now})
+            failed_otp_attempts[ip]['count'] += 1
+            failed_otp_attempts[ip]['last_attempt'] = now
+        
+            return jsonify({
+            'message' : 'Invalid OTP. Try again.'
+            })
+        
+@loginbp.route('sms_login', methods=['GET', 'POST'])
+def sms_otp():
+    if 'user' in session:
+        return redirect(url_for('home'))
+    
+    if 'login_pending' not in session:
+        return redirect(url_for('login.login_'))
+    
+    login_pending = session.get('login_pending')
+    number = login_pending['number']
+    otp_time = datetime.fromisoformat(login_pending['otp_created_at'])
+    elapsed = (datetime.utcnow() - otp_time).total_seconds()
+    remaining = max(0, 300 - int(elapsed)) 
+
+    return render_template('otp_sms.html', timer=remaining, number=number)
 
 @loginbp.route("/enter_info", methods=['GET', 'POST'])
 def info():
@@ -353,3 +544,45 @@ def force_change_password():
 
     return render_template("change_password.html")
 
+
+
+def send_otp_sms(number, otp):
+    API_TOKEN = '4fcbae81935679f94bf6179b6a1d3114aabb2825'
+    message = f'Your One Time Password in Stiprowarenovaliches: {otp}' 
+
+    url = 'https://sms.iprogtech.com/api/v1/sms_messages'
+
+    payload = {
+        "api_token"   : API_TOKEN,
+        "phone_number": number,
+        "message"     : message
+    }
+
+    resp = requests.post(url, json=payload)
+    print("Response JSON:", resp.json())
+
+def send_otp_email(to_email, otp):
+    msg = EmailMessage()
+    msg['Subject'] = 'Proware OTP verification'
+    msg['From'] = current_app.config['EMAIL_USER']
+    msg['To'] = to_email
+    msg.set_content(f"""Good day!
+
+Thank you for using STI ProWare!
+
+Warning: Do not give this to anyone. This code can be used to login to your account.
+
+Your One-Time Password (OTP) is given below. It is valid for the next 5 minutes.
+
+One-Time Password (OTP): {otp}
+
+If you did not request this code, please disregard this message.
+
+Warm regards,
+ProWare
+""")
+
+    with smtplib.SMTP('smtp.gmail.com', 587) as server:
+        server.starttls()
+        server.login(current_app.config['EMAIL_USER'], current_app.config['EMAIL_PASSWORD'])
+        server.send_message(msg)

@@ -3,7 +3,7 @@ from datetime import datetime
 from email.message import EmailMessage
 import smtplib
 import pytz
-from flask import Flask, current_app, url_for, redirect, render_template, session, request, Blueprint
+from flask import current_app, url_for, redirect, render_template, session, request, Blueprint
 from routes.id_generate import generate_item_id, safe_int
 from db_proware import *
 

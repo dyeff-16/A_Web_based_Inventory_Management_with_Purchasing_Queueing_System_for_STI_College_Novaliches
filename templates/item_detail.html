@@ -17,15 +17,18 @@
   {% endif %}
 {% endwith %}
 
-
+<!--Image-->
   <div class="row g-4 align-items-start">
-    <div class="col-md-5 text-center">  
-      <img src="data:image/jpeg;base64,{{ item.image }}" class="img-fluid rounded shadow-sm" alt="{{ item.item_name }}">
+    <div class="col-md-5 text-center"> 
+      <div class="img-frame p-2"> 
+      <img src="data:image/jpeg;base64,{{ item.image }}" class="img-fluid rounded shadow-sm" alt="{{ item.item_name }}" loading="lazy">
+      </div>
     </div>
 
+<!--Item Details-->
     <div class="col-md-7">
-      <h2 class="mb-3 text-primary fw-bold">{{ item.item_name }}</h2>
-      <p class="text-muted"><b>Description:</b> {{ item.item_description }}</p>
+      <h2 class="mb-3 text-info-text-emphasis fw-bold">{{ item.item_name }}</h2>
+      <p class="text-muted mb-3"><b>Description:</b> {{ item.item_description }}</p>
 
       {% if item.item_category in ['Uniform', 'Proware'] and item.sizes %}
    
@@ -68,7 +71,7 @@
         <input type="hidden" name="item_category" value="{{ item.item_category }}">
         <input type="hidden" name="item_price" value="{{ item.item_price }}">
 
-        <p class="h5 fw-bold text-primary"><strong >Price: ₱</strong>{{ item.item_price }}.00</p>
+        <p class="h5 fw-bold text-dark"><strong >Price: ₱</strong>{{ item.item_price }}.00</p>
         <p class="h5 my-3"><b>Stock:</b> {{ item.item_quantity }}</p>
 
         <div class="mb-3 d-flex align-items-center">

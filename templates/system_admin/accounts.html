@@ -5,20 +5,13 @@
   <h1 class="pb-3 text-dark">User Management</h1>
   <div class="row justify-content-center">
     <div class="col-lg-10 col-12">
-      
+
       <!-- Filter & Action Section -->
       <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
-        
-        <!-- Search Bar -->
-        <div class="input-group position-relative" style="max-width: 400px;">
-          <i class="bi bi-search position-absolute" style="left: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; z-index: 10;"></i>
-          <input type="text" id="searchInput" name="search" placeholder="Search here" class="form-control" style="padding-left: 35px;">
-          <button class="btn btn-outline-secondary" type="button" onclick="searchAccount()" id="searchButton">Search</button>
-        </div>
-
         <!-- Role Select -->
         <div class="input-group" style="width: 220px;">
-          <label class="input-group-text d-flex align-items-center gap-2" for="roleSelect" style="border-radius: 8px 0 0 8px;">
+          <label class="input-group-text d-flex align-items-center gap-2" for="roleSelect"
+            style="border-radius: 8px 0 0 8px;">
             <i class="bi bi-person"></i>
             Role
           </label>
@@ -32,7 +25,8 @@
 
         <!-- Status Select -->
         <div class="input-group" style="width: 220px;">
-          <label class="input-group-text d-flex align-items-center gap-2" for="statusSelect" style="border-radius: 8px 0 0 8px;">
+          <label class="input-group-text d-flex align-items-center gap-2" for="statusSelect"
+            style="border-radius: 8px 0 0 8px;">
             <i class="bi bi-lightbulb"></i>
             Status
           </label>
@@ -42,6 +36,17 @@
             <option value="inactive">Inactive</option>
           </select>
         </div>
+        <!-- Search Bar -->
+        <div class="input-group position-relative" style="max-width: 400px;">
+          <i class="bi bi-search position-absolute"
+            style="left: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; z-index: 10;"></i>
+          <input type="text" id="searchInput" name="search" placeholder="Search here" class="form-control"
+            style="padding-left: 35px;">
+          <button class="btn btn-outline-secondary" type="button" onclick="searchAccount()"
+            id="searchButton">Search</button>
+        </div>
+
+
 
         <!-- Import Button -->
         <div class="ms-auto d-flex gap-2">
@@ -55,18 +60,18 @@
 
       <!-- Table Section -->
       <div class="table-responsive">
-              <!-- Pagination -->
-      <nav aria-label="User table pagination">
-        <ul class="pagination justify-content-end">
-          <li class="page-item disabled">
-            <a class="page-link" href="#"><i class="bi bi-chevron-left"></i></a>
-          </li>
-          <li class="page-item active"><a class="page-link">1</a></li>
-          <li class="page-item">
-            <a class="page-link" href="#"><i class="bi bi-chevron-right"></i></a>
-          </li>
-        </ul>
-      </nav>
+        <!-- Pagination -->
+        <nav aria-label="User table pagination">
+          <ul class="pagination justify-content-end">
+            <li class="page-item disabled">
+              <a class="page-link" href="#"><i class="bi bi-chevron-left"></i></a>
+            </li>
+            <li class="page-item active"><a class="page-link">1</a></li>
+            <li class="page-item">
+              <a class="page-link" href="#"><i class="bi bi-chevron-right"></i></a>
+            </li>
+          </ul>
+        </nav>
         <table class="table table-bordered table-hover mb-4">
           <thead class="table-light text-center">
             <tr class="table-dark">
@@ -77,11 +82,9 @@
             </tr>
           </thead>
           <tbody id="bodyAccount">
-          
           </tbody>
         </table>
       </div>
-
     </div>
   </div>
 </div>
@@ -97,16 +100,26 @@
     outline: none !important;
     box-shadow: none !important;
   }
+
+  .table-hover tbody tr:hover td {
+    background-color: rgba(0, 123, 255, 0.08) !important;
+    /* soft blue hover */
+    transition: background-color 0.2s ease;
+  }
+
   .table th,
   .table td {
     vertical-align: middle;
   }
+
   .page-item.active .page-link {
     background-color: #212529;
     border-color: #212529;
   }
+
   .table {
-    margin-top: 10px; /* Adds spacing below filters */
+    margin-top: 10px;
+    /* Adds spacing below filters */
   }
 </style>
 

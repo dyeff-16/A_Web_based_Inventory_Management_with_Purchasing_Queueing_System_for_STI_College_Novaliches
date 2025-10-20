@@ -2,27 +2,27 @@
 {% block content %}
 <div class="d-flex justify-content-center align-items-center" style="min-height:100vh;">
     <div class="card shadow-lg p-4 rounded-4" style="max-width: 450px; width: 100%;">
-        <!-- Display Flash Messages -->
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <div class="alert alert-warning text-center rounded-3 py-2">
-            {{ messages }}
-        </div>
-        {% endif %}
-        {% endwith %}
 
-        <form action="{{ url_for('login.login_') }}" method="POST" id="loginform" onsubmit="return validateTerms()">
-            <h2 class="text-center fw-bold mb-4 text-primary">Login</h2>
+        <!-- <div id="message-container" class="position-fixed top-0 start-50 translate-middle-x mt-3" 
+            style="z-index:1080; max-width:400px; width:100%; text-align:center;">
+        <p id="message" class="text-danger fw-bold"></p>
+        </div> -->
+
+        <form onsubmit="return validateTerms()">
+            <div>
+                <p id="message" class="p" style="display: none;"></p>
+            </div>
+            <h2 class="text-center fw-bold mb-4 text-dark">Login</h2>
 
             <div class="mb-3">
                 <label for="email" class="form-label fw-semibold">Enter your email</label>
-                <input class="form-control rounded-start-3" type="text" id="email" name="email" required placeholder=""/>
+                <input class="form-control rounded-start-3" type="text" id="inputEmail" name="email" required placeholder=""/>
             </div>
 
             <div class="mb-3">
                 <label for="password" class="form-label fw-semibold">Enter your password</label>
                 <div class="input-group">
-                    <input class="form-control rounded-start-3" type="password" id="password" name="password" required placeholder=""/>
+                    <input class="form-control rounded-start-3" type="text" id="inputPassword" name="password" required placeholder=""/>
                     <button class="btn btn-outline-light border" type="button" onclick="togglePassword()">
                         <i class="bi bi-eye text-secondary" id="toggleIcon"></i>
                     </button>
@@ -56,12 +56,12 @@
                 </div>
             </div>
 
-            <button type="submit" id="login-btn" class="btn w-100 fw-bold rounded-3 mt-3" style="background-color:#003399; color:white;">Log In</button>
+            <button type="button" id="btnLogin" class="btn w-100 fw-bold rounded-3 mt-3" onclick="postLogin()" style="background-color:#003399; color:white;">Log In</button>
             
             <div class="text-center mt-3">
                 <a class="fw-bold text-primary text-decoration-underline" style="text-decoration: none;" href="{{url_for('login.info')}}">Reset Password</a>
             </div>
-        </form>
+        </form>   
     </div>
 </div>
 
@@ -69,43 +69,5 @@
         #termscondition:disabled ~ label {color: #212529 !important;opacity: 1 !important;}
         </style>
 
-        <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const termsCheckbox = document.getElementById("termscondition");
-            const acceptBtn = document.getElementById("accept-terms");
-
-            termsCheckbox.addEventListener("click", function(e) {
-                if (termsCheckbox.disabled) {
-                    e.preventDefault();
-                }
-            });
-
-            acceptBtn.addEventListener("click", function() {
-                termsCheckbox.disabled = false;
-                termsCheckbox.checked = true; 
-            });
-        });
-        function validateTerms() {
-          const termsCheckbox = document.getElementById("termscondition");
-          if (!termsCheckbox.checked) {
-              alert("You must read and agree to the Terms & Conditions before logging in.");
-              return false;
-            return true;
-        }
-        }
-        function togglePassword() {
-          const passwordInput = document.getElementById("password");
-          const icon = document.getElementById("toggleIcon");
-
-          if (passwordInput.type === "password") {
-            passwordInput.type = "text";
-            icon.classList.remove("bi-eye-slash");
-            icon.classList.add("bi-eye");
-          } else {
-            passwordInput.type = "password";
-            icon.classList.remove("bi-eye");
-            icon.classList.add("bi-eye-slash");
-          }
-        }
-</script>
+<script src="/static/login.js"></script>
 {%endblock%}
