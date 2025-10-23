@@ -11,7 +11,7 @@ def queue_view():
     if request.method == 'POST':
         if 'start' in request.form:
             db_orders.update_one({}, {"$set": {"queue_started": True}}, upsert=True)
-            db_orders.update_many({'status': 'Paid',}, {'$set': {'queue_status': "queue"}})
+            db_orders.update_many({'status': 'Paid'}, {'$set': {'queue_status': "queue"}})
         elif 'stop' in request.form:
             db_orders.update_one({}, {"$set": {"queue_started": False}}, upsert=True)
         return redirect(url_for('queue_admin.queue_view'))

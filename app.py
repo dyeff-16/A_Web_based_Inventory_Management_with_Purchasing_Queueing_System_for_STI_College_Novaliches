@@ -8,7 +8,7 @@ from routes.item_details import itemdt_bp
 from routes.check_out import check_outbp
 from routes.notif import notifbp
 from routes.purchase import purchasebp
-
+from routes.audit_log import *
 from routes.admin.items import itembp
 from routes.admin.orders import orderbp
 from routes.admin.report import reportbp
@@ -28,7 +28,8 @@ app.config['EMAIL_USER'] = 'stinovalichesproware@gmail.com'
 app.config['EMAIL_PASSWORD'] = 'iocv jahk rprh hijv'
 bcrypt = Bcrypt(app) 
 #csrf = CSRFProtect(app)
-#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
+#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
+
 # db.createUser({ user: "Proware", pwd: "Stinovalichesproware-15", roles: [ { role: "root", db: "admin" } ] })
 #admin blueprint
 app.register_blueprint(itembp)
@@ -57,6 +58,7 @@ def dashboard():
 
 @app.route("/home", methods=['GET','POST'])
 def home():
+    audit_log('view home page')
     #get ung data from form html
     category = request.args.get('category', '').strip()
     search_query = request.form.get('search_item', '').strip()

@@ -115,12 +115,12 @@
       actionBtn.textContent = "Pre-Order";
       actionBtn.classList.remove("btn-primary");
       actionBtn.classList.add("btn-dark");
-      form.action = "{{ url_for('item_details.preorder') }}";  // 🔄 switch to preorder
+      form.action = "{{ url_for('item_details.preorder') }}";  
     } else {
       actionBtn.textContent = "Add to Cart";
       actionBtn.classList.remove("btn-dark");
       actionBtn.classList.add("btn-primary");
-      form.action = "{{ url_for('item_details.add_to_cart') }}"; // 🔄 switch to add-to-cart
+      form.action = "{{ url_for('item_details.add_to_cart') }}";
     }
   }
 

@@ -223,6 +223,10 @@ def orderRelease():
 
     order = db_orders.find_one({'reference_number': rfr_num})
 
+    ph_time = datetime.now(pytz.timezone('Asia/Manila'))
+    date_str = ph_time.strftime('%Y-%m-%d')
+    time_str = ph_time.strftime('%H:%M:%S')  
+
     if order:
         orders = db_orders.update_one(
             {'reference_number': rfr_num}, 
@@ -231,6 +235,30 @@ def orderRelease():
                       'date_release': date_release }})
         db_orders_history.insert_one(order)
         db_orders.delete_one({'reference_number': rfr_num})
+        
+        db_notification.update_one(
+                    {"reference_number": rfr_num, "email": order['email']},
+                    {'$set': {'unread': True},
+                        "$push": {
+                            "thread": {
+                                "status": "Claimed",
+                                "order_date": date_str,
+                                "order_time": time_str,
+                                "timestamp": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+                            }
+                        }
+                    },
+                    upsert=True)
+        
+        send_order_paid_notification(
+                to_email=order['email'],
+                fullname=order['name'],
+                student_id=order['student_id'],
+                ref_number=order['reference_number'],
+                date_str=date_str,
+                time_str=time_str,
+                total_amount=order['total_amount']
+            )
 
         return jsonify({'success': True})
     else:
@@ -511,7 +539,7 @@ Student ID: {student_id}
 Payment Date: {date_str}
 Payment Time: {time_str}
 Total Amount Paid: {total_amount}
-Order Status: Paid
+Order Status: To release
 
 Thank you for your payment! Your order will now be prepared for claiming.
 

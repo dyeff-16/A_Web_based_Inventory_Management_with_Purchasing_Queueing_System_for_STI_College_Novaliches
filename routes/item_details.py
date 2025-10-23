@@ -135,13 +135,12 @@ def add_to_cart():
         current_qty = existing_entry.get("item_quantity", 0) if existing_entry else 0
         updated_quantity = current_qty + item_quantity
 
-        # Respect stock limit
         if updated_quantity > item_stock:
             updated_quantity = item_stock
             flash(f"⚠️ Only {item_stock} stock(s) available for this item.", "warning")
             return redirect(url_for('item_details.item_detail',item_id=item_id))
 
-        # Respect max 10 limit
+
         if updated_quantity > 10:
             updated_quantity = 10
             flash("⚠️ You can only add up to 10 per item in the cart.", "warning")
@@ -224,15 +223,15 @@ def preorder():
     user_email = session['user']['email']
     item_id = request.form.get("item_id")
     item_name = request.form.get('item_name')
-    size_selection = request.form.get("size_selection")  # only exists for size-based items
+    size_selection = request.form.get("size_selection") 
     
-    # default values
+
     item_code = None
     size = None
     price = None
 
     if size_selection:  
-        # size format: itemCode|size|price|quantity
+     
         parts = size_selection.split("|")
         item_code, size, price, qty = parts[0], parts[1], parts[2], parts[3]
     else:
@@ -257,7 +256,6 @@ def preorder():
         "time": time_str
     }
 
-    # insert into preorders collection
     db_preorder.insert_one(preorder_doc)
 
     flash("Your pre-order has been placed. We'll notify you when it's back in stock.", "success")

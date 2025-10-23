@@ -117,7 +117,11 @@ def preOrder():
         return redirect(url_for('login.login_'))
     user = session.get('user')
     email = user.get('email')
+
     preOrderUser = list(db_preorder.find({'email': email}).sort([("order_date", -1), ("order_time", -1)]))
+    # item_size = db_items.find(item_size = db_items.find_one({'sizes.itemCode': itemCode}))
+    # item = db_items.find_one({'itemCode': itemCode})
+
     return render_template('pre-order.html',preOrderUser = preOrderUser)
 
 # @cartbp.route('/update_quantity', methods=['POST','GET'])
