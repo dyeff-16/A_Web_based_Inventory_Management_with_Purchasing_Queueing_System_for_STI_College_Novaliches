@@ -1,157 +1,186 @@
-{% extends "admin.html" %}
-{% block content %}
-<style>
-  .hover-shadow:hover {
-    box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 0.15);
-    transition: box-shadow 0.3s ease-in-out;
-  }
-  .three-dots {
-    cursor: pointer;
-    font-size: 1.8rem;
-    user-select: none;
-    color: #6c757d;
-    transition: color 0.2s;
-  }
-  .three-dots:hover,
-  .three-dots:focus {
-    color: #0d6efd;
-    outline: none;
-  }
-</style>
+  {% extends "admin.html" %}
+  {% block content %}
+  <style>
+    .tab-link {
+      padding: 0.5rem 1rem;
+      color: #6c757d;
+      font-weight: 500;
+      border-bottom: 2px solid transparent;
+      transition: all 0.3s;
+    }
 
-<div class="container py-5">
-  <form method="POST" action="{{ url_for('orders.orders_list') }}" class="d-flex justify-content-end align-items-center mb-3" role="search" style="gap: 0.5rem;">
-    <select class="form-select form-select-m w-auto me-2" aria-label="Filter orders" name="filter_category" id="filter_category">
+    .tab-link.active {
+      color: #0d6efd;
+      border-bottom-color: #0d6efd;
+    }
+
+    .tab-link:hover {
+      color: #0d6efd;
+    }
+
+    .page-card {
+      background: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+  <!-- Main Content -->
+  <div class="container-fluid p-4 bg-light min-vh-100">
+    <div class="page-header d-flex justify-content-between align-items-center border-bottom border-secondary mb-4 pb-2">
+      <h2 class="fw-bold text-primary mb-3">Orders</h2>
+    </div>
+
+<div class="container-fluid mb-3">
+  <div class="d-flex flex-wrap align-items-center gap-2">
+    
+    <div class="input-group" style="max-width: 300px;">
+      <input type="text" id="searchInput" name="search" placeholder="Search here" class="form-control">
+      <button class="btn btn-outline-secondary" type="button" onclick="searchBtn()" id="searchButton">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+
+    <select class="form-select w-auto" aria-label="Filter orders" name="filter_category" id="filter_category">
       <option value="name">Name</option>
       <option value="email">Email</option>
       <option value="reference_number">Reference Number</option>
     </select>
 
-    <label for="search_query">Search:</label>
-    <input class="form-control form-control-m" type="text" aria-label="Search" style="width: 200px;" id="search_query" name="search_query" placeholder="Enter search query">
-    <button class="btn btn-m btn-primary" type="submit">Search</button>
-  </form>
+    <!-- This div will push itself to the right -->
+    <div class="ms-auto">
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#releaseModal1">
+        <i class="bi bi-box-arrow-right me-1"></i>Release
+      </button>
+    </div>
+
+  </div>
 </div>
 
-<div class="container" style="padding-top: 1rem; padding-bottom: 0.25rem;">
-  {% if orders %}
-    {% for order in orders %}
-    <div class="card shadow-sm border-0 rounded-3 hover-shadow mb-3">
-      <div class="card-body d-flex justify-content-between align-items-center">
-        <div>
-          <h5 class="card-title mb-1 fw-bold">
-            Reference Number: <span class="fw-normal">{{ order.reference_number }}</span>
-          </h5>
-          <small class="text-muted fst-italic"><b>Date:</b> {{ order.order_date }}</small><br>
-          <small class="text-muted fst-italic"><b>Time:</b> {{ order.order_time }}</small>
-          {%if order.receipt%}    
-          <p>
-            <a href="#" data-bs-toggle="modal" data-bs-target="#receiptModal{{ loop.index }}"> View Receipt </a>
-          </p>
 
-              <div class="modal fade" id="receiptModal{{ loop.index }}" tabindex="-1" aria-labelledby="receiptModalLabel{{ loop.index }}" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="receiptModalLabel{{ loop.index }}">Receipt</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center">
-                  <img src="data:image/png;base64,{{ order.receipt }}" alt="receipt" style="max-width: 100%;">
 
-                 <form class="item_code" action="{{ url_for('orders.update_order_status') }}" method="POST">
-                    <input type="hidden" id="rfr_num" name="rfr_num" value="{{ order.reference_number }}">
-                    <input type="hidden" name="user_email" value="{{ order.email }}">
-                    <input type="hidden" name="student_id" value="{{ order.student_id }}">
-                    {% if order.receipt and order.status not in ['Paid', 'Claim', 'Claimed'] %}
-                 
-                    <label for="ref_input_{{ loop.index }}" class="form-label mt-2">Enter Reference Number:</label>
-                    <input type="text" name="ref_receipt" id="ref_input_{{ loop.index }}" class="form-control mb-2" placeholder="Enter reference number" >
-                    <button type="submit" name="status" value="Paid" class="btn btn-sm btn-success mb-2">Confirm</button>                    
-                    <input type="text" name="reason" id="reason_input_{{ loop.index }}" class="form-control mb-2" placeholder="Enter Reason" >
-                    <button type="button"class="btn btn-sm btn-danger" onclick="setDeclined('{{ loop.index }}')">Declined</button>
-                    
-                 
-                  {% endif %}
-                </form> 
-              </div>
-              </div>
-            </div>
-          </div>
-            {%else%}
-            {%endif%}
-            <form class="item_code" action="{{ url_for('orders.update_order_status') }}" method="POST">
-              <input type="hidden" name="rfr_num" value="{{ order.reference_number }}">
-              <input type="hidden" name="user_email" value="{{ order.email }}">
-              <input type="hidden" name="student_id" value="{{ order.student_id }}">
-          
-              {% if order.status == 'Claim' %}
-              <button type="submit" name="status" value="Claimed" class="btn btn-sm btn-primary">Claimed</button>
-              {% endif %}
-            </form>
-        </div>
-        <span class="three-dots" role="button" tabindex="0" 
-              data-bs-toggle="collapse" data-bs-target="#orderDetails{{ loop.index }}" 
-              aria-expanded="false" aria-controls="orderDetails{{ loop.index }}" 
-              title="Show order details" aria-label="Toggle order details">⋯</span>
+    <!-- Tabs -->
+    <div class="d-flex align-items-center gap-3 mb-4 border-bottom">
+      <a id="Orders" class="tab-link  text-decoration-none">Orders</a>
+      <a id="Paid" class="tab-link text-decoration-none">Paid</a>
+      <a id="toRelease" class="tab-link text-decoration-none">To Release</a>
+      <a id="Claimed" class="tab-link text-decoration-none">Claim</a>
+      <a id="orderHistory" class="tab-link text-decoration-none">Order History</a>
+    </div>
+
+    <!-- Table -->
+    <div class="page-card p-4">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-dark text-center">
+            <tr>
+              <th>Reference ID</th>
+              <th>Name</th>
+              <th>Date</th>
+              <th id="actionHead">Action</th>
+            </tr>
+          </thead>
+          <tbody class="text-center" id="tbody">
+            
+          </tbody>
+        </table>
       </div>
+    </div>
+  </div>
 
-      <div class="collapse" id="orderDetails{{ loop.index }}">
-        <hr class="my-2">
-        <div class="card-body pt-0 text-secondary">
-          <p class="mb-1"><strong>Email:</strong> {{ order.email }}</p>
-          <p class="mb-1"><strong>Name:</strong> {{ order.name }}</p>
-          <p class="mb-1"><strong>Total Amount:</strong> {{ order.total_amount }}</p>
-          <p class="mb-1"><strong>Status:</strong> {{ order.status }}</p>
-          <p class="mb-1"><strong>Items Ordered:</strong></p>
-          <ul class="mb-2">
-            {% if order["items"]%}
-              {% for item in order["items"] %}
-              <li>
-                {{ item.item_name }}
-                {% if item.size != 'N/A' %} - {{ item.size }}{% endif %}
-                - {{ item.quantity }} pcs - Price: {{ item.price }}
-              </li>
-              {% endfor %}
-            {% else %}
-              <li>No items available</li>
-            {% endif %}
-          </ul>
-        
+  <!-- RELEASE MODAL -->
+  <div class="modal fade" id="releaseModal1" tabindex="-1" aria-labelledby="releaseModalLabel1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="releaseModalLabel1">Release Order</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label class="form-label">Reference Number:</label>
+              <input type="text" id="referenceNumber" class="form-control" placeholder="Enter reference number" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Invoice Number:</label>
+              <input type="text" id="invoiceNumber" class="form-control" placeholder="Enter invoice number" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Release Date</label>
+              <input type="date" id="releaseDate" class="form-control" required>
+            </div>
+            <div class="d-flex justify-content-end gap-2">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-primary" id="btnRelease" onclick="orderRelease()"><i class="bi bi-check-circle me-1"></i>Submit</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
-    {% endfor %}
-  {% else %}
-    <p>No orders available.</p>
-  {% endif %}
-</div>
-<script>
-function setDeclined(idx) {
-  const reason = document.getElementById(`reason_input_${idx}`).value;
-  const ref_num = document.getElementById(`rfr_num`).value;
+  </div>
 
-  fetch('/order/setDeclined', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },  // <-- fix
-    body: JSON.stringify({ reason, ref_num })
-  })
-  .then(r => r.json())
-  .then(data => {
-    console.log(data.message || 'ok');
-    if (data.redirect_url) {
-      window.location.href = data.redirect_url;
-    } else {
-      // optional: give quick feedback without redirect
-      alert('Order declined.');
-      // or reload:
-      // location.reload();
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    alert('Failed to decline.');
-  });
-}
-</script>
-{% endblock %}
+  <!-- RECEIPT MODAL -->
+  <div class="modal fade" id="receiptModal1" tabindex="-1" aria-labelledby="receiptModalLabel1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="receiptModalLabel1">Receipt</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-center mb-3">
+ <img id="receiptImage"
+         src="https://placehold.co/400x600/e0e0e0/666666?text=Loading+Receipt"
+         class="img-fluid rounded"
+         alt="Receipt">
+
+          </div>
+          <form>
+            <div class="mb-3">
+              <label for="ref_input_1" class="form-label">Enter Invoice Number:</label>
+              <input type="text" id="invoiceNumber" class="form-control" placeholder="">
+            </div>
+            <div class="d-flex justify-content-end gap-2">
+              <button type="button" class="btn btn-danger" id="openDecline1">
+                <i class="bi bi-x-circle me-1"></i>Decline
+              </button>
+              <button type="submit" id="indexData" class="btn btn-success" onclick="submitStatus()">
+                <i class="bi bi-check-circle me-1"></i>Confirm
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DECLINE MODAL -->
+  <div class="modal fade" id="declineModal1" tabindex="-1" aria-labelledby="declineModalLabel1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="declineModalLabel1">Decline Order</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Reason for Declining:</label>
+              <textarea class="form-control" rows="4" id="reason_input" placeholder="Please provide a reason..." required></textarea>
+            </div>
+            <div class="d-flex justify-content-end gap-2">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" id="btnDeclined" class="btn btn-danger" onclick="setDeclined()">
+                <i class="bi bi-x-circle me-1"></i>Confirm Decline
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="/static/orders_admin.js"></script>
+
+  {% endblock %}

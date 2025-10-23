@@ -9,32 +9,28 @@
         .then (data => {
             console.log(data.message);
             document.getElementById(`getCartItem_${item_id}`).textContent = data.new_quantity;
-            getCartItem();
+            document.getElementById(`subTotal_${item_id}`).textContent = data.total_amount; 
+                // 🔑 Keep the checkbox price in sync with the new subtotal
+            const cb = document.getElementById(`check_${item_id}`);
+            if (cb) {
+            cb.dataset.price = String(data.total_amount);     // update dataset
+            cb.setAttribute('data-price', data.total_amount); // (optional) keep attr in sync
+            }
+
+            // Recompute the selected total (whether checked or not)
+            updateTotal();
         })
     }
 
 
-   function getCartItem(){
-        fetch('/cart/getCartItem')
-        .then (r=> r.json())
-        .then (data =>{
-            let myCart = document.getElementById('getCartItem');
-            myCart.innerText = '';
-            
-            data.forEach(cart_items =>{
-                myCart.innerText += cart_items.item_quantity;
-
-            })
-        });
-    }
-    setInterval(getCartItem, 2000)
-
     function updateTotal() {
-        let total = 0;
-        document.querySelectorAll('.select-item').forEach(function(checkbox) {
-            if (checkbox.checked) {
-                total += parseFloat(checkbox.getAttribute('data-price'));
-            }
-        });
-        document.getElementById('selected-total').textContent = total.toFixed(2);
+    let total = 0;
+
+    document.querySelectorAll('.select-item').forEach(cb => {
+        if (cb.checked) {
+        total += Number(cb.dataset.price || cb.getAttribute('data-price') || 0);
+        }
+    });
+
+    document.getElementById('selected-total').textContent = total.toFixed(2);
     }

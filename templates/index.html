@@ -31,8 +31,16 @@
       <ul class="navbar-nav align-items-lg-center">  
         <li class="nav-item mx-2"><a href="{{ url_for('queue.queue_user') }}" class="nav-link text-white"><i class="bi bi-hourglass-split me-1"></i>Queue</a></li>
         <li class="nav-item mx-2"><a href="{{ url_for('cart.cart') }}" class="nav-link text-white"><i class="bi bi-cart3 me-1"></i>Cart</a></li>
-        <li class="nav-item mx-2"><a href="{{ url_for('notif.notification') }}" class="nav-link text-white"><i class="bi bi-bell me-1"></i>Notifications</a></li>
-        <li class="nav-item mx-2"><a href="{{ url_for('purchase.purchase') }}" class="nav-link text-white"><i class="bi bi-clock-history me-1"></i>History</a></li>
+        <li class="nav-item mx-2"><a href="{{ url_for('notif.notification') }}" class="nav-link text-white"><i class="bi bi-bell me-1"></i>Notifications</a>       
+          <span id="notifDot" class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle" style="display:none;">
+            <span class="visually-hidden">New notifications</span>
+          </span>
+        </li>
+        <li class="nav-item mx-2"><a href="{{ url_for('purchase.purchase') }}" class="nav-link text-white"><i class="bi bi-clock-history me-1"></i>Purchase</a>
+          <span id="notifDot" class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle" style="display:none;">
+            <span class="visually-hidden">New notifications</span>
+          </span>
+        </li>
 
         {% if 'user' in session %}
         <li class="nav-item mx-2"><a href="{{ url_for('account') }}" class="nav-link text-white"><i class="bi bi-person-circle me-1"></i>Account</a></li>

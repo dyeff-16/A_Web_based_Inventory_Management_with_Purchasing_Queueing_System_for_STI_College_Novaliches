@@ -7,12 +7,12 @@ def get_email():
     user_email = session['user']['email']
     return user_email
 
-@cartbp.route('/getCartItem', methods=['GET','POST'])
-def getCartItem():
-    cart_items = list(db_cart.find({"email": get_email()}))
-    for item in cart_items:
-        item['_id'] = str(item['_id'])
-    return jsonify(cart_items)
+# @cartbp.route('/getCartItem', methods=['GET','POST'])
+# def getCartItem():
+#     cart_items = list(db_cart.find({"email": get_email()}))
+#     for item in cart_items:
+#         item['_id'] = str(item['_id'])
+#     return jsonify(cart_items)
 
 @cartbp.route('/cart', methods=['POST','GET'])
 def cart():
