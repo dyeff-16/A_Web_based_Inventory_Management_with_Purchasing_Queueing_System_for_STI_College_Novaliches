@@ -104,10 +104,10 @@
         }
         else if(reportType == 'range'){
             if(!dateStart || !dateEnd){
-                alert("Pili ka muna kase start at end date")
+                alert("Choose start and end date")
             }
             else if(dateEnd < dateStart){
-                alert("mali ka ya dat mauna start date kesa sa end date")
+                alert("Start with start date not end date")
             }
             else{
             fetch('/report/rangeDate',{
