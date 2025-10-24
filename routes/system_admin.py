@@ -206,42 +206,43 @@ def getAccount():
 
     return jsonify({'accounts': accounts, 'message': 'Search results (POST)', 'query': query})
 
-@system_adminbp.before_app_request
-def maintenance_block():
-    # paths that must always work
-    allowed_paths = {
-        '/system_admin', 
-        '/system_admin/maintenance',       # maintenance page itself
-        '/system_admin/toggle_maintenance' # your admin toggle endpoint (POST)
-    }
-    # always allow static files
-    if request.path.startswith('/static/'):
-        return None
+# @system_adminbp.before_app_request
+# def maintenance_block():
+#     # paths that must always work
+#     allowed_paths = {
+#         '/system_admin', 
+#         '/system_admin/maintenance',       # maintenance page itself
+#         '/system_admin/toggle_maintenance' # your admin toggle endpoint (POST)
+#     }
+#     # always allow static files
+#     if request.path.startswith('/static/'):
+#         return None
 
-    is_maintenance = bool(current_app.config.get('MAINTENANCE_MODE'))
-    is_logged_in  = bool(session.get('user_id'))   # <- use your actual login key
+#     is_maintenance = bool(current_app.config.get('MAINTENANCE_MODE'))
+#     is_logged_in  = bool(session.get('user_id'))   # <- use your actual login key
 
-    # If maintenance ON and user is NOT logged in → block to maintenance page
-    if is_maintenance and not is_logged_in:
-        if request.path in allowed_paths:
-            return None
+#     # If maintenance ON and user is NOT logged in → block to maintenance page
+#     if is_maintenance and not is_logged_in:
+#         if request.path in allowed_paths:
+#             return None
 
-        # If it's an API call expecting JSON
-        if request.accept_mimetypes.best == 'application/json':
-            return jsonify({"status": "maintenance", "message": "Service temporarily unavailable."}), 503
+#         # If it's an API call expecting JSON
+#         if request.accept_mimetypes.best == 'application/json':
+#             return jsonify({"status": "maintenance", "message": "Service temporarily unavailable."}), 503
 
-        # Otherwise show the maintenance page
-        return redirect(url_for('system_admin.maintenance_page'))
+#         # Otherwise show the maintenance page
+#         return redirect(url_for('system_admin.maintenance_page'))
     
-@system_adminbp.route('/maintenance')
-def maintenance_page():
-    return render_template('system_admin/maintenance.html'), 503
+# @system_adminbp.route('/maintenance')
+# def maintenance_page():
+#     return render_template('system_admin/maintenance.html'), 503
 
-@system_adminbp.route('/toggle_maintenance', methods=['POST'])
-def toggle_maintenance():
-    # Only allow admins to call this (add your own admin check)
-    current_app.config['MAINTENANCE_MODE'] = not current_app.config.get('MAINTENANCE_MODE', False)
-    return {
-        "maintenance": current_app.config['MAINTENANCE_MODE'],
-        "message": "🛠 ON" if current_app.config['MAINTENANCE_MODE'] else "✅ OFF"
-    }
+# @system_adminbp.route('/toggle_maintenance', methods=['POST'])
+# def toggle_maintenance():
+
+#     # Only allow admins to call this (add your own admin check)
+#     current_app.config['MAINTENANCE_MODE'] = not current_app.config.get('MAINTENANCE_MODE', False)
+#     return {
+#         "maintenance": current_app.config['MAINTENANCE_MODE'],
+#         "message": "🛠 ON" if current_app.config['MAINTENANCE_MODE'] else "✅ OFF"
+#     }
