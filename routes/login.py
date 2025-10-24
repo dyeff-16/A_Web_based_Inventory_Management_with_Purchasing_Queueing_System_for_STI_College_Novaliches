@@ -379,8 +379,11 @@ def sms_otp():
         return redirect(url_for('login.login_'))
     
     login_pending = session.get('login_pending')
-    number = login_pending['number']
-    masked_number = "*" * (len(number) - 4) + number[-4:]
+    number = str(login_pending.get('number', ''))   # ensure string
+
+    # ✅ Mask: *****6789 (show only last 4)
+    last4 = number[-4:] if len(number) >= 4 else number
+    masked_number = '*' * max(0, len(number) - 4) + last4
     otp_time = datetime.fromisoformat(login_pending['otp_created_at'])
     elapsed = (datetime.utcnow() - otp_time).total_seconds()
     remaining = max(0, 300 - int(elapsed)) 
