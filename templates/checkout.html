@@ -57,7 +57,7 @@
 
                         <div class="flex-grow-1">
                             <h3 class="card-title mb-2 text-dark fw-bold">{{ item.item_name }}</h3>
-                            <p class="mb-1 text-primary fw-bold fs-5">Price: ₱ {{ item.item_price }}0</p>
+                            <p class="mb-1 text-primary fw-bold fs-5">Price: ₱ {{ item.item_price }}.00</p>
                             {% if item.size %}
                             <p class="mb-1"><strong>Size:</strong> {{ item.size }}</p>
                             {% endif %}
@@ -104,9 +104,9 @@
                             <p class="text-muted">This action cannot be undone.</p>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-success" data-bs-dismiss="modal">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
                                 <i class="bi bi-x-circle me-1"></i>No</button>
-                            <button type="button" class="btn btn-danger" onclick="confirmOrder()">
+                            <button type="button" class="btn btn-success" onclick="confirmOrder()">
                                 <i class="bi bi-check-circle me-1"></i>Yes</button>
                         </div>
                     </div>

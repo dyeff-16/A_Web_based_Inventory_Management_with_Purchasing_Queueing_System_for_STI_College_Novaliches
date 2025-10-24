@@ -16,12 +16,7 @@
       --gradient-nav: linear-gradient(68deg, var(--primary-dark), var(--secondary-dark));
     }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      min-height: 100vh;
-      background-color: #f4f4f5;
-    }
-
+    
     .nav-gradient {
 
       background: var(--gradient-nav);
@@ -65,11 +60,6 @@
           </li>
           <li class="nav-item mx-2"><a href="{{ url_for('purchase.purchase') }}" class="nav-link text-white"><i
                 class="bi bi-clock-history me-1"></i>Purchase</a>
-            <span id="cartNotif"
-              class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"
-              style="display:none;">
-              <span class="visually-hidden">New notifications</span>
-            </span>
           </li>
 
           {% if 'user' in session %}
@@ -85,16 +75,16 @@
     </div>
   </nav>
   {%block content%}
-<main class="container my-4">
-        <div class="d-flex justify-content-end">
-            <!-- Fixed typo: justtify-content-end -> justify-content-end -->
-            <form class="d-flex ms-auto my-2 my-lg-0" name="search_item" method="POST" action="{{url_for('home')}}">
-                <input class="form-control me-2" type="search" name="search_item" placeholder="Search" aria-label="Search">
-                <button class="btn btn-dark" type="submit">Search</button>
-            </form>
-        </div>
+  <main class="container my-4">
+    <div class="d-flex justify-content-end">
+      <!-- Fixed typo: justtify-content-end -> justify-content-end -->
+      <form class="d-flex ms-auto my-2 my-lg-0" name="search_item" method="POST" action="{{url_for('home')}}">
+        <input class="form-control me-2" type="search" name="search_item" placeholder="Search" aria-label="Search">
+        <button class="btn btn-dark" type="submit">Search</button>
+      </form>
+    </div>
 
-        <div class="dropdown mb-4 mt-4 text-start">
+    <!-- <div class="dropdown mb-4 mt-4 text-start">
             <button class="btn btn-outline-primary dropdown-toggle" type="button" id="categoryDropdown"
                 data-bs-toggle="dropdown" aria-expanded="false">
                 {{ category if category else 'Select Category' }}
@@ -103,34 +93,61 @@
                 <li><a class="dropdown-item" href="{{ url_for('home', category='Uniform') }}">Uniform</a></li>
                 <li><a class="dropdown-item" href="{{ url_for('home', category='Proware') }}">Proware</a></li>
             </ul>
-        </div>
+        </div> -->
+    <div class="mb-4 mt-4 d-flex flex-wrap gap-2 justify-content-start">
+      <a class="btn btn-outline-primary {% if not category %}active{% endif %}" href="{{ url_for('home') }}">All</a>
+      <a class="btn btn-outline-primary {% if category == 'Uniform' %}active{% endif %}"
+        href="{{ url_for('home', category='Uniform') }}">Uniform</a>
+      <a class="btn btn-outline-primary {% if category == 'Proware' %}active{% endif %}"
+        href="{{ url_for('home', category='Proware') }}">Proware</a>
+    </div>
 
-
-        <div class="row g-4">
-            {% for item in items %}
-
-            <div class="col-6 col-md-4 col-lg-3">
-                <a href="{{ url_for('item_details.item_detail', item_id=item._id) }}" class="text-decoration-none text-dark">
-                    <div class="card h-100 shadow-sm">
-                        <img src="data:image/jpeg;base64,{{ item.image }}" class="card-img-top" alt="Item">
-                        <div class="card-body text-center">
-                            <h5 class="card-title">{{ item.item_name }}</h5>
-                            {%if item.sizes%}
-                            <p class="text-dark"><small>₱{{ item.sizes[0].price }}.00</small></p>
-                            {%else%}
-                            <p class="text-dark"><small>₱{{ item.item_price }}.00</small></p>
-                            {%endif%}
-                        </div>
-                    </div>
-                </a>
+    <div class="row g-4">
+      {% for item in items %}
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{{ url_for('item_details.item_detail', item_id=item._id) }}" class="text-decoration-none text-dark">
+            <div class="card h-100 shadow-sm">
+              <img src="data:image/jpeg;base64,{{ item.image }}" class="card-img-top" alt="Item">
+              <div class="card-body text-center">
+                <h5 class="card-title">{{ item.item_name }}</h5>
+                {%if item.sizes%}
+                <p class="text-dark"><small>₱{{ item.sizes[0].price }}.00</small></p>
+                {%else%}
+                <p class="text-dark"><small>₱{{ item.item_price }}.00</small></p>
+                {%endif%}
+              </div>
             </div>
-            {% endfor %}
+          </a>
         </div>
-    </main>
+      {% endfor %}
+    </div>
+        {% if total_pages is defined and total_pages > 1 %}
+        <nav aria-label="Product page navigation" class="mt-5 d-flex justify-content-center">
+            <ul class="pagination shadow-sm rounded-3 overflow-hidden">
+                <!-- Previous Button (<-) -->
+                <li class="page-item {% if page is defined and page == 1 %}disabled{% endif %}">
+                    <a class="page-link" href="{{ url_for('home', page=page - 1 if page > 1 else 1, category=category) }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
 
-    <!-- Load Bootstrap 5 JS (Required for Toggler Button and Dropdown) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        crossorigin="anonymous"></script>
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">
+                        {{ page }} of {{ total_pages }}
+                    </span>
+                </li>
+
+                <li class="page-item {% if page is defined and page == total_pages %}disabled{% endif %}">
+                    <a class="page-link" href="{{ url_for('home', page=page + 1 if page < total_pages else total_pages, category=category) }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        {% endif %}
+     
+  </main>
+
   {%endblock%}
   <script src="/static/notification.js"></script>
 </body>

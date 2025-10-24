@@ -37,7 +37,7 @@
 
               <div class="col">
                 <h5 class="mb-2">{{ item.item_name }}</h5>
-                <p class="text-primary fw-bold mb-2">₱ {{ item.item_price }}0</p>
+                <p class="text-primary fw-bold mb-2">₱ {{ item.item_price }}.00</p>
 
                 {% if item.size %}
                 <p class="mb-2 text-muted"><strong>Size: {{ item.size }}</strong></p>
@@ -47,7 +47,7 @@
                   <span class="text-muted small">Quantity:</span>
                   <a onclick="stockButton('minus', '{{item.itemCode}}', '{{item.item_id}}', event)"
                     class="btn btn-sm btn-outline-secondary quantity-btn"><i class="bi bi-dash"></i></a>
-                  <span id="getCartItem_{{item.item_id}}" class="getCartItem fw-bold mx-2">{{item.item_quantity}}</span>
+                  <span id="getCartItem_{{item.item_id}}" class="getCartItem fw-bold mx-2">{{ item.item_quantity }}</span>
                   <a onclick="stockButton('add', '{{item.itemCode}}', '{{item.item_id}}', event)"
                     class="btn btn-sm btn-outline-secondary quantity-btn"><i class="bi bi-plus"></i></a>
                 </div>
@@ -81,30 +81,29 @@
         {% endfor %}
       </div>
 
-      <!-- Summary Column -->
-      <div class="col-lg-4">
-        <div class="card shadow-sm position-fixed  me-4" style="top: 100px; width: 450px;">
-          <div class="card-body">
-            <h5 class="mb-3"><i class="bi bi-receipt me-2"></i>Order Summary</h5>
+        <div class="col-lg-4">
+          <div class="card shadow-sm sticky-top" style="top: 50px;">
+            <div class="card-body">
+              <h5 class="mb-3"><i class="bi bi-receipt me-2"></i>Order Summary</h5>
 
-            <div class="d-flex justify-content-between mb-2">
-              <h5 class="mb-0">Total:</h5>
-              <h5 class="mb-0 text-primary" id="selected-total">₱ 0.00</h5>
-            </div>
+              <div class="d-flex justify-content-between mb-3">
+                <h5 class="mb-0">Total:</h5>
+                <h5 class="mb-0 text-primary" id="selected-total">₱ 0.00</h5>
+              </div>
 
-            <button type="submit" class="btn btn-primary w-100 btn-lg">
-              <i class="bi bi-credit-card me-2"></i>Proceed to Checkout
-            </button>
+              <button type="submit" class="btn btn-primary w-100 btn-lg">
+                <i class="bi bi-credit-card me-2"></i>Proceed to Checkout
+              </button>
 
-            <div class="mt-3 text-center">
-              <a href="product.html" class="text-decoration-none">
-                <i class="bi bi-arrow-left me-1"></i> Continue Shopping
-              </a>
+              <div class="mt-3 text-center">
+                <a href="{{ url_for('home') }}" class="text-decoration-none">
+                  <i class="bi bi-arrow-left me-1"></i> Continue Shopping
+                </a>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
   </form>
   {% else %}
   <div class="alert alert-info mt-4">Your cart is empty.</div>

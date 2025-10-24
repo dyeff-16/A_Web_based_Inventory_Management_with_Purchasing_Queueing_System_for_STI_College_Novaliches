@@ -125,7 +125,7 @@ def add_to_cart():
             return "Error: Invalid format for size selection", 400
 
         item_code, item_size, item_price, item_quantities = split_values
-        item_price = float(item_price)
+        item_price = int(item_price)
         item_stock = int(item_quantities)  # stock available for this size
 
         query = {'email': user_email, 'itemCode': item_code}
@@ -171,7 +171,7 @@ def add_to_cart():
         return redirect(url_for('cart.cart'))
 
     else:
-        item_price = float(item["item_price"])
+        item_price = int(item["item_price"])
         item_stock = int(item.get("item_quantity", 99999))  # fallback if stock not set
 
         query = {'email': user_email, 'itemCode': item["itemCode"]}

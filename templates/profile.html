@@ -9,15 +9,11 @@
     <div class="text-center mb-4">
       <div class="position-relative d-inline-block">
         {%if account.profile%}
-        <img src="data:image/jpeg;base64,{{ account.profile }}" 
-             alt="Profile Photo" 
-             class="border border-3 shadow-sm" 
-             style="width: 180px; height: 180px; object-fit: cover;">
+        <img src="data:image/jpeg;base64,{{ account.profile }}" alt="Profile Photo" class="border border-3 shadow-sm"
+          style="width: 180px; height: 180px; object-fit: cover;">
         {%else%}
-              <img src="" 
-             alt="Profile Photo" 
-             class="border border-3 shadow-sm" 
-             style="width: 180px; height: 180px; object-fit: cover;">
+        <img src="" alt="Profile Photo" class="border border-3 shadow-sm"
+          style="width: 180px; height: 180px; object-fit: cover;">
         {%endif%}
         <form action="{{url_for('account')}}" method="POST" enctype="multipart/form-data" class="mt-3">
           <div class="input-group">
@@ -29,27 +25,58 @@
     </div>
 
     <div class="px-3">
-      <table class="table table-borderless mb-0">
-        <tr>
-          <th scope="row" class="text-muted">Name:</th>
-          <td>{{ account.fullname }}</td>
-        </tr>
-        <tr>
-          <th scope="row" class="text-muted">Email:</th>
-          <td>{{ account.email }}</td>
-        </tr>
-        <tr>
-          <th scope="row" class="text-muted">Student ID:</th>
-          <td>{{ account.student_id }}</td>
-        </tr>
-      </table>
+      <div class="table-responsive">
+        <table class="table table-borderless mb-0">
+          <tr>
+            <th scope="row" class="text-muted">Name:</th>
+            <td>{{ account.fullname }}</td>
+          </tr>
+          <tr>
+            <th scope="row" class="text-muted">Email:</th>
+            <td>{{ account.email }}</td>
+          </tr>
+          <tr>
+            <th scope="row" class="text-muted">Student ID:</th>
+            <td>{{ account.student_id }}</td>
+          </tr>
+        </table>
+      </div>
 
-        <div class="d-flex justify-content-end mt-4">
-            <form action="/auth/logout" method="POST">
-            <button type="submit" class="btn btn-danger px-4">Logout</button>
-            </form>
+    <div class="d-flex justify-content-end mt-4">
+  <button type="button" class="btn btn-danger px-4" data-bs-toggle="modal" data-bs-target="#confirmLogoutModal">
+    Logout
+  </button>
+</div>
+
+<form id="logoutForm" action="/auth/logout" method="POST">
+  <div class="modal fade" id="confirmLogoutModal" tabindex="-1" aria-labelledby="confirmLogoutLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 rounded-4">
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold" id="confirmLogoutLabel">Confirm Logout</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+
+        <div class="modal-body">
+          Are you sure you want to log out?
+        </div>
+
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <!-- Make this a submit button -->
+          <button type="submit" class="btn btn-danger">Logout</button>
+        </div>
+      </div>
     </div>
   </div>
-</div>
-{% endblock %}
+</form>
+      <script>
+        // Submit the hidden form when user confirms
+        document.addEventListener('DOMContentLoaded', () => {
+          const btn = document.getElementById('confirmLogoutBtn');
+          btn.addEventListener('click', () => {
+            document.getElementById('logoutForm').submit();
+          });
+        });
+      </script>
+      {% endblock %}

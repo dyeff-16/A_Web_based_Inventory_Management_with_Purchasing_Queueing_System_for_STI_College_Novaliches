@@ -32,6 +32,9 @@ def add_uniform():
         item_name = request.form['item_name']
         item_selection = request.form.get('item_selection')
         item_program = request.form.get('program_selection')
+        reference_number = request.form.get['refnum']
+        del_name = request.form['del_name']
+        del_date = request.form.get('del_date')
         item_description = request.form.get("description", "").strip()        
 
         image_data = item_img.read()
@@ -43,6 +46,9 @@ def add_uniform():
             "item_category": item_category,
             "item_program": item_program,
             "item_description": item_description,
+            "referenceNumber": reference_number,
+            "delivery_name": del_name,
+            'delivery_date': del_date
         }
         sizes = []
         size_map = {
@@ -88,8 +94,8 @@ def add_uniform():
 
         if item_selection == 'quantity':
             item_data['itemCode'] = request.form.get('quantity_itemcode')
-            item_data['item_quantity'] = request.form.get('quantity_stock')
-            item_data['item_price'] = request.form.get('quantity_price')
+            item_data['item_quantity'] = safe_int(request.form.get('quantity_stock'))
+            item_data['item_price'] = safe_int(request.form.get('quantity_price'))
 
         db_items.insert_one(item_data)
         return redirect(url_for('item.products'))
@@ -107,6 +113,9 @@ def add_proware():
         item_img = request.files['item_img']
         item_name = request.form['item_name']
         item_selection = request.form.get('item_selection')
+        reference_number = request.form.get['refnum']
+        del_name = request.form['del_name']
+        del_date = request.form.get('del_date')
         item_description = request.form.get("description", "").strip()
 
         image_data = item_img.read()
@@ -117,6 +126,9 @@ def add_proware():
             "item_name": item_name,
             "item_category": item_category,
             "item_description": item_description,
+            "referenceNumber": reference_number,
+            "delivery_name": del_name,
+            'delivery_date': del_date
         }
 
         sizes = []
@@ -172,6 +184,9 @@ def add_textbook():
         item_img = request.files['item_img']
         item_name = request.form['item_name']
         item_description = request.form['description']      
+        reference_number = request.form.get['refnum']
+        del_name = request.form['del_name']
+        del_date = request.form.get('del_date')
 
         image_data = item_img.read()
         image_base64 = base64.b64encode(image_data).decode('utf-8')
@@ -180,9 +195,12 @@ def add_textbook():
             "image": image_base64,
             "item_name": item_name,
             "item_category": item_category,
+            "referenceNumber": reference_number,
+            "delivery_name": del_name,
+            'delivery_date': del_date,
             'itemCode': request.form.get('quantity_itemcode'),
-            'item_quantity': request.form.get('quantity_stock'),
-            'item_price': request.form.get('quantity_price'),
+            'item_quantity': safe_int(request.form.get('quantity_stock')),
+            'item_price': safe_int(request.form.get('quantity_price')),
             "item_description": item_description,
          }
         item_data["_id"] = generate_item_id("TXTB")

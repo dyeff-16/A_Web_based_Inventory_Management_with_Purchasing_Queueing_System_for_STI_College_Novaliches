@@ -30,7 +30,7 @@
       <h2 class="fw-bold text-primary mb-3">Orders</h2>
     </div>
 
-<div class="container-fluid mb-3">
+<!-- <div class="container-fluid mb-3">
   <div class="d-flex flex-wrap align-items-center gap-2">
     
     <div class="input-group" style="max-width: 300px;">
@@ -46,7 +46,7 @@
       <option value="reference_number">Reference Number</option>
     </select>
 
-    <!-- This div will push itself to the right -->
+  
     <div class="ms-auto">
       <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#releaseModal1">
         <i class="bi bi-box-arrow-right me-1"></i>Release
@@ -54,7 +54,7 @@
     </div>
 
   </div>
-</div>
+</div> -->
 
 
 
@@ -65,8 +65,13 @@
       <a id="toRelease" class="tab-link text-decoration-none">To Release</a>
       <a id="Claimed" class="tab-link text-decoration-none">Claim</a>
       <a id="orderHistory" class="tab-link text-decoration-none">Order History</a>
+          <div class="ms-auto">
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#releaseModal1">
+        <i class="bi bi-box-arrow-right me-1"></i>Release
+      </button>
     </div>
-
+    </div>
+    
     <!-- Table -->
     <div class="page-card p-4">
       <div class="table-responsive">
@@ -144,7 +149,7 @@
               <button type="button" class="btn btn-danger" id="openDecline1">
                 <i class="bi bi-x-circle me-1"></i>Decline
               </button>
-              <button type="submit" id="indexData" class="btn btn-success" onclick="submitStatus()">
+              <button type="button" id="indexData" class="btn btn-success" onclick="submitStatus()">
                 <i class="bi bi-check-circle me-1"></i>Confirm
               </button>
             </div>

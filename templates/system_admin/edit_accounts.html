@@ -66,14 +66,16 @@
       <input type="checkbox" name="queuePermission" id="queuePermission" value="startQueue">
       <label for="startQueue">Start Queue</label>
     </div>
-    <div class="container justify-content-center mt-3">
-    <button class="btn btn-primary" onclick="submitRoles('{{account.email}}')">Submit</button>
-    </div>
+   
   </div>
   <div id="studentPermission" style="display: none;">
     <h2>Student</h2>
   </div>
+   <div class="container justify-content-center mt-3">
+    <button class="btn btn-primary" onclick="submitRoles('{{account.email}}')">Submit</button>
+    </div>
 </div>
+
 <script src="/static/systemAdminAcc.js"></script>
 {%endif%}
 {% endblock %}

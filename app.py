@@ -1,4 +1,5 @@
 import base64
+import math
 from flask import Flask, url_for, redirect, render_template, session, flash, request
 from db_proware import *
 from routes.cart import cartbp
@@ -56,32 +57,89 @@ def dashboard():
         return redirect(url_for('home'))
     return render_template('dashboard.html')
 
-@app.route("/home", methods=['GET','POST'])
+
+
+@app.route("/home", methods=['GET', 'POST'])
 def home():
-    audit_log('view home page')
-    #get ung data from form html
-    category = request.args.get('category', '').strip()
-    search_query = request.form.get('search_item', '').strip()
-
-    #query para sa items    
-    if search_query:
-            items = db_items.find({'item_name': {'$regex': search_query, '$options': 'i'}})
-    else:
-            items = db_items.find()
-    #query para sa category
-    if category:
-        items = db_items.find({'item_category': {'$regex': category, '$options': 'i'}})
-
-    #check roles dito   
+    PER_PAGE = 15
     
-    return render_template('index.html', items=items)
+    try:
+        page = int(request.args.get('page', 1))
+    except ValueError:
+        page = 1
+        
+    category = request.args.get('category', '').strip()
+    
+    search_query = request.form.get('search_item', request.args.get('search_item', '')).strip()
+    query_filter = {}
+    
+    
+    if category:
+        query_filter['item_category'] = {'$regex': category, '$options': 'i'}
+        
+    if search_query:
+        search_condition = {'item_name': {'$regex': search_query, '$options': 'i'}}
+        
+        if query_filter:
+            query_filter = {'$and': [query_filter, search_condition]}
+        else:
+            query_filter = search_condition
+
+    
+    total_items = db_items.count_documents(query_filter)
+    
+    total_pages = math.ceil(total_items / PER_PAGE) if total_items > 0 else 1
+
+    
+    if page < 1:
+        page = 1
+    elif page > total_pages:
+        page = total_pages
+
+    
+    skip = (page - 1) * PER_PAGE
+    
+    items = list(db_items.find(query_filter).skip(skip).limit(PER_PAGE))
+    
+    return render_template(
+        'index.html', 
+        items=items, 
+        page=page, 
+        total_pages=total_pages, 
+        category=category,
+        search_query=search_query
+    )
+
+
+
+
+# @app.route("/home", methods=['GET','POST'])
+# def home():
+#     audit_log('view home page')
+#     #get ung data from form html
+#     category = request.args.get('category', '').strip()
+#     search_query = request.form.get('search_item', '').strip()
+
+#     #query para sa items    
+#     if search_query:
+#             items = db_items.find({'item_name': {'$regex': search_query, '$options': 'i'}})
+#     else:
+#             items = db_items.find()
+#     #query para sa category
+#     if category:
+#         items = db_items.find({'item_category': {'$regex': category, '$options': 'i'}})
+
+#     #check roles dito   
+    
+#     return render_template('index.html', items=items)
 
 @app.route("/admin", methods=["POST","GET"])
 def admin():
     if 'user' not in session:
         return redirect(url_for('login.login_'))
-    
-    
+
+    audit_log('view admin page')
+
     return render_template('admin.html')
     
 @app.route("/system_admin", methods=["POST","GET"])
@@ -89,7 +147,7 @@ def system_admin():
     if 'user' not in session:
         return redirect(url_for('login.login_'))
     
-    
+    audit_log('view system_admin page')
     return render_template('system_admin.html')
 
 @app.route("/account", methods=['POST', 'GET'])
@@ -108,7 +166,8 @@ def account():
       image_base64 = base64.b64encode(image_data).decode('utf-8')
       db_account.update_one({'email': email}, {'$set': {'profile': image_base64}})        
 
-    acc = db_account.find_one({"email": email})   
+    acc = db_account.find_one({"email": email})  
+    audit_log('view account page') 
     return render_template('profile.html', account=acc)
 
 if __name__ == "__main__":

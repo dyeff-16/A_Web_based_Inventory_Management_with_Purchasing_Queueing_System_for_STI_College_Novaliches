@@ -9,19 +9,18 @@
         .then (data => {
             console.log(data.message);
             document.getElementById(`getCartItem_${item_id}`).textContent = data.new_quantity;
-            document.getElementById(`subTotal_${item_id}`).textContent = data.total_amount; 
-                // 🔑 Keep the checkbox price in sync with the new subtotal
-            const cb = document.getElementById(`check_${item_id}`);
+            document.getElementById(`subTotal_${item_id}`).textContent = `${data.total_amount}.00`; 
+ console.log(data.new_quantity, data.total_amount);            const cb = document.getElementById(`check_${item_id}`);
             if (cb) {
-            cb.dataset.price = String(data.total_amount);     // update dataset
-            cb.setAttribute('data-price', data.total_amount); // (optional) keep attr in sync
+            cb.dataset.price = String(data.total_amount);     
+            cb.setAttribute('data-price', data.total_amount); 
             }
-
-            // Recompute the selected total (whether checked or not)
             updateTotal();
         })
     }
 
+
+    
 
     function updateTotal() {
     let total = 0;

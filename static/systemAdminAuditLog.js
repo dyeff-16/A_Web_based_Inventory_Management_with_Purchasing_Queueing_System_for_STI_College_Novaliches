@@ -36,7 +36,7 @@
             const tdAction = document.createElement('td');
 
             tdEmail.innerText = audit.email;
-            tdDateTime.innerText = audit.datetime;
+            tdDateTime.innerText = audit.timestamp_str;
             tdAction.innerText = audit.action;
 
             row.appendChild(tdEmail);

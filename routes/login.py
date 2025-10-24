@@ -380,11 +380,12 @@ def sms_otp():
     
     login_pending = session.get('login_pending')
     number = login_pending['number']
+    masked_number = "*" * (len(number) - 4) + number[-4:]
     otp_time = datetime.fromisoformat(login_pending['otp_created_at'])
     elapsed = (datetime.utcnow() - otp_time).total_seconds()
     remaining = max(0, 300 - int(elapsed)) 
 
-    return render_template('otp_sms.html', timer=remaining, number=number)
+    return render_template('otp_sms.html', timer=remaining, number=masked_number)
 
 @loginbp.route("/enter_info", methods=['GET', 'POST'])
 def info():

@@ -334,26 +334,26 @@
             icon.classList.add("bi-eye-slash");
         }
     }
-    // function validateTerms() {
-    //     const termsCheckbox = document.getElementById("termscondition");
-    //     if (!termsCheckbox.checked) {
-    //         alert("You must read and agree to the Terms & Conditions before logging in.");
-    //         return false;
-    //         return true;
-    //     }
-    // }
-    // document.addEventListener("DOMContentLoaded", function () {
-    //     const termsCheckbox = document.getElementById("termscondition");
-    //     const acceptBtn = document.getElementById("accept-terms");
+    function validateTerms() {
+        const termsCheckbox = document.getElementById("termscondition");
+        if (!termsCheckbox.checked) {
+            alert("You must read and agree to the Terms & Conditions before logging in.");
+            return false;
+            return true;
+        }
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+        const termsCheckbox = document.getElementById("termscondition");
+        const acceptBtn = document.getElementById("accept-terms");
 
-    //     termsCheckbox.addEventListener("click", function (e) {
-    //         if (termsCheckbox.disabled) {
-    //             e.preventDefault();
-    //         }
-    //     });
+        termsCheckbox.addEventListener("click", function (e) {
+            if (termsCheckbox.disabled) {
+                e.preventDefault();
+            }
+        });
 
-    //     acceptBtn.addEventListener("click", function () {
-    //         termsCheckbox.disabled = false;
-    //         termsCheckbox.checked = true;
-    //     });
-    // });
+        acceptBtn.addEventListener("click", function () {
+            termsCheckbox.disabled = false;
+            termsCheckbox.checked = true;
+        });
+    });

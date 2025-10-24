@@ -32,8 +32,8 @@ def edit_account(student_id):
 def submitRoles():
     data = request.get_json()
     email = data.get('email')
-    roles = data.get('roles')
-    status = data.get('status')
+    roles = data.get('selectRoles')
+    status = data.get('selectStatus')
     productPermission = data.get('productPermission')
     reportsPermission = data.get('reportsPermission')
     ordersPermission = data.get('ordersPermission')

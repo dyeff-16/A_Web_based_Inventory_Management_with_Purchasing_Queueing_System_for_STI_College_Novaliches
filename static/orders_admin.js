@@ -1,29 +1,29 @@
-document.getElementById('searchInput').addEventListener('input', function () {
+// document.getElementById('searchInput').addEventListener('input', function () {
 
-    const search = this.value;
-    const filter = document.getElementById('filter_category').value;
+//     const search = this.value;
+//     const filter = document.getElementById('filter_category').value;
 
-    fetch('/order/getOrder', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ search, filter })
-    })
-        .then(r => r.json())
-        .then(data => displayOrders(data.orders))
-})
+//     fetch('/order/getOrder', {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ search, filter })
+//     })
+//         .then(r => r.json())
+//         .then(data => displayOrders(data.orders))
+// })
 
-function searchBtn() {
-    const search = document.getElementById('searchInput').value;
-    const filter = document.getElementById('filter_category').value;
+// function searchBtn() {
+//     const search = document.getElementById('searchInput').value;
+//     const filter = document.getElementById('filter_category').value;
 
-    fetch('/order/getOrder', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ search, filter })
-    })
-        .then(r => r.json())
-        .then(data => displayOrders(data.orders))
-}
+//     fetch('/order/getOrder', {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ search, filter })
+//     })
+//         .then(r => r.json())
+//         .then(data => displayOrders(data.orders))
+// }
 
 function orderRelease() {
     const referenceNumber = document.getElementById('referenceNumber').value;
@@ -73,7 +73,8 @@ function submitStatus() {
     const indexData = document.getElementById('indexData').dataset;
     console.log("Reference Number:", indexData.rfr);
     const referenceNumber = indexData.rfr;
-    const invoiceNumber = document.getElementById('invoiceNumber').value;
+    const invoiceNumber = document.querySelector('#receiptModal1 #invoiceNumber').value.trim();
+    console.log('Invoice Number:', invoiceNumber);
 
     fetch('/order/setPaid', {
         method: 'POST',
@@ -89,7 +90,7 @@ function submitStatus() {
             }
 
             if (data.message) {
-                alert('Please input invoice number');
+                alert(data.message);
             }
 
         })

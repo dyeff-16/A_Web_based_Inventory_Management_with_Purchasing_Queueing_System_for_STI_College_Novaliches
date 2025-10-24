@@ -29,6 +29,7 @@
     const modalEl = document.getElementById('confirmUploadModal' + index);
     const modal = bootstrap.Modal.getInstance(modalEl);
     if (modal) modal.hide();
+    
   }
 
   function getImageItem(item_id) {

@@ -74,7 +74,7 @@ def update_quantity():
                 return jsonify({"message": "Invalid action"}), 400
 
             total_amount = int(cart_item["item_price"] * new_quantity)
-
+            print(total_amount)
             db_cart.update_one(
                 {"item_id": cart_item["item_id"], "email": get_email(), "itemCode": item_code},
                 {"$set": {"item_quantity": new_quantity, "total_amount": total_amount}}
@@ -99,7 +99,7 @@ def update_quantity():
                 return jsonify({"message": "Invalid action"}), 400
             
             total_amount = int(cart_item["item_price"] * new_quantity)
-
+            print(total_amount)
             db_cart.update_one(
                 {"item_id": cart_item["item_id"]},
                 {"$set": {"item_quantity": new_quantity, "total_amount": total_amount}}

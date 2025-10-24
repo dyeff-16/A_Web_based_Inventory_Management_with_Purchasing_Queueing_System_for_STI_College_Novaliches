@@ -64,7 +64,7 @@ def place_order():
         flash('No matching items found in your cart.', 'warning')
         return redirect(url_for('cart.cart'))
 
-    total_amount = sum(float(item.get('total_amount', 0)) for item in cart_items)
+    total_amount = sum(int(item.get('total_amount', 0)) for item in cart_items)
     ref_number = generate_reference_number()
 
     # Format items with only essential fields
@@ -103,6 +103,7 @@ def place_order():
         'name': user_email['fullname'],
         'items': ordered_items,
         'total_amount': total_amount,
+        'unread': True,
         'thread':[
             {"status": "Placed Order",
              'order_date': date_str,

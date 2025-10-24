@@ -277,7 +277,7 @@ def setDeclined():
     order = db_orders.find_one({'reference_number': ref_num})
     db_orders.update_one(
             {"reference_number": ref_num},
-            {"$unset": {"receipt": "",
+            {"$set": {"receipt": "",
                         "status": "Placed_Order"}}
         )
     db_notification.update_one(
@@ -295,6 +295,16 @@ def setDeclined():
                 },
                 upsert=True
             )
+    send_order_declined_notification(
+            to_email=order['email'],
+            fullname=order['name'],
+            student_id=order['student_id'],
+            ref_number=order['reference_number'],
+            date_str=date_str,
+            time_str=time_str,
+            total_amount=order['total_amount'],
+            reason = reason
+        )
     return jsonify({
         "message": "declined",
         "redirect_url": url_for('orders.orders_list') 
@@ -313,22 +323,30 @@ def setPaid():
     time_str = ph_time.strftime('%H:%M:%S')  
 
     order = db_orders.find_one({'reference_number': rfr_num})
+
+    if not rfr_num:
+        print('no rfr')
+        return jsonify(success=False, message='Missing reference number'), 400
+    if not invoice_num:
+        print('no invoice')
+        return jsonify(success=False, message='Please input invoice number'), 400
+    if not order:
+        return jsonify(success=False, message='Order not found'), 404
+
     for item in order.get('items', []):
-                item_code = item['itemCode']
-                quantity = int(item['quantity'])
+        item_code = item['itemCode']
+        quantity = int(item['quantity'])
 
-                # First try to deduct from a sized item
-                result = db_items.update_one(
-                    {"sizes.itemCode": item_code},
-                    {"$inc": {"sizes.$.quantity": -quantity}}
-                )
+        result = db_items.update_one(
+            {"sizes.itemCode": item_code},
+            {"$inc": {"sizes.$.quantity": -quantity}}
+        )
 
-                # If not found in sizes, deduct from non-sized item
-                if result.modified_count == 0:
-                    db_items.update_one(
-                        {"itemCode": item_code},
-                        {"$inc": {"item_quantity": -quantity}}
-                    )
+        if result.modified_count == 0:
+            db_items.update_one(
+                {"itemCode": item_code},
+                {"$inc": {"item_quantity": -quantity}}
+            )
     
     db_orders.update_one(
             {"reference_number": rfr_num},
@@ -360,7 +378,8 @@ def setPaid():
             total_amount=order['total_amount']
         )
 
-    return jsonify({'success': True})
+    return jsonify({'success': True,
+                    'redirect': True})
 
 @orderbp.route('/setClaimed', methods=['POST'])
 def setClaimed():
@@ -530,7 +549,7 @@ def send_order_paid_notification(to_email, fullname, student_id, ref_number, dat
     msg['To'] = to_email
     msg.set_content(f"""Good day {fullname},
 
-Your payment for the order with STI ProWare has been confirmed!
+Your order is to release
 
 Here are the details of your order:
 
@@ -544,7 +563,7 @@ Order Status: To release
 Thank you for your payment! Your order will now be prepared for claiming.
 
 Warm regards,
-ProWare Team
+Proware Team
 """)
     with smtplib.SMTP('smtp.gmail.com', 587) as server:
         server.starttls()
@@ -572,7 +591,37 @@ Order Status: Claimed
 Thank you for using STI ProWare! We hope to serve you again soon.
 
 Warm regards,
-ProWare Team
+Proware Team
+""")
+    with smtplib.SMTP('smtp.gmail.com', 587) as server:
+        server.starttls()
+        server.login(current_app.config['EMAIL_USER'], current_app.config['EMAIL_PASSWORD'])
+        server.send_message(msg)
+
+
+def send_order_declined_notification(to_email, fullname, student_id, ref_number, date_str, time_str, total_amount, reason):
+    msg = EmailMessage()
+    msg['Subject'] = 'STI ProWare – Payment Confirmation'
+    msg['From'] = current_app.config['EMAIL_USER']
+    msg['To'] = to_email
+    msg.set_content(f"""Good day {fullname},
+
+Your Order has been declined reason below this message:
+Reason: {reason}      
+
+Here are the details of your order:
+
+Reference Number: {ref_number}
+Student ID: {student_id}
+Payment Date: {date_str}
+Payment Time: {time_str}
+Total Amount Paid: {total_amount}
+Order Status: Placed Order
+
+Thank you for your payment! Your order will now be prepared for claiming.
+
+Warm regards,
+Proware Team
 """)
     with smtplib.SMTP('smtp.gmail.com', 587) as server:
         server.starttls()
