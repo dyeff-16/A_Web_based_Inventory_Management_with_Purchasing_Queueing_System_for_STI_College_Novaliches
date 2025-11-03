@@ -14,7 +14,7 @@ from routes.admin.items import itembp
 from routes.admin.orders import orderbp
 from routes.admin.report import reportbp
 from routes.admin.queue import queueadminbp
-
+from routes.admin.dashboard import dashboardbp
 from routes.system_admin import system_adminbp
 
 from routes.admin.id_generate import *
@@ -37,6 +37,7 @@ app.register_blueprint(itembp)
 app.register_blueprint(orderbp)
 app.register_blueprint(reportbp)
 app.register_blueprint(queueadminbp)
+app.register_blueprint(dashboardbp)
 
 #system_admin blueprint
 app.register_blueprint(system_adminbp)

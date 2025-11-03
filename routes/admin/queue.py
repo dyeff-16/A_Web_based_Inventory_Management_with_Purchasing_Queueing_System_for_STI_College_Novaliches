@@ -4,8 +4,6 @@ from db_proware import db_orders
 
 queueadminbp = Blueprint('queue_admin', __name__,url_prefix='/queue_admin')  
 
-from flask import session, redirect, url_for
-
 @queueadminbp.route('/queue', methods=['GET', 'POST'])
 def queue_view():
     if request.method == 'POST':

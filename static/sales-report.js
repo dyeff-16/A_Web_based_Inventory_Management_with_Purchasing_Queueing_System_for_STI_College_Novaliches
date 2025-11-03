@@ -20,7 +20,8 @@
                         } else {
                         combined[code] = {
                             name: item.item_name || "No name",
-                            total: amt
+                            total: amt,
+                            sizes: item.size
                         };
                         }
                     });
@@ -31,14 +32,17 @@
                     const row = document.createElement('tr');
 
                     const tdName  = document.createElement('td');
+                    const tdSizes = document.createElement('td');
                     const tdCode  = document.createElement('td');
                     const tdTotal = document.createElement('td');
 
                     tdName.innerText  = combined[code].name;
+                    tdSizes.innerText = combined[size].sizes
                     tdCode.innerText  = code;
                     tdTotal.innerText = combined[code].total; 
 
                     row.appendChild(tdName);
+                    row.appendChild(tdSizes);
                     row.appendChild(tdCode);
                     row.appendChild(tdTotal);
                     tBodyElement.appendChild(row);
@@ -80,14 +84,17 @@
                     const row = document.createElement('tr');
 
                     const tdName  = document.createElement('td');
+                    const tdSizes = document.createElement('td');
                     const tdCode  = document.createElement('td');
                     const tdTotal = document.createElement('td');
 
                     tdName.innerText  = combined[code].name;
+                    tdSizes.innerText = combined[size].sizes
                     tdCode.innerText  = code;
-                    tdTotal.innerText = combined[code].total; // format if you want
+                    tdTotal.innerText = combined[code].total; 
 
                     row.appendChild(tdName);
+                    row.appendChild(tdSizes);
                     row.appendChild(tdCode);
                     row.appendChild(tdTotal);
                     tBodyElement.appendChild(row);
@@ -128,23 +135,27 @@
                         } else {
                         combined[code] = {
                             name: item.item_name || "No name",
-                            total: amt
+                            total: amt,
+                            sizes: item.size
                         };
                         }
                     });
                     });
                 for (const code in combined) {
                     const row = document.createElement('tr');
-
+                    
                     const tdName  = document.createElement('td');
+                    const tdSizes = document.createElement('td');
                     const tdCode  = document.createElement('td');
                     const tdTotal = document.createElement('td');
 
                     tdName.innerText  = combined[code].name;
+                    tdSizes.innerText = combined[code].sizes;
                     tdCode.innerText  = code;
-                    tdTotal.innerText = combined[code].total; // format if you want
+                    tdTotal.innerText = combined[code].total + '.00'; 
 
                     row.appendChild(tdName);
+                    row.appendChild(tdSizes);
                     row.appendChild(tdCode);
                     row.appendChild(tdTotal);
                     tBodyElement.appendChild(row);
