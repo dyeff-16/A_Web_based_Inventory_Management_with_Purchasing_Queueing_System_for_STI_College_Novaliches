@@ -1,7 +1,35 @@
+    // const email = document.getElementById('inputEmail').value;
+    // email.addEventListener('blur', async () => {
+    //     const termsCheckbox = document.getElementById("termscondition");
+    //     const loginBtn = document.getElementById('btnLogin');
+    //     let alreadyAccepted = false;
+        
+    //     const res = await fetch('/auth/hasRead', {
+    //         method: 'POST',
+    //         headers: {'Content-Type': 'application/json'},
+    //         body: JSON.stringify({ email })
+    //     });
+    //     const data = await res.json();
+
+    //     if (data.exists && data.hasRead) {
+    //         alreadyAccepted = true;
+    //         termsCheckbox.style.display = 'none';
+    //         loginBtn.disabled = false;
+    //     } else {
+    //         alreadyAccepted = false;
+    //         termsCheckbox.style.display = 'block';
+    //         loginBtn.disabled = true;
+    //     }
+    // })
+
     function postLogin() {
+        // const termsCheckbox = document.getElementById("termscondition");
+        // if (!termsCheckbox.checked) {
+        //     alert("You must read and agree to the Terms & Conditions before logging in.");
+        // }
+
         const inputEmail = document.getElementById('inputEmail').value;
         const inputPassword = document.getElementById('inputPassword').value;
-
         document.getElementById('btnLogin').disabled = true;
 
         fetch('/auth/postLogin', {
@@ -38,27 +66,27 @@
             })
 
     }
-   
-    let time = 60; 
-    window.onload = function() {
-    const btn = document.getElementById('resendBtn');
-    const text = document.getElementById('resendText');
 
-    btn.disabled = true;
-    text.textContent = `Resend in ${time}s`;
+    let time = 60;
+    window.onload = function () {
+        const btn = document.getElementById('resendBtn');
+        const text = document.getElementById('resendText');
 
-    const timer = setInterval(() => {
-        time--;
+        btn.disabled = true;
         text.textContent = `Resend in ${time}s`;
-        if (time <= 0) {
-        clearInterval(timer);
-        btn.disabled = false;
-        text.textContent = 'Resend Code';
-        }
-    }, 1000);
+
+        const timer = setInterval(() => {
+            time--;
+            text.textContent = `Resend in ${time}s`;
+            if (time <= 0) {
+                clearInterval(timer);
+                btn.disabled = false;
+                text.textContent = 'Resend Code';
+            }
+        }, 1000);
     };
 
-    function resendSMS(){
+    function resendSMS() {
         const btn = document.getElementById('resendBtn');
         const text = document.getElementById('resendText');
         let time = 60;
@@ -71,23 +99,23 @@
             time--;
             text.textContent = `Resend in ${time}s`;
             if (time <= 0) {
-            clearInterval(timer);
-            btn.disabled = false;
-            text.textContent = 'Resend Code';
+                clearInterval(timer);
+                btn.disabled = false;
+                text.textContent = 'Resend Code';
             }
         }, 1000);
 
         fetch('/auth/resend_sms', { method: 'POST' })
-        .then(res => res.json())
-        .then(data => {
-        if (data.success) {
-            alert('New OTP sent!');
-        } else {
-            alert('Failed to resend code.');
-        }
-        });
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('New OTP sent!');
+                } else {
+                    alert('Failed to resend code.');
+                }
+            });
     }
-    function resendEmail(){
+    function resendEmail() {
         const btn = document.getElementById('resendBtn');
         const text = document.getElementById('resendText');
         let time = 60;
@@ -100,23 +128,23 @@
             time--;
             text.textContent = `Resend in ${time}s`;
             if (time <= 0) {
-            clearInterval(timer);
-            btn.disabled = false;
-            text.textContent = 'Resend Code';
+                clearInterval(timer);
+                btn.disabled = false;
+                text.textContent = 'Resend Code';
             }
         }, 1000);
 
         fetch('/auth/resend_email', { method: 'POST' })
-        .then(res => res.json())
-        .then(data => {
-        if (data.success) {
-            alert('New OTP sent!');
-        } else {
-            alert('Failed to resend code.');
-        }
-        });
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('New OTP sent!');
+                } else {
+                    alert('Failed to resend code.');
+                }
+            });
     }
-    
+
     function moveNext(current, nextFieldID) {
         if (current.value.length === 1) {
             const nextField = document.getElementById(nextFieldID);
@@ -124,9 +152,9 @@
         }
     }
     function moveBack(event, prevId) {
-    if (event.key === "Backspace" && !event.target.value && prevId) {
-        document.getElementById(prevId).focus();
-    }
+        if (event.key === "Backspace" && !event.target.value && prevId) {
+            document.getElementById(prevId).focus();
+        }
     }
 
     function emailOTP() {
@@ -214,7 +242,7 @@
             })
     }
 
-    function findAccount(){
+    function findAccount() {
         const email = document.getElementById('email').value;
         document.getElementById('btnverify').disabled = true;
 
@@ -223,27 +251,28 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email })
         })
-        .then(r => r.json())
-        .then(data => {
-            if(data.success){
-                window.location.href = '/auth/otp_verify_password'
-                document.getElementById('btnverify').disabled = false;
-            }else{
-                alert(data.message);
-                document.getElementById('btnverify').disabled = false;
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '/auth/otp_verify_password'
+                    document.getElementById('btnverify').disabled = false;
+                } else {
+                    alert(data.message);
+                    document.getElementById('btnverify').disabled = false;
 
-            }
-        })
+                }
+            })
     }
-    function resetpasswordOTP(){
-      let inputOTP = document.getElementById("otp1").value +
+
+    function resetpasswordOTP() {
+        let inputOTP = document.getElementById("otp1").value +
             document.getElementById("otp2").value +
             document.getElementById("otp3").value +
             document.getElementById("otp4").value +
             document.getElementById("otp5").value +
             document.getElementById("otp6").value;
 
-        document.getElementById('btnOTP').disabled = true;  
+        document.getElementById('btnOTP').disabled = true;
         fetch('/auth/otp_verify_password', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -263,15 +292,16 @@
 
             })
     }
-    function forceChangePassword(){
-      let inputOTP = document.getElementById("otp1").value +
+
+    function forceChangePassword() {
+        let inputOTP = document.getElementById("otp1").value +
             document.getElementById("otp2").value +
             document.getElementById("otp3").value +
             document.getElementById("otp4").value +
             document.getElementById("otp5").value +
             document.getElementById("otp6").value;
 
-        document.getElementById('btnOTP').disabled = true;  
+        document.getElementById('btnOTP').disabled = true;
         fetch('/auth/otp_force_change_password', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -334,26 +364,19 @@
             icon.classList.add("bi-eye-slash");
         }
     }
-    function validateTerms() {
-        const termsCheckbox = document.getElementById("termscondition");
-        if (!termsCheckbox.checked) {
-            alert("You must read and agree to the Terms & Conditions before logging in.");
-            return false;
-            return true;
-        }
-    }
-    document.addEventListener("DOMContentLoaded", function () {
-        const termsCheckbox = document.getElementById("termscondition");
-        const acceptBtn = document.getElementById("accept-terms");
 
-        termsCheckbox.addEventListener("click", function (e) {
-            if (termsCheckbox.disabled) {
-                e.preventDefault();
-            }
-        });
+    // document.addEventListener("DOMContentLoaded", function () {
+    //     const termsCheckbox = document.getElementById("termscondition");
+    //     const acceptBtn = document.getElementById("accept-terms");
 
-        acceptBtn.addEventListener("click", function () {
-            termsCheckbox.disabled = false;
-            termsCheckbox.checked = true;
-        });
-    });
+    //     termsCheckbox.addEventListener("click", function (e) {
+    //         if (termsCheckbox.disabled) {
+    //             e.preventDefault();
+    //         }
+    //     });
+
+    //     acceptBtn.addEventListener("click", function () {
+    //         termsCheckbox.disabled = false;
+    //         termsCheckbox.checked = true;
+    //     });
+    // });

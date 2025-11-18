@@ -73,13 +73,13 @@ function submitStatus() {
     const indexData = document.getElementById('indexData').dataset;
     console.log("Reference Number:", indexData.rfr);
     const referenceNumber = indexData.rfr;
-    const invoiceNumber = document.querySelector('#receiptModal1 #invoiceNumber').value.trim();
-    console.log('Invoice Number:', invoiceNumber);
+    // const invoiceNumber = document.querySelector('#receiptModal1 #invoiceNumber').value.trim();
+    // console.log('Invoice Number:', invoiceNumber);
 
     fetch('/order/setPaid', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ referenceNumber, invoiceNumber })
+        body: JSON.stringify({ referenceNumber })
     })
         .then(r => r.json())
         .then(data => {

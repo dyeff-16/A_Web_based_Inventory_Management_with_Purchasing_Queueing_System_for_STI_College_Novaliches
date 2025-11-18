@@ -315,7 +315,6 @@ def setPaid():
 
     data = request.get_json()
     rfr_num = data.get('referenceNumber')
-    invoice_num = data.get('invoiceNumber')
 
     
     ph_time = datetime.now(pytz.timezone('Asia/Manila'))
@@ -327,9 +326,6 @@ def setPaid():
     if not rfr_num:
         print('no rfr')
         return jsonify(success=False, message='Missing reference number'), 400
-    if not invoice_num:
-        print('no invoice')
-        return jsonify(success=False, message='Please input invoice number'), 400
     if not order:
         return jsonify(success=False, message='Order not found'), 404
 
@@ -350,7 +346,7 @@ def setPaid():
     
     db_orders.update_one(
             {"reference_number": rfr_num},
-            {"$set": {"status": 'toRelease', "invoiceNumber": invoice_num}}
+            {"$set": {"status": 'toRelease'}}
         )
     db_notification.update_one(
                 {"reference_number": rfr_num, "email": order['email']},

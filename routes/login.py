@@ -26,6 +26,22 @@ def check_role(required_role):
         return True 
     return False
 
+@loginbp.route('/hasRead', methods=['POST'])
+def hasRead():
+    data = request.get_json()
+    email = data.get('email')
+
+    user = db_account.find_one({'email': email})
+
+    if not user:
+        return jsonify({'message': True})
+    
+    return jsonify({
+        'exists': True,
+        'hasRead': user.get('hasRead', False)
+    })
+
+
 @loginbp.route('/logout', methods=['GET','POST'])
 def logout():
     if 'user' in session:
@@ -78,7 +94,7 @@ def login():
 
         data = request.get_json()
         email = data.get('inputEmail')
-        password = data.get('inputPassword')       
+        password = data.get('inputPassword')   
         user = db_account.find_one({ "email" : email})
 
         if user:
@@ -478,8 +494,6 @@ def reset_password():
 
     return render_template("reset_password.html")
 
-
-
 @loginbp.route('/otp_force_change_password', methods=['POST','GET'])
 def otp_force_change_password():
 
@@ -554,6 +568,7 @@ def force_change_password():
                 "$set": {
                     "password": new_password,   # you can hash it with bcrypt or werkzeug if needed
                     "force_change_password": False,
+                    'hasRead': True,
                     "number": number
                 }
             }
@@ -567,6 +582,43 @@ def force_change_password():
 
     return render_template("change_password.html")
 
+# @loginbp.route('/login_admin')
+# def login_admin():
+#     return render_template('login_admin.html')
+
+@loginbp.route('/signupPost', methods=['POST'])
+def signup_post():
+    data = request.get_json() or {}
+    
+    email = (data.get('inputEmail') or '').strip()
+    password = data.get('inputPassword') or ''
+    code = (data.get('inputCode') or '').strip().lower()
+    number = data.get('inputNumber')
+
+    if not email or not password or not code or not number:
+        return jsonify({'message': 'All fields are required'}), 400
+
+    if not email.endswith("@novaliches.sti.edu.ph"):
+        return jsonify({'message': 'STI Novaliches account required'}), 400
+    
+    if code != "stiadmin2025":
+        return jsonify({'message': 'Invalid invite code'}), 400
+    
+    db_account.insert_one({
+        'email': email,
+        'password': password,
+        'student_id': 1,
+        'roles': 'admin',
+        'number': int(number),
+        'force_change_password': False,
+        'status': 'active'
+    })
+    return jsonify({'success': True, 'message': 'Admin account created successfully'})
+
+@loginbp.route('/signup',methods=['GET'])
+def signup():
+
+    return render_template('signup.html')
 
 
 def send_otp_sms(number, otp):

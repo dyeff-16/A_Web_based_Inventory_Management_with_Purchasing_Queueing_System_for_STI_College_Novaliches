@@ -2,7 +2,7 @@ from email.message import EmailMessage
 import random
 import smtplib
 import string
-from flask import Flask, current_app, url_for, redirect, render_template, session, flash, request, Blueprint
+from flask import Flask, current_app, jsonify, url_for, redirect, render_template, session, flash, request, Blueprint
 from db_proware import *
 
 
@@ -12,10 +12,35 @@ def get_email():
     user_email = session['user']['email']
     return user_email
 
+@check_outbp.route('/hasRead', methods=['POST'])
+def mark_terms_read():
+
+    if 'user' not in session:
+        return jsonify({'success': False, 'error': 'Not logged in'}), 401
+
+    data = request.get_json() or {}
+
+
+    if data.get('hasRead') is not True:
+        return jsonify({'success': False, 'error': 'Invalid payload'}), 400
+
+    user_email = session['user']['email']
+
+
+    db_account.update_one(
+        {'email': user_email},
+        {'$set': {'hasRead': True}}
+    )
+
+    return jsonify({'success': True})
+
 @check_outbp.route('/check_out', methods=['GET', 'POST'])
 def check_out():
     if 'user' not in session:
         return redirect(url_for('login.login_'))
+    
+    account = db_account.find_one({'email': get_email()}) or {}
+    has_read_terms = account.get('hasRead', False)
 
     if request.method == 'POST':
         selected_ids = request.form.getlist('selected_items')
@@ -34,7 +59,7 @@ def check_out():
 
         total_amount = sum(float(item.get('total_amount', 0)) for item in cart_items)
 
-        return render_template('checkout.html', user=get_email(), items=cart_items, total=total_amount)
+        return render_template('checkout.html', user=get_email(), has_read_terms=has_read_terms, items=cart_items, total=total_amount)
 
     return render_template('checkout.html')
 

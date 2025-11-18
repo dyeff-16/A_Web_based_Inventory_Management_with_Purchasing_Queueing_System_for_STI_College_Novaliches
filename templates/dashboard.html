@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>STI Novaliches Proware</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <style>
     .hero {
@@ -13,16 +14,20 @@
       padding: 100px 0;
       text-align: center;
     }
+
     .hero h1 {
       font-weight: 700;
       font-size: 3rem;
     }
+
     .feature-card {
       transition: transform 0.3s;
     }
+
     .feature-card:hover {
       transform: translateY(-10px);
     }
+
     footer {
       background-color: #002147;
       color: white;
@@ -30,141 +35,172 @@
     }
   </style>
 </head>
+
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
-  <div class="container">
-    <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
-      <img src="/static/img/sti.png" height="30" class="me-2">Novaliches Proware
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#FAQModal">FAQ</a>
-        </li>
-        <li class="nav-item"><a class="nav-link" href="{{url_for('login.login_')}}">Login</a></li>
-      </ul>
-    </div>
-  </div>
-</nav>
-
-<div class="modal fade" id="FAQModal" tabindex="-1" aria-labelledby="FAQModal" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" style="max-width: 750px;">
-    <div class="modal-content shadow-lg">
-      <div class="modal-header bg-dark text-white">
-        <h5 class="modal-title fw-bold" id="FAQModal">Frequently Ask Question</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body px-4">
-        <h5 class="fw-bold">What is the main purpose of the system?</h5>
-        <p>
-            The main purpose of the system is it designed to reduce long waiting lines at STI College Novaliches by providing a 
-            web based platform students and staff can browse, order, pre-order, and track school merchandise such as uniforms, 
-            merchandise, and accessories online. 
-        </p>
-        <h5 class="fw-bold">Who can use the system?</h5>
-        <p>
-            The system is primarily intended for STI College Novaliches students and staff. Alumni may browse merchandise but 
-            cannot place direct orders unless assisted by currently enrolled students. 
-        </p>
-        <h5 class="fw-bold">What problems does the system solve?</h5>
-        <p>
-            It addresses: 
-        </p> 
-        <ul>
-          <li>Long queues during peak periods (e.g., start of semesters). </li>
-          <li>Stock shortages by enabling pre-orders and real-time inventory tracking. </li>
-          <li>Payment validation issues by requiring proof of payment uploads verified by administrators.</li>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
+        <img src="/static/img/sti.png" height="30" class="me-2">Novaliches Proware
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#FAQModal">FAQ</a>
+          </li>
+          <li class="nav-link" data-bs-toggle="modal" data-bs-target="#loginChoiceModal"><a>Login</a></li>
         </ul>
-        <h5 class="fw-bold">How does the queueing system work? </h5>
-        <p>
-            The queueing system works when demand is high or stock is limited, customers are placed in a digital queue. 
-            This ensures fairness and prevents system overload. Pre-orders are handled separately, with notifications sent 
-            once items become available         
-        </p> 
-        <h5 class="fw-bold">What features are included for users?</h5>
-        <ul>
-          <li>Secure login with Multi-Factor Authentication (MFA)</li>
-          <li>Browse categorized merchandise</li>
-          <li>Place regular and pre-orders</li>
-          <li>Upload proof of payment</li>
-          <li> Track order status in real time</li>
-          <li>Receive notifications when items are ready for pickup</li>
-        </ul>
-        <h5 class="fw-bold">How does the system ensure security?</h5>
-        <p>
-            The system ensures security by using Multi-Factor Authentication for both students and staff. 
-            Payment proofs are validated by administrators to ensure legitimacy.          
-        </p>
-        <h5 class="fw-bold">What makes this system unique?</h5>
-        <p>
-            Unlike traditional manual processes, the uniqueness of  system combines:         
-        </p>
-        <ul>
-          <li>Convenience (online browsing and ordering)</li>
-          <li>Efficiency (queueing and automated inventory updates)</li>
-          <li>This integration modernizes the purchasing process and enhances customer satisfaction</li>
-        </ul>
-        <h5 class="fw-bold">Is the system limited only to STI College Novaliches?</h5>
-        <p>
-            Yes. The system was developed exclusively for STI College Novaliches. It does not cover other branches or external suppliers      
-        </p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
-  </div>
-</div>
+  </nav>
+  <div class="modal fade" id="loginChoiceModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-top" style="max-width: 380px;">
+      <div class="modal-content border-0 rounded-4 shadow-lg">
 
-<section class="hero">
-  <div class="container">
-    <h1>Welcome to STI Novaliches Proware</h1>
-    <p class="lead mt-3">Fast and easy uniform and proware shopping for STI students.</p>
-    <a href="{{url_for('home')}}" class="btn btn-warning btn-lg mt-3">Shop Now</a>
-  </div>
-</section>
-
-<section class="py-5">
-  <div class="container">
-    <div class="row text-center mb-4">
-      <h2 class="fw-bold text-primary">Why Shop With Us?</h2>
-    </div>
-    <div class="row g-4">
-      <div class="col-md-4">
-        <div class="card feature-card shadow-sm h-100 text-center p-4">
-          <i class="bi bi-bag-check fs-1 text-primary mb-3"></i>
-          <h5 class="fw-bold">Easy Ordering</h5>
-          <p>Order uniforms and proware in just a few clicks, anytime and anywhere.</p>
+        <div class="modal-header border-0">
+          <!-- <h4 class="modal-title fw-bold"></h4> -->
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card feature-card shadow-sm h-100 text-center p-4">
-          <i class="bi bi-clock-history fs-1 text-primary mb-3"></i>
-          <h5 class="fw-bold">Save Time</h5>
-          <p>No more long lines! Pick up your orders with our queue system.</p>
+        <div class="modal-body px-4 pb-4">
+
+          <a href="{{ url_for('login.login_') }}">
+            <button class="btn btn-light w-100 py-3 mb-3 rounded-pill border">
+              Log in
+            </button>
+          </a>
+          <a href="{{ url_for('login.signup') }}">
+            <button class="btn btn-primary w-100 py-3 rounded-pill">
+              Sign up admin
+            </button>
+          </a>
         </div>
+
       </div>
-      <div class="col-md-4">
-        <div class="card feature-card shadow-sm h-100 text-center p-4">
-          <i class="bi bi-shield-check fs-1 text-primary mb-3"></i>
-          <h5 class="fw-bold">Trustworthy</h5>
-          <p>Secure ordering and accurate updates on your purchases and history.</p>
+    </div>
+  </div>
+  <div class="modal fade" id="FAQModal" tabindex="-1" aria-labelledby="FAQModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 750px;">
+      <div class="modal-content shadow-lg">
+        <div class="modal-header bg-dark text-white">
+          <h5 class="modal-title fw-bold" id="FAQModal">Frequently Ask Question</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body px-4">
+          <h5 class="fw-bold">What is the main purpose of the system?</h5>
+          <p>
+            The main purpose of the system is it designed to reduce long waiting lines at STI College Novaliches by
+            providing a
+            web based platform students and staff can browse, order, pre-order, and track school merchandise such as
+            uniforms,
+            merchandise, and accessories online.
+          </p>
+          <h5 class="fw-bold">Who can use the system?</h5>
+          <p>
+            The system is primarily intended for STI College Novaliches students and staff. Alumni may browse
+            merchandise but
+            cannot place direct orders unless assisted by currently enrolled students.
+          </p>
+          <h5 class="fw-bold">What problems does the system solve?</h5>
+          <p>
+            It addresses:
+          </p>
+          <ul>
+            <li>Long queues during peak periods (e.g., start of semesters). </li>
+            <li>Stock shortages by enabling pre-orders and real-time inventory tracking. </li>
+            <li>Payment validation issues by requiring proof of payment uploads verified by administrators.</li>
+          </ul>
+          <h5 class="fw-bold">How does the queueing system work? </h5>
+          <p>
+            The queueing system works when demand is high or stock is limited, customers are placed in a digital queue.
+            This ensures fairness and prevents system overload. Pre-orders are handled separately, with notifications
+            sent
+            once items become available
+          </p>
+          <h5 class="fw-bold">What features are included for users?</h5>
+          <ul>
+            <li>Secure login with Multi-Factor Authentication (MFA)</li>
+            <li>Browse categorized merchandise</li>
+            <li>Place regular and pre-orders</li>
+            <li>Upload proof of payment</li>
+            <li> Track order status in real time</li>
+            <li>Receive notifications when items are ready for pickup</li>
+          </ul>
+          <h5 class="fw-bold">How does the system ensure security?</h5>
+          <p>
+            The system ensures security by using Multi-Factor Authentication for both students and staff.
+            Payment proofs are validated by administrators to ensure legitimacy.
+          </p>
+          <h5 class="fw-bold">What makes this system unique?</h5>
+          <p>
+            Unlike traditional manual processes, the uniqueness of  system combines:
+          </p>
+          <ul>
+            <li>Convenience (online browsing and ordering)</li>
+            <li>Efficiency (queueing and automated inventory updates)</li>
+            <li>This integration modernizes the purchasing process and enhances customer satisfaction</li>
+          </ul>
+          <h5 class="fw-bold">Is the system limited only to STI College Novaliches?</h5>
+          <p>
+            Yes. The system was developed exclusively for STI College Novaliches. It does not cover other branches or
+            external suppliers
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
   </div>
-</section>
 
-<footer class="text-center">
-  <div class="container">
-    <p class="mb-1">© 2025 STI Novaliches Proware. All Rights Reserved.</p>
-  </div>
-</footer>
+  <section class="hero">
+    <div class="container">
+      <h1>Welcome to STI Novaliches Proware</h1>
+      <p class="lead mt-3">Fast and easy uniform and proware shopping for STI students.</p>
+      <a href="{{url_for('home')}}" class="btn btn-warning btn-lg mt-3">Shop Now</a>
+    </div>
+  </section>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+  <section class="py-5">
+    <div class="container">
+      <div class="row text-center mb-4">
+        <h2 class="fw-bold text-primary">Why Shop With Us?</h2>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card feature-card shadow-sm h-100 text-center p-4">
+            <i class="bi bi-bag-check fs-1 text-primary mb-3"></i>
+            <h5 class="fw-bold">Easy Ordering</h5>
+            <p>Order uniforms and proware in just a few clicks, anytime and anywhere.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card feature-card shadow-sm h-100 text-center p-4">
+            <i class="bi bi-clock-history fs-1 text-primary mb-3"></i>
+            <h5 class="fw-bold">Save Time</h5>
+            <p>No more long lines! Pick up your orders with our queue system.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card feature-card shadow-sm h-100 text-center p-4">
+            <i class="bi bi-shield-check fs-1 text-primary mb-3"></i>
+            <h5 class="fw-bold">Trustworthy</h5>
+            <p>Secure ordering and accurate updates on your purchases and history.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="text-center">
+    <div class="container">
+      <p class="mb-1">© 2025 STI Novaliches Proware. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
