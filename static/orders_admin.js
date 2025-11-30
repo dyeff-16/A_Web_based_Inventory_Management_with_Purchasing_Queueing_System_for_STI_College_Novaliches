@@ -98,7 +98,7 @@ function submitStatus() {
 
 function displayOrders(orders) {
     const tbody = document.getElementById('tbody');
-    tbody.innerHTML = ''; 
+    tbody.innerHTML = '';
 
     orders.forEach((order, index) => {
         const collapseId = `orderDetails_${index}`;
@@ -272,6 +272,31 @@ function setDeclined() {
 }
 
 
+function confirmOrder(orderRef, statusBadgeEl) {
+    fetch('/order/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reference_number: orderRef })
+    })
+        .then(res => res.json())
+        .then(data => {
+
+            if (data.success) {
+                statusBadgeEl.textContent = 'Confirmed';
+                statusBadgeEl.classList.remove('bg-warning');
+                statusBadgeEl.classList.add('bg-success');
+            } else {
+                alert(data.message || 'Failed to confirm order.');
+                console.log(orderRef);
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Error confirming order.');
+        });
+}
+
+
 document.getElementById('Orders').addEventListener('click', function () {
     fetch('/order/placeOrder')
         .then(r => r.json())
@@ -279,41 +304,42 @@ document.getElementById('Orders').addEventListener('click', function () {
             const tbody = document.getElementById('tbody');
             tbody.innerHTML = '';
 
-            data.orders.forEach((order, index) => {
-
-                // Use order._id for guaranteed unique ID across the application
+            data.orders.forEach(order => {
                 const collapseId = `po-detail-${order._id}`;
 
-                // --- MAIN ORDER ROW (tr1) ---
+                // MAIN ROW
                 const tr1 = document.createElement('tr');
                 tr1.classList.add('align-middle');
 
                 const tdRfrNum = document.createElement('td');
                 const tdName = document.createElement('td');
                 const tdDate = document.createElement('td');
-                const tdAction = document.createElement('td'); // Cell for the button group
+                const tdAction = document.createElement('td');
                 tdAction.classList.add('text-center');
 
-                // Create the button group for actions
+                // BUTTON GROUP
                 const group = document.createElement('div');
                 group.classList.add('btn-group', 'btn-group-sm');
 
-                // --- COLLAPSE BUTTON ---
+                // Confirm button
+                const btnConfirm = document.createElement('button');
+                btnConfirm.classList.add('btn', 'btn-sm', 'mx-2', 'btn-success');
+                btnConfirm.innerHTML = 'Confirm';
+
+                // Collapse button
                 const btnCollapse = document.createElement('button');
                 btnCollapse.classList.add('btn', 'btn-sm', 'btn-outline-secondary');
                 btnCollapse.setAttribute('data-bs-toggle', 'collapse');
                 btnCollapse.setAttribute('data-bs-target', `#${collapseId}`);
-                btnCollapse.innerHTML = `Details`;
+                btnCollapse.textContent = 'Details';
                 btnCollapse.title = 'Toggle Details';
 
-
+                group.appendChild(btnConfirm);
                 group.appendChild(btnCollapse);
                 tdAction.appendChild(group);
 
                 tdRfrNum.innerText = order.reference_number;
                 tdName.innerText = order.name;
-
-                // Assuming order_date and order_time are available directly
                 tdDate.innerText = `${order.order_date} ${order.order_time}`;
 
                 tr1.appendChild(tdRfrNum);
@@ -323,20 +349,19 @@ document.getElementById('Orders').addEventListener('click', function () {
 
                 tbody.appendChild(tr1);
 
-                // --- DETAIL ROW (tr2) — collapsible details ---
+                // DETAIL ROW
                 const tr2 = document.createElement('tr');
-                tr2.classList.add('collapse'); // Bootstrap's collapse class
-                tr2.id = collapseId; // Linked to the button's data-bs-target
+                tr2.classList.add('collapse');
+                tr2.id = collapseId;
 
                 const tdCollapse = document.createElement('td');
-                // Assuming 4 visible columns (RfrNum, Name, Date, Action)
                 tdCollapse.colSpan = 4;
                 tdCollapse.classList.add('text-start', 'bg-light');
 
                 const rowDiv = document.createElement('div');
                 rowDiv.classList.add('row', 'g-3', 'p-3');
 
-                // Email & Student ID (col1)
+                // col1: Email + Student ID
                 const col1 = document.createElement('div');
                 col1.classList.add('col-md-4');
                 const emailP = document.createElement('p');
@@ -348,7 +373,7 @@ document.getElementById('Orders').addEventListener('click', function () {
                 col1.appendChild(emailP);
                 col1.appendChild(stdP);
 
-                // Total & Status (col2)
+                // col2: Total + Status
                 const col2 = document.createElement('div');
                 col2.classList.add('col-md-4');
                 const totalP = document.createElement('p');
@@ -357,18 +382,29 @@ document.getElementById('Orders').addEventListener('click', function () {
 
                 const statusP = document.createElement('p');
                 statusP.classList.add('mb-2');
-                // Using badge-warning for pending/active orders
-                statusP.innerHTML = `<strong>Status:</strong> <span class="badge bg-warning">${order.status || 'N/A'}</span>`;
+
+                // Status badge element (we pass this to confirmOrder)
+                const statusBadge = document.createElement('span');
+                if (order.status == 'Confirm') {
+                    statusBadge.classList.add('badge', 'bg-success')
+                } else {
+                    statusBadge.classList.add('badge', 'bg-warning');
+                }
+
+                statusBadge.textContent = order.status || 'Pending';
+
+                statusP.innerHTML = '<strong>Status:</strong> ';
+                statusP.appendChild(statusBadge);
 
                 col2.appendChild(totalP);
                 col2.appendChild(statusP);
 
-                // Items (col3)
+                // col3: Items
                 const col3 = document.createElement('div');
                 col3.classList.add('col-12', 'col-md-4');
                 const label = document.createElement('p');
                 label.classList.add('mb-2', 'fw-bold');
-                label.innerHTML = 'Items Ordered:';
+                label.textContent = 'Items Ordered:';
                 const itemList = document.createElement('ul');
                 itemList.classList.add('list-unstyled', 'mb-0');
 
@@ -378,22 +414,32 @@ document.getElementById('Orders').addEventListener('click', function () {
                     li.innerText = `${item.item_name}${sizeText} - ${item.quantity} pcs - ₱${item.price}`;
                     itemList.appendChild(li);
                 });
-
+                if (order.status == 'Confirm') {
+                    statusBadge.classList.add('badge', 'bg-success')
+                }
                 col3.appendChild(label);
                 col3.appendChild(itemList);
 
-                // Combine sections
                 rowDiv.appendChild(col1);
                 rowDiv.appendChild(col2);
                 rowDiv.appendChild(col3);
                 tdCollapse.appendChild(rowDiv);
                 tr2.appendChild(tdCollapse);
-
-                // Add detail row immediately after main row
                 tbody.appendChild(tr2);
+                if (order.status === "Confirm") {
+                    btnConfirm.style.display = "none";
+                }
+
+
+                btnConfirm.addEventListener('click', function () {
+                    if (confirm('Confirm this order?')) {
+                        confirmOrder(order.reference_number, statusBadge);
+                    }
+                });
             });
-        })
-})
+        });
+});
+
 
 document.getElementById('Paid').addEventListener('click', function () {
     fetch('/order/paidOrder')

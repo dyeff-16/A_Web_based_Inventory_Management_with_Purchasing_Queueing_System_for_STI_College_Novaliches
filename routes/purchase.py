@@ -41,6 +41,7 @@ def upload_receipt():
     if 'img_reciept' in request.files and request.files['img_reciept'].filename != '':
         image_reciept = request.files['img_reciept']
         ref_num = request.form.get('ref_number')
+        invoice_number = request.form.get('fileInput')
         
         ph_time = datetime.now(pytz.timezone('Asia/Manila'))
         date_str = ph_time.strftime('%Y-%m-%d')
@@ -52,7 +53,7 @@ def upload_receipt():
 
         db_orders.update_one(
             {"reference_number": ref_num},
-            {"$set": {'receipt': image_base64, 'status': 'Paid'}}
+            {"$set": {'receipt': image_base64, 'status': 'Paid', 'invoice_number': invoice_number}}
         )
         send_order_paid_notification(
             to_email=order['email'],

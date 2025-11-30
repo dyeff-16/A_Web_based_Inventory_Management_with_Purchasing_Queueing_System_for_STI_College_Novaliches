@@ -1,7 +1,7 @@
 {% extends "index.html" %}
 {% block content %}
 <div class="container my-4">
-<div class="container-fluid p-4 bg-light min-vh-100">
+  <div class="container-fluid p-4 bg-light min-vh-100">
     <div class="page-header d-flex justify-content-between align-items-center border-bottom border-secondary mb-4 pb-2">
       <div>
         <h2 class="mb-3"><i class="bi bi-bag-check me-2"></i>My Orders</h2>
@@ -35,258 +35,264 @@
     </div>
 
 
-{% if orders %}
+    {% if orders %}
     {% for order in orders %}
-        {% if order.status not in ["Paid", "Claim", "toRelease"] %}
-        <div class="card shadow-sm border-0 rounded-3 hover-shadow mb-3">
-            <div class="card-body d-flex justify-content-between align-items-center">
-                <div>
-                    <h5 class="card-title mb-1 fw-bold">
-                        Reference Number: <span class="fw-normal">{{ order.reference_number }}</span>
-                    </h5>
-                    <small class="text-muted fst-italic"><b>Date:</b> {{ order.order_date }}</small><br>
-                    <small class="text-muted fst-italic"><b>Time:</b> {{ order.order_time }}</small>
-                    <div class="m-3">
-                      {% if order['items'] %}
-                    {% for item in order['items'] %}
-                      <div class="d-flex align-items-start mb-3" style="max-width: 500px;">
-                        <!-- Image -->
-                        <img 
-                          style="width: 100px; height: 100px; object-fit: cover; border: solid 1px rgb(251, 251, 251);" 
-                          id="item-image-{{ item.item_id }}" 
-                          data-item-id="{{ item.item_id }}" 
-                          alt="Item image"
-                        >
-                        
-                        <!-- Text details -->
-                        <div class="ms-3">
-                          <h5 class="mb-1">{{ item.item_name }}</h5>
-                          {% if item.size != 'N/A' %}
-                            <p class="mb-1 text-muted">Size: {{ item.size }}</p>
-                          {% endif %}
-                          <p class="mb-1">Quantity: {{ item.quantity }} pcs</p>
-                          <p class="mb-0 fw-semibold">Price: ₱{{ item.price }}.00</p>
-                        </div>
-                      </div>
+    {% if order.status not in ["Paid", "Claim", "toRelease"] %}
+    <div class="card shadow-sm border-0 rounded-3 hover-shadow mb-3">
+      <div class="card-body d-flex justify-content-between align-items-center">
+        <div>
+          <h5 class="card-title mb-1 fw-bold">
+            Reference Number: <span class="fw-normal">{{ order.reference_number }}</span>
+          </h5>
+          <small class="text-muted fst-italic"><b>Date:</b> {{ order.order_date }}</small><br>
+          <small class="text-muted fst-italic"><b>Time:</b> {{ order.order_time }}</small>
+          <div class="m-3">
+            {% if order['items'] %}
+            {% for item in order['items'] %}
+            <div class="d-flex align-items-start mb-3" style="max-width: 500px;">
+              <!-- Image -->
+              <img style="width: 100px; height: 100px; object-fit: cover; border: solid 1px rgb(251, 251, 251);"
+                id="item-image-{{ item.item_id }}" data-item-id="{{ item.item_id }}" alt="Item image">
 
-                      <script>
-                        document.addEventListener('DOMContentLoaded', function() {
-                          getImageItem('{{ item.item_id }}');
-                        });
-                      </script>
-                    {% endfor %}
-                  {% endif %}
+              <!-- Text details -->
+              <div class="ms-3">
+                <h5 class="mb-1">{{ item.item_name }}</h5>
+                {% if item.size != 'N/A' %}
+                <p class="mb-1 text-muted">Size: {{ item.size }}</p>
+                {% endif %}
+                <p class="mb-1">Quantity: {{ item.quantity }} pcs</p>
+                <p class="mb-0 fw-semibold">Price: ₱{{ item.price }}.00</p>
+              </div>
+            </div>
+
+            <script>
+              document.addEventListener('DOMContentLoaded', function () {
+                getImageItem('{{ item.item_id }}');
+              });
+            </script>
+            {% endfor %}
+            {% endif %}
+          </div>
+
+          <button class="btn btn-success btn-sm mt-3 mb-2 " data-bs-toggle="modal"
+            data-bs-target="#salesModal{{ loop.index }}">
+            Slip
+          </button>
+
+          <!-- ✅ Issuance Slip Modal -->
+          <div class="modal fade" id="salesModal{{ loop.index }}" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+
+                <div class="modal-header d-block text-center">
+                  <h5 class="modal-title w-100 mb-0">STI NOVALICHES</h5>
+                  <small class="text-muted">SALES ISSUANCE SLIP</small>
+                  <button type="button" class="btn-close position-absolute end-0 top-0 m-3"
+                    data-bs-dismiss="modal"></button>
                 </div>
-                               
-                <button class="btn btn-success btn-sm mt-3 mb-2 " data-bs-toggle="modal" data-bs-target="#salesModal{{ loop.index }}">
-                    Slip
-                </button>
 
-                <!-- ✅ Issuance Slip Modal -->
-                <div class="modal fade" id="salesModal{{ loop.index }}" tabindex="-1">
-                  <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-
-                      <div class="modal-header d-block text-center">
-                        <h5 class="modal-title w-100 mb-0">STI NOVALICHES</h5>
-                        <small class="text-muted">SALES ISSUANCE SLIP</small>
-                        <button type="button" class="btn-close position-absolute end-0 top-0 m-3" data-bs-dismiss="modal"></button>
-                      </div>
-                     
-                      <div class="modal-body">
-                        <div class="row mb-2">
-                          <div class="col-md-6">
-                            <p><strong>Student Name:</strong> {{ order.name }}</p>
-                          </div>
-                          <div class="col-md-6">
-                            <p><strong>Student Number:</strong> {{ order.student_id if order.student_id else "N/A" }}</p>
-                          </div>
-                          <div class="col-md-6">
-                            <p><strong>Date:</strong> {{ order.order_date }}</p>
-                          </div>
-                          <div class="col-md-6">
-                            <p><strong>Issuance Slip No.:</strong> IS-{{ loop.index|string }}</p>
-                          </div>
-                          <div class="col-md-6">
-                            <p><strong>Invoice No.:</strong> INV-{{ order.reference_number }}</p>
-                          </div>
-                        </div>
-
-                        <!-- Items Table -->
-                        <table class="table table-bordered table-sm">
-                          <thead>
-                            <tr>
-                              <th>Item Description</th>
-                              <th>Size</th>
-                              <th>Quantity</th>
-                              <th>SRP</th>
-                              <th>Amount</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {% for item in order['items'] %}
-                            <tr>
-                              <td>{{ item.item_name }}</td>
-                              <td>{{ item.size if item.size != 'N/A' else 'n/a' }}</td>
-                              <td>{{ item.quantity }}</td>
-                              <td>₱{{ item.price }}.00</td>
-                              <td>₱{{ item.quantity * item.price }}.00</td>
-                            </tr>
-                            {% endfor %}
-                          </tbody>
-                          <tfoot>
-                            <tr>
-                              <td colspan="4" class="text-end"><strong>Total</strong></td>
-                              <td><strong>₱{{ order.total_amount }}.00</strong></td>
-                            </tr>
-                          </tfoot>
-                        </table>
-                      </div>
-
-                      <div class="modal-footer">
-                        <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
-                      </div>
+                <div class="modal-body">
+                  <div class="row mb-2">
+                    <div class="col-md-6">
+                      <p><strong>Student Name:</strong> {{ order.name }}</p>
+                    </div>
+                    <div class="col-md-6">
+                      <p><strong>Student Number:</strong> {{ order.student_id if order.student_id else "N/A" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                      <p><strong>Date:</strong> {{ order.order_date }}</p>
+                    </div>
+                    <div class="col-md-6">
+                      <p><strong>Issuance Slip No.:</strong> IS-{{ loop.index|string }}</p>
+                    </div>
+                    <div class="col-md-6">
+                      <p><strong>Invoice No.:</strong> INV-{{ order.reference_number }}</p>
                     </div>
                   </div>
-                </div>
-                <!-- End Issuance Slip Modal -->    
-            {% if not order.receipt %}
-            <!-- Upload Receipt Form -->
-            <form id="uploadForm{{ loop.index }}" action="{{ url_for('purchase.upload_receipt') }}" method="post" enctype="multipart/form-data">
-              <input type="hidden" name="ref_number" value="{{ order.reference_number }}">
-              <input type="file" name="img_reciept" class="form-control mb-2 mt-3" required id="fileInput{{ loop.index }}">
-              <button type="button" class="btn btn-sm btn-dark" onclick="showUploadModal('{{ loop.index }}')">Upload Receipt</button>
-            </form>
 
-            <!-- Confirm Upload Modal -->
-            <div class="modal fade" id="confirmUploadModal{{ loop.index }}" tabindex="-1" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title">Confirm Upload</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                  </div>
-                  <div class="modal-body text-center">
-                    <p>Are you sure you want to upload this receipt?</p>
-                    <img id="previewImage{{ loop.index }}" src="" style="max-width: 100%; display:none;" class="mb-2 rounded">
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                    <button type="button" class="btn btn-primary" onclick="confirmYes('{{ loop.index }}')">Yes</button>
-                  </div>
+                  <!-- Items Table -->
+                  <table class="table table-bordered table-sm">
+                    <thead>
+                      <tr>
+                        <th>Item Description</th>
+                        <th>Size</th>
+                        <th>Quantity</th>
+                        <th>SRP</th>
+                        <th>Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for item in order['items'] %}
+                      <tr>
+                        <td>{{ item.item_name }}</td>
+                        <td>{{ item.size if item.size != 'N/A' else 'n/a' }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>₱{{ item.price }}.00</td>
+                        <td>₱{{ item.quantity * item.price }}.00</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td colspan="4" class="text-end"><strong>Total</strong></td>
+                        <td><strong>₱{{ order.total_amount }}.00</strong></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+
+                <div class="modal-footer">
+                  <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                 </div>
               </div>
             </div>
-         
-                    {% else %}
-                        <p>
-                            <a href="#" style="text-decoration: none; color: rgb(76, 169, 219);" data-bs-toggle="modal" data-bs-target="#receiptModal{{ loop.index }}">View Receipt</a>
-                        </p>
-                        <div class="modal fade" id="receiptModal{{ loop.index }}" tabindex="-1" 
-                             aria-labelledby="receiptModalLabel{{ loop.index }}" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="receiptModalLabel{{ loop.index }}">Receipt</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body text-center">
-                                        <img src="data:image/png;base64,{{ order.receipt }}" 
-                                             alt="receipt" style="max-width: 100%;">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
+          </div>
+          <!-- End Issuance Slip Modal -->
+          {%if order.status == 'Confirm'%}
+          {% if not order.receipt %}
+          <!-- Upload Receipt Form -->
+          <form id="uploadForm{{ loop.index }}" action="{{ url_for('purchase.upload_receipt') }}" method="post"
+            enctype="multipart/form-data">
+            <input type="hidden" name="ref_number" value="{{ order.reference_number }}">
+            <input type="file" name="img_reciept" class="form-control mb-2 mt-3" required
+              id="fileInput{{ loop.index }}">
+            <button type="button" class="btn btn-sm btn-dark" onclick="showUploadModal('{{ loop.index }}')">Upload
+              Receipt</button>
+          </form>
+
+          <!-- Confirm Upload Modal -->
+          <div class="modal fade" id="confirmUploadModal{{ loop.index }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Confirm Upload</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
+                <div class="modal-body text-center">
+                  <p>Are you sure you want to upload this receipt?</p>
+                  <img id="previewImage{{ loop.index }}" src="" style="max-width: 100%; display:none;"
+                    class="mb-2 rounded">
+                  <input type="text" name="invoice_num" class="form-control mb-2 mt-3" id="invoiceInput{{ loop.index }}"
+                    placeholder="Invoice number" required>
+
+
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                  <button type="button" class="btn btn-primary" onclick="confirmYes('{{ loop.index }}')">Yes</button>
+                </div>
+              </div>
             </div>
+          </div>
+
+          {% else %}
+          <p>
+            <a href="#" style="text-decoration: none; color: rgb(76, 169, 219);" data-bs-toggle="modal"
+              data-bs-target="#receiptModal{{ loop.index }}">View Receipt</a>
+          </p>
+          <div class="modal fade" id="receiptModal{{ loop.index }}" tabindex="-1"
+            aria-labelledby="receiptModalLabel{{ loop.index }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="receiptModalLabel{{ loop.index }}">Receipt</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                  <img src="data:image/png;base64,{{ order.receipt }}" alt="receipt" style="max-width: 100%;">
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+          {%endif%}
         </div>
-        {% endif %}
+      </div>
+    </div>
+    {% endif %}
     {% endfor %}
-{% else %}
+    {% else %}
     <p>No orders available.</p>
-{% endif %}
+    {% endif %}
 
-</div>
-<script src="/static/orders.js"></script>
+  </div>
+  <script src="/static/orders.js"></script>
   <style>
-        .tab-container {
-          padding: 0.5rem 0;
-        }
+    .tab-container {
+      padding: 0.5rem 0;
+    }
 
-        .tab-link {
-          display: flex;
-          align-items: center;
-          padding: 0.75rem 1rem;
-          text-decoration: none;
-          color: #6c757d;
-          border-radius: 0.5rem;
-          transition: background-color 0.2s ease, color 0.2s ease;
-          font-weight: 500;
-        }
+    .tab-link {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      text-decoration: none;
+      color: #6c757d;
+      border-radius: 0.5rem;
+      transition: background-color 0.2s ease, color 0.2s ease;
+      font-weight: 500;
+    }
 
-        .tab-link:hover {
-          background-color: #f8f9fa;
-          color: #495057;
-        }
+    .tab-link:hover {
+      background-color: #f8f9fa;
+      color: #495057;
+    }
 
-        .tab-link.active {
-          background-color: transparent;
-          color: #0d6efd;
-        }
+    .tab-link.active {
+      background-color: transparent;
+      color: #0d6efd;
+    }
 
-        .tab-link.active:hover {
-          background-color: #f8f9fa;
-        }
+    .tab-link.active:hover {
+      background-color: #f8f9fa;
+    }
 
-        @media (max-width: 576px) {
-          .tab-link {
-            padding: 0.5rem 0.75rem;
-            font-size: 0.9rem;
-          }
+    @media (max-width: 576px) {
+      .tab-link {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+      }
 
-          .tab-container {
-            padding: 0.25rem 0;
-          }
-        }
+      .tab-container {
+        padding: 0.25rem 0;
+      }
+    }
 
-        .order-card {
-          transition: all 0.3s ease;
-          border: 2px solid transparent;
-        }
+    .order-card {
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
 
-        .order-card:hover {
-          border-color: #0d6efd;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-          transform: translateY(-2px);
-          /* Subtle lift on hover */
-        }
+    .order-card:hover {
+      border-color: #0d6efd;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+      /* Subtle lift on hover */
+    }
 
-        .card {
-          border-radius: 0.75rem;
-        }
+    .card {
+      border-radius: 0.75rem;
+    }
 
-        .modal-content {
-          border-radius: 0.75rem;
-        }
+    .modal-content {
+      border-radius: 0.75rem;
+    }
 
-        /* Mobile adjustments */
-        @media (max-width: 768px) {
-          .order-card .row {
-            text-align: center;
-          }
+    /* Mobile adjustments */
+    @media (max-width: 768px) {
+      .order-card .row {
+        text-align: center;
+      }
 
-          .btn-group {
-            flex-direction: column;
-            width: 100%;
-          }
+      .btn-group {
+        flex-direction: column;
+        width: 100%;
+      }
 
-          .btn-group .btn {
-            margin-bottom: 0.5rem;
-          }
-        }
-      </style>
+      .btn-group .btn {
+        margin-bottom: 0.5rem;
+      }
+    }
+  </style>
 
-{% endblock %}
-
-
+  {% endblock %}

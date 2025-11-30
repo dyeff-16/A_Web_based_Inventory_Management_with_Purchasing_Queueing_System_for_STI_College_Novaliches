@@ -14,7 +14,8 @@ def getPlaceOrder():
         return redirect(url_for('login.login_'))
 
     if request.method == 'GET':
-        orders = db_orders.find({'status': 'Placed_Order'}).sort([("order_date", -1), ("order_time", -1)])
+        orders = db_orders.find({"status": {"$in": ["Placed_Order", "Confirm"]}}).sort([("order_date", -1), ("order_time", -1)])
+
         orderDic = []
         for order in orders:
             order['_id'] = str(order['_id'])
@@ -47,6 +48,43 @@ def getPlaceOrder():
         orderDic.append(order)
 
     return jsonify({'orders': orderDic})
+@orderbp.route('/confirm', methods=['POST'])
+def confirm_order():
+    data = request.get_json()
+    reference_number = data.get('reference_number')  
+
+    db_orders.update_one(
+        {"reference_number": reference_number},       
+        {"$set": { "status": "Confirm"}}
+    )
+    # db_notification.update_one(
+    #             {"reference_number": ref_num, "email": order['email']},
+    #             {'$set': {'unread': True},
+    #                 "$push": {
+    #                     "thread": {
+    #                         "status": "Declined",
+    #                         "Reason": reason,
+    #                         "order_date": date_str,
+    #                         "order_time": time_str,
+
+    #                     }
+    #                 }
+    #             },
+    #             upsert=True
+    #         )
+    # send_order_declined_notification(
+    #         to_email=order['email'],
+    #         fullname=order['name'],
+    #         student_id=order['student_id'],
+    #         ref_number=order['reference_number'],
+    #         date_str=date_str,
+    #         time_str=time_str,
+    #         total_amount=order['total_amount'],
+    #         reason = reason
+    #     )
+
+
+    return jsonify({'success':True})
 
 @orderbp.route('/paidOrder', methods=['POST', 'GET'])
 def getPaidOrder():
