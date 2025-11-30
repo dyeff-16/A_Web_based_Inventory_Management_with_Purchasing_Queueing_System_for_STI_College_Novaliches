@@ -29,7 +29,7 @@ app.config['EMAIL_USER'] = 'stinovalichesproware@gmail.com'
 app.config['EMAIL_PASSWORD'] = 'iocv jahk rprh hijv'
 bcrypt = Bcrypt(app) 
 #csrf = CSRFProtect(app)
-#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
+#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
 
 # db.createUser({ user: "Proware", pwd: "Stinovalichesproware-15", roles: [ { role: "root", db: "admin" } ] })
 #admin blueprint
