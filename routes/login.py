@@ -397,7 +397,7 @@ def sms_otp():
     login_pending = session.get('login_pending')
     number = str(login_pending.get('number', ''))   # ensure string
 
-    # ✅ Mask: *****6789 (show only last 4)
+  
     last4 = number[-4:] if len(number) >= 4 else number
     masked_number = '*' * max(0, len(number) - 4) + last4
     otp_time = datetime.fromisoformat(login_pending['otp_created_at'])
@@ -561,12 +561,11 @@ def force_change_password():
             flash("Passwords do not match.")
             return render_template("change_password.html")
 
-        # ✅ Update password in MongoDB
         db_account.update_one(
             {"email": email},
             {
                 "$set": {
-                    "password": new_password,   # you can hash it with bcrypt or werkzeug if needed
+                    "password": new_password,  
                     "force_change_password": False,
                     'hasRead': True,
                     "number": number
@@ -604,7 +603,7 @@ def signup_post():
     if code != "stiadmin2025":
         return jsonify({'message': 'Invalid invite code'}), 400
     
-    db_account.insert_one({
+    db_account_pending.insert_one({
         'email': email,
         'password': password,
         'student_id': 1,

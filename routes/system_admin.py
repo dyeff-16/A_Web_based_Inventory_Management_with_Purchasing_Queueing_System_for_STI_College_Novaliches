@@ -27,12 +27,14 @@ def edit_account(student_id):
 
     return render_template('system_admin/edit_accounts.html', account=account)
 
-
+@system_adminbp.route('/pendingAccount')
+def pendingAccount():
+    return render_template('system_admin/pendingAcc.html')\
+    
 @system_adminbp.route('/submitRoles', methods=['POST'])
 def submitRoles():
     data = request.get_json()
     email = data.get('email')
-    roles = data.get('selectRoles')
     status = data.get('selectStatus')
     productPermission = data.get('productPermission')
     reportsPermission = data.get('reportsPermission')
@@ -49,7 +51,6 @@ def submitRoles():
     db_account.update_one(
                 {'email': email},
                 {'$set': {
-                    'roles': roles,
                     'status': status,
                     'permissions': dictPermission
                 }}
@@ -162,7 +163,64 @@ def accounts():
         return redirect(url_for('login.login_'))
     
     return render_template('system_admin/accounts.html')
-     
+
+@system_adminbp.route('/getPending', methods=['GET'])
+def get_pending_accounts():
+    accounts = []
+
+    for acc in db_account_pending.find():
+        accounts.append({
+            "email": acc.get("email", ""),
+            "_id": str(acc.get("_id"))  
+        })
+
+    return jsonify({"accounts": accounts}), 200
+
+
+@system_adminbp.route('/updatePending', methods=['POST'])
+def update_pending_account():
+    data = request.get_json(silent=True) or {}
+
+    email = data.get("email")
+    action = data.get("action")  # expected: "approve" or "reject"
+
+    if not email or action not in ["approve", "reject"]:
+        return jsonify({
+            "success": False,
+            "message": "Invalid request data."
+        }), 400
+
+    # Find the pending account first
+    pending_acc = db_account_pending.find_one({"email": email})
+
+    if not pending_acc:
+        return jsonify({
+            "success": False,
+            "message": "Pending account not found."
+        }), 404
+
+    # If approve: move document to db_account, then delete from pending
+    if action == "approve":
+        # Copy all key/values
+        account_data = pending_acc.copy()
+        account_data['fullname'] = 'adminstinova'
+        db_account.insert_one(account_data)
+
+        db_account_pending.delete_one({"_id": pending_acc["_id"]})
+
+        return jsonify({
+            "success": True,
+            "message": "Account approved and moved to main accounts."
+        }), 200
+
+    if action == "reject":
+        db_account_pending.delete_one({"_id": pending_acc["_id"]})
+
+        return jsonify({
+            "success": True,
+            "message": "Pending account rejected and removed."
+        }), 200
+
 @system_adminbp.route('/getAccount', methods=['GET','POST'])
 def getAccount():
     if 'user' not in session:

@@ -1,81 +1,147 @@
-{%extends 'system_admin.html'%}
+{% extends 'system_admin.html' %}
 {% block content %}
 {% if account %}
-<div class="container justify-content-center align-items-center">
-  <div class="container bg-body-tertiary p-4 my-4 rounded shadow-sm" style="width: 100%; max-width: 600px; border-color: #000 !important;">
-    <h2 class="mb-4 text-center">Edit Account</h2>
 
-      <div class="mb-3">
-        <p class="h4"><label class="fw-bold">Email: </label> {{ account.email }}</p>
-      </div>
-      <div class="container">
-        <h4>Roles</h4>
-        <select id="selectRoles" onchange="changePermission()">
-          <option value="admin">Admin</option>
-          <option value="student">Student</option>
-        </select>
-      </div>
-      <div class="container mb-3">
-        <h4>Status</h4>
-        <select id="selectStatus" onchange="changePermission()">
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-        </select>
+<div class="container-fluid px-5 py-4">
+
+  <div class="card shadow-sm border-0 rounded-4">
+
+    <!-- HEADER -->
+    <div class="card-header bg-dark text-white rounded-top-4 py-3">
+      <h4 class="fw-bold mb-0">Edit Account</h4>
+      <small class="opacity-75">Manage account status and permissions</small>
+    </div>
+
+    <div class="card-body px-5 py-4">
+
+      <div class="row g-4">
+
+        <!-- LEFT COLUMN -->
+        <div class="col-lg-4">
+
+          <!-- EMAIL -->
+          <label class="fw-semibold mb-1">Email</label>
+          <div class="input-group mb-4">
+            <span class="input-group-text bg-light border-0">
+              <i class="bi bi-envelope-fill"></i>
+            </span>
+            <input type="text" class="form-control bg-light border-0" 
+                   value="{{ account.email }}" readonly>
+          </div>
+
+          <!-- STATUS -->
+          <label class="fw-semibold">Status</label>
+          <select id="selectStatus" class="form-select shadow-sm mb-4"
+                  onchange="changePermission();">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+
+        </div>
+
+        <!-- RIGHT COLUMN – PERMISSIONS -->
+        <div class="col-lg-8">
+
+          <div class="row g-4">
+
+            <!-- PRODUCT PERMISSION -->
+            <div class="col-md-6">
+              <div class="border rounded-3 p-3 bg-light">
+                <h6 class="fw-bold mb-3">Product Permissions</h6>
+
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" id="viewProduct" value="ViewProduct">
+                  <label class="form-check-label" for="viewProduct">View Product</label>
+                </div>
+
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" id="editProduct" value="EditProduct">
+                  <label class="form-check-label" for="editProduct">Edit Product</label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="addProduct" value="AddProduct">
+                  <label class="form-check-label" for="addProduct">Add Product</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- REPORT PERMISSION -->
+            <div class="col-md-6">
+              <div class="border rounded-3 p-3 bg-light">
+                <h6 class="fw-bold mb-3">Reports Permissions</h6>
+
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" id="viewReports" value="ViewReports">
+                  <label class="form-check-label" for="viewReports">View Reports</label>
+                </div>
+
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" id="generateReports" value="GenerateReports">
+                  <label class="form-check-label" for="generateReports">Generate Reports</label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="downloadReports" value="DownloadReports">
+                  <label class="form-check-label" for="downloadReports">Download Reports</label>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- ORDERS PERMISSION -->
+            <div class="col-md-6">
+              <div class="border rounded-3 p-3 bg-light">
+                <h6 class="fw-bold mb-3">Orders Permissions</h6>
+
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" id="viewOrders" value="ViewOrders">
+                  <label class="form-check-label" for="viewOrders">View Orders</label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="manageOrders" value="ManageOrders">
+                  <label class="form-check-label" for="manageOrders">Manage Orders</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- QUEUE PERMISSION -->
+            <div class="col-md-6">
+              <div class="border rounded-3 p-3 bg-light">
+                <h6 class="fw-bold mb-3">Queue Permissions</h6>
+
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" id="viewQueue" value="ViewQueue">
+                  <label class="form-check-label" for="viewQueue">View Queue</label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="startQueue" value="StartQueue">
+                  <label class="form-check-label" for="startQueue">Start Queue</label>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
       </div>
 
-    <div class="container" id="adminPermission" style="display: block;">
-        <div class="container mb-3">
-        <h4>Product Permission</h4>
-        
-        <input type="checkbox" name="prodcutPermission" id="prodcutPermission" value="ViewProduct">
-        <label for="ViewProduct" >View Product</label>
-        <br>
-        <input type="checkbox" name="prodcutPermission" id="prodcutPermission" value="editProduct">
-        <label for="editProduct" >Edit Product</label>
-        <br>
-        <input type="checkbox" name="prodcutPermission" id="prodcutPermission" value="addProduct">
-        <label for="addProduct" >Add Product</label>
+      <!-- BUTTON -->
+      <div class="d-flex justify-content-end mt-4">
+        <button class="btn btn-primary px-4 py-2"
+                onclick="submitRoles('{{ account.email }}')">
+          Save Changes
+        </button>
+      </div>
+
     </div>
-    <div class="container mb-3">
-        <h4>Reports Permission</h4>
-        
-        <input type="checkbox" name="reportsPermission" id="reportsPermission" value="viewReports">
-        <label for="viewReports" >View Reports</label>
-        <br>
-        <input type="checkbox" name="reportsPermission" id="reportsPermission" value="generateReports">
-        <label for="generateReports" >Generate Reports</label>
-        <br>
-        <input type="checkbox" name="reportsPermission" id="reportsPermission" value="downloadReports">
-        <label for="downloadReports" >Download Reports</label>
-    </div>
-    <div class="container mb-3">
-      <h4>Orders Permission</h4>
-      
-      <input type="checkbox" name="ordersPermission" id="ordersPermission" value="viewOrders">
-      <label for="viewOrders">View Orders</label>
-      <br>
-      <input type="checkbox" name="ordersPermission" id="ordersPermission" value="manageOrders">
-      <label for="manageOrders" >Manage Orders</label>
-    </div>
-    <div class="container">
-      <h4>Queue Permission</h4>
-      
-      <input type="checkbox" name="queuePermission" id="queuePermission" value="viewQueue">
-      <label for="viewQueue">View Queue</label>
-      <br>
-      <input type="checkbox" name="queuePermission" id="queuePermission" value="startQueue">
-      <label for="startQueue">Start Queue</label>
-    </div>
-   
   </div>
-  <div id="studentPermission" style="display: none;">
-    <h2>Student</h2>
-  </div>
-   <div class="container justify-content-center mt-3">
-    <button class="btn btn-primary" onclick="submitRoles('{{account.email}}')">Submit</button>
-    </div>
+
 </div>
 
 <script src="/static/systemAdminAcc.js"></script>
-{%endif%}
+
+{% endif %}
 {% endblock %}
