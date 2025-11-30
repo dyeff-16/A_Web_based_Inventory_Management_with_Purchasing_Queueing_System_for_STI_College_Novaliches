@@ -3,7 +3,7 @@ from datetime import datetime
 from email.message import EmailMessage
 import smtplib
 import pytz
-from flask import current_app, url_for, redirect, render_template, session, request, Blueprint
+from flask import current_app, jsonify, url_for, redirect, render_template, session, request, Blueprint
 from routes.id_generate import generate_item_id, safe_int
 from db_proware import *
 
@@ -23,6 +23,18 @@ def products():
             textbooks=item_textbook)
     else:
      return redirect(url_for('login.login_'))
+
+@itembp.route('/getproducts', methods=['GET'])
+def getproducts():
+    item_cursor = db_items.find()
+    items = []
+
+    for product in item_cursor:
+        product['_id'] = str(product['_id'])
+        items.append(product)
+
+    return jsonify({'items': items})
+
 
 @itembp.route('/add_uniform', methods=['POST', 'GET']) 
 def add_uniform():

@@ -1,54 +1,98 @@
-{% extends "admin.html" %}
+{% extends 'admin.html' %}
 {% block content %}
-<div class="container bg-body-tertiary p-4 my-4 rounded shadow-sm">
-  <h2 class="mb-4 fw-bold">Add ERM</h2>
-    <form action="/item/add_erm" method="POST" enctype="multipart/form-data" id="item_form">
-      <div class="mb-4 row align-items-center" style="max-width: 450px;">
-          <label for="reference_number" class="col-auto fw-bold mb-0 me-3">Reference Number:</label>
-              <div class="col">
-                  <input id="refnum" class="form-control" type="text" name="refnum" placeholder="Reference Number"/>
-              </div>
-      </div>
-        <div class="mb-4 row align-items-center" style="max-width: 600px;">
-        <label for="item_name" class="col-auto fw-bold mb-0 me-3">Name:</label>
-        <div class="col">
-            <input id="item_name" class="form-control" type="text" name="item_name" placeholder="Item Name"/>
-        </div>
-        </div>
 
-        <div class="mb-4 row align-items-center" style="max-width: 600px;">
-        <label for="item_img" class="col-auto fw-bold mb-0 me-3">Image:</label>
-        <div class="col">
-            <input id="item_img" class="form-control" type="file" name="item_img"/>
-        </div>
-        </div>
-        <div id="quantity_section"">
-        <div class="row align-items-center mb-3">
-        <div class="col-auto fw-bold">
-            <label for="quantity_itemcode" class="form-label mb-0">Item Code:</label>
-        </div>
-        <div class="col">
-            <input class="form-control" type="text" id="quantity_itemcode" name="quantity_itemcode" placeholder="Item Code">
-        </div>
-
-        <div class="col-auto fw-bold">
-            <label for="quantity_stock" class="form-label mb-0">Quantity:</label>
-        </div>
-        <div class="col">
-            <input class="form-control" type="number" id="quantity_stock" name="quantity_stock" min="1" placeholder="Quantity">
-        </div>
-
-        <div class="col-auto fw-bold">
-            <label for="quantity_price" class="form-label mb-0">Price:</label>
-        </div>
-        <div class="col">
-            <input type="text" class="form-control" id="quantity_price" name="quantity_price" placeholder="Price">
-        </div>
-        </div>
-        </div>
-        <div class="text-center">
-        <button class="btn btn-primary px-5" type="submit">Upload</button>
-      </div>
-    </form>
+<div class="container-fluid p-4 bg-light min-vh-100">
+  <!-- HEADER -->
+  <div class="page-header d-flex justify-content-between align-items-center border-bottom border-info-emphasis mb-4 pb-2">
+    <div>
+      <h2 class="fw-bold text-primary mb-3">Add Textbook</h2>
+    </div>
   </div>
+
+  <div class="col-lg-10 mx-auto">
+    <div class="card shadow-sm border-0 rounded-4">
+      <div class="bg-white rounded-3 shadow-sm p-4">
+        <form action="/item/add_erm" method="POST" enctype="multipart/form-data" id="item_form">
+
+          <!-- Reference, Delivery Name, Date -->
+          <div class="row g-3 mb-4">
+            <div class="col-md-4">
+              <label for="refnum" class="form-label fw-medium text-primary">Reference Number:</label>
+              <input id="refnum" class="form-control" type="text" name="refnum"
+                     placeholder="Reference Number">
+            </div>
+
+            <div class="col-md-4">
+              <label for="del_name" class="form-label fw-medium text-primary">Delivery Person Name:</label>
+              <input id="del_name" class="form-control" type="text" name="del_name"
+                     placeholder="Delivery Name">
+            </div>
+
+            <div class="col-md-4">
+              <label for="del_date" class="form-label fw-medium text-primary">Delivery Date:</label>
+              <input id="del_date" class="form-control" type="date" name="del_date">
+            </div>
+          </div>
+
+          <!-- Image Upload -->
+          <div class="mb-4">
+            <label for="item_img" class="form-label fw-medium text-primary">Image:</label>
+            <div class="border border-2 border-dashed p-4 text-center rounded-3 bg-light-subtle"
+                 style="cursor: pointer;" onclick="document.getElementById('item_img').click()">
+              <i class="bi bi-cloud-upload fs-1 text-muted"></i>
+              <p class="mb-1">Click to upload image</p>
+              <input id="item_img" class="form-control" type="file" name="item_img"
+                     accept="image/*" style="display: none;">
+            </div>
+            <!-- Optional preview container if you later add JS -->
+            <div id="imagePreviewContainer" class="row g-3 mt-2"></div>
+          </div>
+
+          <hr class="text-primary-subtle my-4">
+
+          <!-- Product Information -->
+          <h5 class="form-label fw-semibold text-primary mb-3">Product Information</h5>
+
+          <!-- Item Name -->
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label for="item_name" class="form-label fw-medium text-primary">Name:</label>
+              <input id="item_name" class="form-control" type="text" name="item_name"
+                     placeholder="Textbook Name">
+            </div>
+          </div>
+
+          <!-- Quantity Section (Item Code / Qty / Price) -->
+          <div id="quantity_section" class="row g-3 mb-4">
+            <div class="col-md-4">
+              <label for="quantity_itemcode" class="form-label fw-medium text-primary">Item Code:</label>
+              <input class="form-control" type="text" id="quantity_itemcode" name="quantity_itemcode"
+                     placeholder="Item Code">
+            </div>
+
+            <div class="col-md-4">
+              <label for="quantity_stock" class="form-label fw-medium text-primary">Quantity:</label>
+              <input class="form-control" type="number" id="quantity_stock" name="quantity_stock" min="1"
+                     placeholder="Quantity">
+            </div>
+
+            <div class="col-md-4">
+              <label for="quantity_price" class="form-label fw-medium text-primary">Price:</label>
+              <input type="text" class="form-control" id="quantity_price" name="quantity_price"
+                     placeholder="Price">
+            </div>
+          </div>
+
+          <div class="text-end">
+            <button class="btn btn-primary px-4 shadow-sm" type="submit">
+              <i class="bi bi-upload me-2"></i>Upload Textbook
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
