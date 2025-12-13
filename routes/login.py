@@ -120,6 +120,7 @@ def login():
                         'fullname': user['fullname'],
                         'number': user['number'],
                         'email': user['email'],
+                        'course': user['program'],
                         'student_id': user['student_id'],
                         'roles': user['roles'],
                         'otp_attempts': 0
@@ -252,6 +253,7 @@ def otpValidationLogin():
             session['user'] = {
                 'fullname': login_pending['fullname'],
                 'email': login_pending['email'],
+                'course': login_pending['course'],
                 'student_id': login_pending['student_id'],
                 'roles': login_pending['roles'],
             }
@@ -359,6 +361,7 @@ def smsValidationLogin():
             session['user'] = {
                 'fullname': login_pending['fullname'],
                 'email': login_pending['email'],
+                'course': login_pending['course'],
                 'student_id': login_pending['student_id'],
                 'roles': login_pending['roles'],
             }
@@ -395,7 +398,7 @@ def sms_otp():
         return redirect(url_for('login.login_'))
     
     login_pending = session.get('login_pending')
-    number = str(login_pending.get('number', ''))   # ensure string
+    number = str(login_pending.get('number', ''))   
 
   
     last4 = number[-4:] if len(number) >= 4 else number
@@ -541,7 +544,6 @@ def otp_force_change_password():
 
 @loginbp.route("/force_change_password", methods=["GET", "POST"])
 def force_change_password():
-    # Make sure user is in pending_change_password session
     if "pending_change_password" not in session:
         return redirect(url_for("login.login_"))
 
@@ -581,9 +583,6 @@ def force_change_password():
 
     return render_template("change_password.html")
 
-# @loginbp.route('/login_admin')
-# def login_admin():
-#     return render_template('login_admin.html')
 
 @loginbp.route('/signupPost', methods=['POST'])
 def signup_post():

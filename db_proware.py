@@ -15,3 +15,4 @@ db_info =db_admin.info
 db_preorder = db_admin.pre_order
 db_auditlog = db_admin.audit_log
 db_account_pending = db_admin.pendingAccount
+textbookdb = db_admin.textbook

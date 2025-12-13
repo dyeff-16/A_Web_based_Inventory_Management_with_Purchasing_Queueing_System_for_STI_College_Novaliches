@@ -182,7 +182,7 @@ def update_pending_account():
     data = request.get_json(silent=True) or {}
 
     email = data.get("email")
-    action = data.get("action")  # expected: "approve" or "reject"
+    action = data.get("action")  
 
     if not email or action not in ["approve", "reject"]:
         return jsonify({
@@ -190,7 +190,6 @@ def update_pending_account():
             "message": "Invalid request data."
         }), 400
 
-    # Find the pending account first
     pending_acc = db_account_pending.find_one({"email": email})
 
     if not pending_acc:
@@ -199,9 +198,7 @@ def update_pending_account():
             "message": "Pending account not found."
         }), 404
 
-    # If approve: move document to db_account, then delete from pending
     if action == "approve":
-        # Copy all key/values
         account_data = pending_acc.copy()
         account_data['fullname'] = 'adminstinova'
         db_account.insert_one(account_data)
@@ -264,43 +261,41 @@ def getAccount():
 
     return jsonify({'accounts': accounts, 'message': 'Search results (POST)', 'query': query})
 
-# @system_adminbp.before_app_request
-# def maintenance_block():
-#     # paths that must always work
-#     allowed_paths = {
-#         '/system_admin', 
-#         '/system_admin/maintenance',       # maintenance page itself
-#         '/system_admin/toggle_maintenance' # your admin toggle endpoint (POST)
-#     }
-#     # always allow static files
-#     if request.path.startswith('/static/'):
-#         return None
+@system_adminbp.before_app_request
+def maintenance_block():
 
-#     is_maintenance = bool(current_app.config.get('MAINTENANCE_MODE'))
-#     is_logged_in  = bool(session.get('user_id'))   # <- use your actual login key
+    allowed_paths = {
+        '/system_admin', 
+        '/system_admin/maintenance',       
+        '/system_admin/toggle_maintenance' 
+    }
 
-#     # If maintenance ON and user is NOT logged in → block to maintenance page
-#     if is_maintenance and not is_logged_in:
-#         if request.path in allowed_paths:
-#             return None
+    if request.path.startswith('/static/'):
+        return None
 
-#         # If it's an API call expecting JSON
-#         if request.accept_mimetypes.best == 'application/json':
-#             return jsonify({"status": "maintenance", "message": "Service temporarily unavailable."}), 503
+    is_maintenance = bool(current_app.config.get('MAINTENANCE_MODE'))
+    is_logged_in  = bool(session.get('user_id'))   
 
-#         # Otherwise show the maintenance page
-#         return redirect(url_for('system_admin.maintenance_page'))
+    if is_maintenance and not is_logged_in:
+        if request.path in allowed_paths:
+            return None
+
+      
+        if request.accept_mimetypes.best == 'application/json':
+            return jsonify({"status": "maintenance", "message": "Service temporarily unavailable."}), 503
+
     
-# @system_adminbp.route('/maintenance')
-# def maintenance_page():
-#     return render_template('system_admin/maintenance.html'), 503
+        return redirect(url_for('system_admin.maintenance_page'))
+    
+@system_adminbp.route('/maintenance')
+def maintenance_page():
+    return render_template('system_admin/maintenance.html'), 503
 
-# @system_adminbp.route('/toggle_maintenance', methods=['POST'])
-# def toggle_maintenance():
+@system_adminbp.route('/toggle_maintenance', methods=['POST'])
+def toggle_maintenance():
 
-#     # Only allow admins to call this (add your own admin check)
-#     current_app.config['MAINTENANCE_MODE'] = not current_app.config.get('MAINTENANCE_MODE', False)
-#     return {
-#         "maintenance": current_app.config['MAINTENANCE_MODE'],
-#         "message": "🛠 ON" if current_app.config['MAINTENANCE_MODE'] else "✅ OFF"
-#     }
+    current_app.config['MAINTENANCE_MODE'] = not current_app.config.get('MAINTENANCE_MODE', False)
+    return {
+        "maintenance": current_app.config['MAINTENANCE_MODE'],
+        "message": "🛠 ON" if current_app.config['MAINTENANCE_MODE'] else "✅ OFF"
+    }

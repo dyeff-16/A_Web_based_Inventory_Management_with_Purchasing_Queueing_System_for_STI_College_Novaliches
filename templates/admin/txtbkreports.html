@@ -1,0 +1,54 @@
+
+{% extends 'admin.html' %}
+{% block content %}
+ <div class="container my-4">
+    <h3 class="fw-bold mb-3">Sales Report</h3>
+
+<div class="row g-3 align-items-end mb-3">
+  <div class="col-auto">
+    <label class="form-label fw-bold">Report Type</label>
+    <select id="reportTypeTxt" class="form-select" onchange="viewDate()">
+      <option value="range">Custom Date Range</option>  
+      <option value="monthly">Monthly</option>
+      <option value="weekly">Weekly</option>
+    </select>
+  </div>
+
+  <div class="col-auto">
+    <label for="dateStart" id="textStartDateTxt" class="form-label fw-bold">Start Date</label>
+    <input type="date" id="dateStartTxt" class="form-control">
+    </div>
+    <div class="col-auto">
+    <label for="dateEnd" id="textEndDateTxt" class="form-label fw-bold">End Date</label>
+    <input type="date" id="dateEndTxt" class="form-control">
+    </div>
+
+  <div class="col-auto">
+    <button class="btn btn-outline-primary" id="btnGenerateReportTxt" onclick="generateReportTxt()">Generate Report</button>
+  </div>
+</div>
+ <div class="container">
+    <div class="container d-flex align-items-center m-4 ms-0 gap-3">
+    <h2 id="setMonthTxt" class="h2 mb-0"></h2>
+    <h2 id="setYearTxt" class="mb-0"></h2>
+    <h2 id="setTotalMonthTxt" class="mb-0"></h2>
+    </div>
+    <table class="tableTxt">
+        <thead>
+            <tr>
+                <th>Item Name</th>
+                <th>Size</th>
+                <th>ItemCode</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody id="itemTableReportsTxt">
+
+        </tbody>
+    </table>
+ </div>
+  
+
+    </div>
+<script src="/static/sales-report.js"></script>
+{% endblock %}

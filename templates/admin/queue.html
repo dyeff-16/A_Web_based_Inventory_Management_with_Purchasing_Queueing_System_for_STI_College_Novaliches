@@ -1,74 +1,87 @@
 {% extends 'admin.html' %}
 {% block content %}
- <div class="container mt-4">
+<div class="container mt-4">
   {% if not queue_started %}
-    <form method="POST">
-      <button type="submit" name="start" class="btn btn-primary">Start Queue</button>
-    </form>
+    <div class="d-flex justify-content-center">
+      <form method="POST">
+        <button type="submit" name="start" class="btn btn-primary btn-lg px-5">Start Queue</button>
+      </form>
+    </div>
   {% else %}
-    <form method="POST" class="mb-3">
-      <button type="submit" name="stop" class="btn btn-danger">Stop Queue</button>
-    </form>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4 class="fw-bold mb-0">Queue Management</h4>
+      <form method="POST">
+        <button type="submit" name="stop" class="btn btn-danger">Stop Queue</button>
+      </form>
+    </div>
 
-    <div class="row">
-     
-      <div class="col-md-6">
-        <div class="border rounded p-3 h-100">
-          <h5 class="fw-bold text-center">Queue Line</h5>
-          <div class="d-flex flex-column gap-3 mt-3">
-            {% if queue_orders %}
-         
-              <div class="border rounded p-4 text-center bg-light">
-                <span class="fw-bold">{{ queue_orders[0].reference_number }}</span><br>
-                <span class="fw-bold">{{ queue_orders[0].name }}</span>
-                
-                <form method="POST" action="{{ url_for('queue_admin.queue_done') }}">
-                  <input type="hidden" name="ref_num" value="{{ queue_orders[0].reference_number }}">
-                  <button type="submit" class="btn btn-success btn-sm mt-2">Done</button>
-                </form>
-                <form method="POST" action="{{ url_for('queue_admin.queue_skip') }}">
-                  <input type="hidden" name="ref_num" value="{{ queue_orders[0].reference_number }}">
-                  <button type="submit" class="btn btn-primary btn-sm mt-1">Skip</button>
-                </form>
+    <div class="row g-3">
+      <div class="col-lg-7">
+        <div class="border rounded-3 p-3 h-100 bg-white shadow-sm">
+          <h5 class="fw-bold text-center mb-3 text-primary">Queue Line</h5>
+
+          {% if queue_orders %}
+            <div class="card border-0 shadow-sm mb-4">
+              <div class="card-body text-center">
+                <div class="text-muted small mb-1">Now Serving</div>
+                <div class="display-6 fw-bold mb-1">{{ queue_orders[0].reference_number }}</div>
+                <div class="fw-semibold mb-3">{{ queue_orders[0].name }}</div>
+
+                <div class="d-flex justify-content-center gap-2">
+                  <form method="POST" action="{{ url_for('queue_admin.queue_done') }}">
+                    <input type="hidden" name="ref_num" value="{{ queue_orders[0].reference_number }}">
+                    <button type="submit" class="btn btn-success btn-sm px-3">Done</button>
+                  </form>
+                  <form method="POST" action="{{ url_for('queue_admin.queue_skip') }}">
+                    <input type="hidden" name="ref_num" value="{{ queue_orders[0].reference_number }}">
+                    <button type="submit" class="btn btn-outline-primary btn-sm px-3">Skip</button>
+                  </form>
+                </div>
               </div>
+            </div>
 
+            <h6 class="fw-semibold mb-2">Next in Line</h6>
+            <div class="d-flex flex-row flex-nowrap overflow-auto gap-3 pb-2">
               {% for order in queue_orders[1:] %}
-
-                <div class="border rounded p-4 text-center">
-                  <span class="fw-bold">{{ order.reference_number }}</span><br>
-                  <span class="fw-bold">{{ order.name }}</span>
-
+                <div class="card border-0 shadow-sm" style="min-width: 220px;">
+                  <div class="card-body text-center">
+                    <div class="fw-bold">{{ order.reference_number }}</div>
+                    <div class="small text-muted mt-1">{{ order.name }}</div>
+                  </div>
                 </div>
               {% endfor %}
-            {% else %}
-              <p class="text-muted">No orders in queue.</p>
-            {% endif %}
-          </div>
+            </div>
+          {% else %}
+            <p class="text-muted text-center mt-4 mb-0">No orders in queue.</p>
+          {% endif %}
         </div>
       </div>
 
-      <div class="col-md-6">
-        <div class="border rounded p-3 h-100">
-          <h5 class="fw-bold text-center">Skip Queue</h5>
-          <div class="d-flex flex-column gap-3 mt-3">
-            {% if skip_orders %}
+      <div class="col-lg-5">
+        <div class="border rounded-3 p-3 h-100 bg-white shadow-sm">
+          <h5 class="fw-bold text-center mb-3 text-warning">Skip Queue</h5>
+
+          {% if skip_orders %}
+            <div class="d-flex flex-row flex-nowrap overflow-auto gap-3 pb-2">
               {% for order in skip_orders %}
-                <div class="border rounded p-4 text-center">
-                  <span class="fw-bold">{{ order.reference_number }}</span>
-                  <form method="POST" action="{{ url_for('queue_admin.queue_done') }}">
-                    <input type="hidden" name="ref_num" value="{{ order.reference_number }}">
-                    <button type="submit" class="btn btn-success btn-sm mt-2">Done</button>
-                  </form>
+                <div class="card border-0 shadow-sm" style="min-width: 220px;">
+                  <div class="card-body text-center">
+                    <div class="fw-bold mb-1">{{ order.reference_number }}</div>
+                    <div class="small text-muted mb-2">{{ order.name }}</div>
+                    <form method="POST" action="{{ url_for('queue_admin.queue_done') }}">
+                      <input type="hidden" name="ref_num" value="{{ order.reference_number }}">
+                      <button type="submit" class="btn btn-success btn-sm px-3">Done</button>
+                    </form>
+                  </div>
                 </div>
               {% endfor %}
-            {% else %}
-              <p class="text-muted">No skip orders.</p>
-            {% endif %}
-          </div>
+            </div>
+          {% else %}
+            <p class="text-muted text-center mt-4 mb-0">No skip orders.</p>
+          {% endif %}
         </div>
       </div>
     </div>
   {% endif %}
-</div> 
-
+</div>
 {% endblock %}

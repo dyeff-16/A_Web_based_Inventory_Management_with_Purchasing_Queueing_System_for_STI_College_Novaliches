@@ -128,30 +128,6 @@ def claim():
     if 'user' not in session:
         return redirect(url_for('home'))
     
-    # btn_claim_ref = request.form.get('btn_claim')
-    # email = request.form.get('email')
-
-
-    # ph_time = datetime.now(pytz.timezone('Asia/Manila'))
-    # date_str = ph_time.strftime('%Y-%m-%d')
-    # time_str = ph_time.strftime('%H:%M:%S')  # military time
-
-    # if btn_claim_ref:
-    #     db_notification.update_one(
-    #                 {"reference_number": btn_claim_ref, "email": email},
-    #                 {
-    #                     "$push": {
-    #                         "thread": {
-    #                             "status": "Claim",
-    #                             "order_date": date_str,
-    #                             "order_time": time_str,
-    #                             "timestamp": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-    #                         }
-    #                     }
-    #                 },
-    #                 upsert=True
-    #             )
-    #     print('hahah')
     user_data = session.get('user')
     if user_data:
         name = user_data.get('fullname')

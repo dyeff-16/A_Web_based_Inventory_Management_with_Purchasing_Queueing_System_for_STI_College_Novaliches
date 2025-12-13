@@ -112,28 +112,6 @@ def home():
     )
 
 
-
-
-# @app.route("/home", methods=['GET','POST'])
-# def home():
-#     audit_log('view home page')
-#     #get ung data from form html
-#     category = request.args.get('category', '').strip()
-#     search_query = request.form.get('search_item', '').strip()
-
-#     #query para sa items    
-#     if search_query:
-#             items = db_items.find({'item_name': {'$regex': search_query, '$options': 'i'}})
-#     else:
-#             items = db_items.find()
-#     #query para sa category
-#     if category:
-#         items = db_items.find({'item_category': {'$regex': category, '$options': 'i'}})
-
-#     #check roles dito   
-    
-#     return render_template('index.html', items=items)
-
 @app.route("/admin", methods=["POST","GET"])
 def admin():
     if 'user' not in session:

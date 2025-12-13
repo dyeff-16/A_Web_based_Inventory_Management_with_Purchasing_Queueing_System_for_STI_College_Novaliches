@@ -79,7 +79,6 @@ def place_order():
 
     user_email = session['user']
 
-    # Get selected cart items for this user
     cart_items = list(db_cart.find({
         'itemCode': {'$in': selected_ids},
         'email': get_email()
@@ -92,7 +91,6 @@ def place_order():
     total_amount = sum(int(item.get('total_amount', 0)) for item in cart_items)
     ref_number = generate_reference_number()
 
-    # Format items with only essential fields
     ordered_items = [{
         'item_id': item['item_id'],
         'item_name': item['item_name'],
@@ -161,7 +159,6 @@ def place_order():
 def send_order_confirmation(to_email, fullname, student_id, ref_number, date_str, time_str, total_amount, ordered_items):
 
 
-    # Format items as a readable list
     items_list = "\n".join(
         [f"- {item['item_name']} (x{item['quantity']}) - {item['subtotal']}" for item in ordered_items]
     )
