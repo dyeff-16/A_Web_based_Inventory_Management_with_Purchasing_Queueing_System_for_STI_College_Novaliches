@@ -1,2 +1,3 @@
-﻿#A_Web_based_Inventory_Management_with_Purchasing_Queueing_System_for_STI_College_Novaliches/tree/main
+﻿#A_Web_based_Inventory_Management_with_Purchasing_Queueing_System_for_STI_College_Novaliches
+
 
